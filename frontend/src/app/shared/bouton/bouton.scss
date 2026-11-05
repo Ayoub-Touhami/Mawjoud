@@ -1,0 +1,95 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e-2);
+  min-block-size: var(--hauteur-bouton);
+  min-inline-size: var(--cible-tactile);
+  padding-inline: var(--e-5);
+  font-family: var(--police-texte);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: var(--rayon);
+  transition:
+    background-color 120ms,
+    border-color 120ms;
+}
+
+:host(.bouton-principal) {
+  color: var(--action-texte);
+  background: var(--action);
+}
+
+:host(.bouton-principal:hover) {
+  background: var(--action-survol);
+}
+
+:host(.bouton-menthe) {
+  color: var(--tonal-texte);
+  background: var(--tonal);
+}
+
+:host(.bouton-menthe:hover) {
+  background: var(--tonal-survol);
+}
+
+:host(.bouton-secondaire) {
+  color: var(--contour);
+  background: transparent;
+  border-color: var(--contour);
+}
+
+:host(.bouton-secondaire:hover) {
+  background: var(--contour-survol);
+}
+
+:host(.bouton-alerte) {
+  color: var(--alerte-texte);
+  background: var(--alerte);
+}
+
+:host(.bouton-alerte:hover) {
+  background: var(--alerte-survol);
+}
+
+:host(.bouton-lien) {
+  min-block-size: var(--cible-tactile);
+  padding-inline: var(--e-2);
+  color: var(--lien);
+  text-decoration: underline;
+  background: transparent;
+}
+
+:host(.bouton-lien:hover) {
+  text-decoration-thickness: 2px;
+}
+
+:host([aria-disabled='true']:not(.en-chargement)) {
+  color: var(--texte-secondaire);
+  text-decoration: none;
+  cursor: not-allowed;
+  background: var(--statut-inconnu-fond);
+  border-color: transparent;
+}
+
+:host(.en-chargement) {
+  cursor: progress;
+}
+
+.roue {
+  inline-size: 20px;
+  block-size: 20px;
+  border: 2px solid currentcolor;
+  border-block-start-color: transparent;
+  border-radius: 50%;
+  animation: rotation 0.8s linear infinite;
+}
+
+@keyframes rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}

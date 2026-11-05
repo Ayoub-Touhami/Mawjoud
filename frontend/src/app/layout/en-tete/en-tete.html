@@ -1,12 +1,36 @@
 <header class="en-tete">
-  <a class="marque" routerLink="/">Mawjoud <span lang="ar" dir="rtl">موجود</span></a>
-  <nav aria-label="Navigation principale">
-    <a routerLink="/" routerLinkActive="actif" [routerLinkActiveOptions]="{ exact: true }">Carte</a>
-    <a routerLink="/resultats" routerLinkActive="actif">Résultats</a>
+  <a class="accueil" routerLink="/" [attr.aria-label]="'app.accueilLien' | transloco">
+    <app-logo />
+  </a>
+
+  <div class="outils">
+    <app-selecteur-langue />
+    <app-selecteur-theme />
+    <button
+      type="button"
+      class="menu"
+      [attr.aria-expanded]="ouvert()"
+      aria-controls="navigation-principale"
+      [attr.aria-label]="(ouvert() ? 'navigation.fermerMenu' : 'navigation.ouvrirMenu') | transloco"
+      (click)="basculer()"
+    >
+      <app-icone [nom]="ouvert() ? 'fermer' : 'menu'" />
+    </button>
+  </div>
+
+  <nav
+    id="navigation-principale"
+    [class.ouverte]="ouvert()"
+    [attr.aria-label]="'navigation.principale' | transloco"
+  >
     <a routerLink="/alertes" routerLinkActive="actif" [routerLinkActiveOptions]="{ exact: true }">
-      Mes alertes
+      {{ 'navigation.mesAlertes' | transloco }}
     </a>
-    <a routerLink="/pharmacien/inscription" routerLinkActive="actif">Je suis pharmacien</a>
-    <a routerLink="/compte/connexion" routerLinkActive="actif">Se connecter</a>
+    <a routerLink="/pharmacien/inscription" routerLinkActive="actif">
+      {{ 'navigation.jeSuisPharmacien' | transloco }}
+    </a>
+    <a class="connexion" appBouton variante="secondaire" routerLink="/compte/connexion">
+      {{ 'navigation.seConnecter' | transloco }}
+    </a>
   </nav>
 </header>

@@ -1,0 +1,46 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-1);
+  min-block-size: 30px;
+  padding-block: var(--e-1);
+  padding-inline: var(--e-3);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--couleur);
+  white-space: nowrap;
+  background: var(--fond-pastille);
+  border: 1.5px solid transparent;
+  border-radius: var(--rayon-pastille);
+}
+
+:host(.disponible),
+:host(.inscrite-verifiee) {
+  --couleur: var(--statut-disponible);
+  --fond-pastille: var(--statut-disponible-fond);
+}
+
+:host(.quantite-limitee) {
+  --couleur: var(--statut-limitee);
+  --fond-pastille: var(--statut-limitee-fond);
+}
+
+:host(.en-rupture) {
+  --couleur: var(--statut-rupture);
+  --fond-pastille: var(--statut-rupture-fond);
+}
+
+:host(.a-confirmer) {
+  --couleur: var(--statut-confirmer);
+  --fond-pastille: var(--statut-confirmer-fond);
+
+  border: 1.5px dashed var(--statut-tirets);
+}
+
+:host(.non-inscrite) {
+  --couleur: var(--statut-inconnu);
+  --fond-pastille: var(--statut-inconnu-fond);
+
+  border: 1.5px dashed var(--statut-tirets);
+}

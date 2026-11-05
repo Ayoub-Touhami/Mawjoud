@@ -1,0 +1,101 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--police-texte);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--texte);
+  background: var(--fond);
+}
+
+[lang] {
+  font-family: var(--police-texte);
+}
+
+h1,
+h2,
+h3 {
+  margin-block: 0 var(--e-3);
+  font-family: var(--police-titre);
+  font-weight: 700;
+  color: var(--titre);
+}
+
+h1 {
+  font-size: 24px;
+  line-height: 30px;
+}
+
+h2 {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+h3 {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@media (min-width: 900px) {
+  h1 {
+    font-size: 40px;
+    line-height: 44px;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}
+
+// Reem Kufi perd sa lisibilité en petit : les petits titres arabes restent en texte.
+:lang(ar) h3 {
+  font-family: var(--police-texte);
+  font-weight: 600;
+}
+
+a {
+  color: var(--lien);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+app-icone svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// Les flèches suivent le sens de lecture.
+[dir='rtl'] app-icone[data-miroir] {
+  transform: scaleX(-1);
+}
+
+.donnee {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.etiquette {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: var(--etiquette-espacement);
+  text-transform: var(--etiquette-casse);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 1.5s !important;
+  }
+}

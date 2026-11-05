@@ -1,36 +1,117 @@
+:host {
+  display: block;
+  container-type: inline-size;
+}
+
 .en-tete {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 24px;
-  padding-block: 8px;
-  padding-inline: 16px;
-  background: var(--papier);
-  border-block-end: 1px solid var(--bordure);
+  gap: var(--e-2);
+  padding-block: var(--e-2);
+  padding-inline: var(--e-4);
+  background: var(--carte);
+  border-block-end: 1px solid var(--carte-bord);
 }
 
-.marque {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--vert);
+.accueil {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--cible-tactile);
   text-decoration: none;
+  border-radius: var(--rayon-petit);
+}
+
+.outils {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+
+.menu {
+  display: grid;
+  place-items: center;
+  inline-size: var(--cible-tactile);
+  block-size: var(--cible-tactile);
+  color: var(--titre);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon-petit);
 }
 
 nav {
+  display: none;
+  flex-basis: 100%;
+  flex-direction: column;
+  gap: var(--e-1);
+  padding-block: var(--e-2);
+}
+
+nav.ouverte {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
 }
 
-nav a {
-  display: inline-flex;
+nav > a:not(.connexion) {
+  display: flex;
   align-items: center;
-  min-height: 44px;
-  color: var(--encre);
+  min-block-size: var(--cible-tactile);
+  padding-inline: var(--e-2);
+  font-weight: 600;
+  color: var(--texte);
+  text-decoration: none;
+  border-radius: var(--rayon-petit);
 }
 
-nav a.actif {
-  font-weight: 600;
-  color: var(--vert);
+nav > a:not(.connexion):hover {
+  background: var(--contour-survol);
+}
+
+nav > a.actif:not(.connexion) {
+  color: var(--titre);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.connexion {
+  --hauteur-bouton: var(--cible-tactile);
+}
+
+@container (min-width: 860px) {
+  .en-tete {
+    flex-wrap: nowrap;
+    gap: var(--e-5);
+    padding-inline: var(--e-5);
+  }
+
+  .accueil {
+    margin-inline-end: auto;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  nav,
+  nav.ouverte {
+    display: flex;
+    flex-basis: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--e-4);
+    padding-block: 0;
+  }
+
+  .outils {
+    order: 1;
+  }
+
+  nav {
+    order: 0;
+  }
+
+  nav .connexion {
+    order: 2;
+  }
 }

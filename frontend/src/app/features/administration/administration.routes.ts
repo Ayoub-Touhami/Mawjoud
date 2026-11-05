@@ -13,13 +13,13 @@ export const ADMINISTRATION_ROUTES: Routes = [
       {
         path: 'reclamations',
         component: ReclamationsPage,
-        title: 'Réclamations à valider · Mawjoud',
+        title: 'pages.reclamations',
       },
-      { path: 'annuaire', component: AnnuairePage, title: 'Annuaire des pharmacies · Mawjoud' },
+      { path: 'annuaire', component: AnnuairePage, title: 'pages.annuaire' },
       {
         path: 'signalements',
         component: SignalementsPage,
-        title: "Signalements d'abus · Mawjoud",
+        title: 'pages.signalements',
       },
     ],
   },

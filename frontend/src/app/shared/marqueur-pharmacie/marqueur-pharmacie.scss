@@ -1,0 +1,59 @@
+:host {
+  position: relative;
+  display: inline-block;
+  inline-size: 44px;
+  block-size: 55px;
+}
+
+:host(.selectionne) {
+  inline-size: 56px;
+  block-size: 70px;
+}
+
+:host(.selectionne)::before {
+  position: absolute;
+  inset-block-start: -4px;
+  inset-inline-start: -14px;
+  inline-size: 84px;
+  block-size: 84px;
+  content: '';
+  background: var(--marqueur-halo);
+  border-radius: 50%;
+}
+
+svg {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.plein {
+  fill: var(--marqueur-plein);
+}
+
+.coche {
+  fill: none;
+  stroke: var(--marqueur-signe);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vide {
+  fill: var(--marqueur-vide);
+  stroke: var(--statut-tirets);
+  stroke-width: 3;
+  stroke-dasharray: 6 5;
+}
+
+.interrogation {
+  fill: none;
+  stroke: var(--statut-inconnu);
+  stroke-width: 4.500;
+  stroke-linecap: round;
+}
+
+.point {
+  fill: var(--statut-inconnu);
+}

@@ -5,7 +5,27 @@
   <title>Mawjoud</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta name="theme-color" content="#0B3D2E">
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="icones/icone-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>
+    // Applique le thème et la langue mémorisés avant l'affichage, pour éviter un éclair.
+    (function () {
+      try {
+        var racine = document.documentElement;
+        var theme = localStorage.getItem('mawjoud.theme');
+        var langue = localStorage.getItem('mawjoud.langue');
+        if (theme === 'clair' || theme === 'sombre') racine.setAttribute('data-theme', theme);
+        if (langue === 'ar') {
+          racine.lang = 'ar';
+          racine.dir = 'rtl';
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>

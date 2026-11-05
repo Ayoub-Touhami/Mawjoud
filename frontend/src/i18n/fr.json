@@ -1,0 +1,147 @@
+{
+  "app": {
+    "nom": "Mawjoud",
+    "slogan": "Moins de tours, plus de secours.",
+    "accueilLien": "Mawjoud, retour à la carte"
+  },
+  "pages": {
+    "accueil": "Carte des pharmacies",
+    "resultats": "Résultats",
+    "fichePharmacie": "Fiche pharmacie",
+    "connexion": "Connexion et inscription",
+    "verificationEmail": "Vérification de l'e-mail",
+    "aPropos": "À propos et contact",
+    "creerAlerte": "Créer une alerte",
+    "mesAlertes": "Mes alertes",
+    "inscriptionPharmacien": "Inscription pharmacien",
+    "espacePharmacien": "Espace pharmacien",
+    "reclamerPharmacie": "Réclamer ma pharmacie",
+    "reclamations": "Réclamations à valider",
+    "annuaire": "Annuaire des pharmacies",
+    "signalements": "Signalements d'abus",
+    "introuvable": "Page introuvable",
+    "design": "Composants de Mawjoud"
+  },
+  "navigation": {
+    "principale": "Navigation principale",
+    "secondaire": "Navigation secondaire",
+    "ouvrirMenu": "Ouvrir le menu",
+    "fermerMenu": "Fermer le menu",
+    "mesAlertes": "Mes alertes",
+    "jeSuisPharmacien": "Je suis pharmacien",
+    "seConnecter": "Se connecter",
+    "aPropos": "À propos et contact",
+    "creerAlerte": "Créer une alerte",
+    "espacePharmacien": "Espace pharmacien",
+    "administration": "Administration"
+  },
+  "langue": {
+    "autre": "عربية",
+    "autreCode": "ar",
+    "changer": "Afficher le site en arabe"
+  },
+  "theme": {
+    "versSombre": "Passer au thème sombre",
+    "versClair": "Passer au thème clair"
+  },
+  "introuvable": {
+    "texte": "Cette adresse n'existe pas sur Mawjoud.",
+    "retour": "Retour à la carte"
+  },
+  "statut": {
+    "disponible": "Disponible",
+    "quantite-limitee": "Quantité limitée",
+    "en-rupture": "En rupture",
+    "a-confirmer": "À confirmer",
+    "non-inscrite": "Non inscrite",
+    "inscrite-verifiee": "Inscrite, vérifiée"
+  },
+  "marqueur": {
+    "inscrite": "Inscrite, stock déclaré",
+    "nonInscrite": "Non inscrite, appelez"
+  },
+  "etat": {
+    "erreur": {
+      "titre": "Une erreur est survenue",
+      "texte": "Nous n'avons pas pu charger cette page. Réessayez dans un instant.",
+      "action": "Réessayer"
+    },
+    "vide": {
+      "titre": "Pas encore de stock déclaré",
+      "texte": "Aucune pharmacie inscrite n'a déclaré ce médicament à Tunis pour le moment. Créez une alerte : nous vous écrivons dès que c'est le cas.",
+      "action": "Créer une alerte"
+    },
+    "horsConnexion": {
+      "titre": "Le signal est coupé",
+      "texte": "La dernière carte date d'il y a 2 h. Les stocks ont pu changer : appelez la pharmacie avant de vous déplacer.",
+      "action": "Réessayer"
+    },
+    "chargement": {
+      "titre": "Chargement…"
+    }
+  },
+  "design": {
+    "reserve": "Page réservée au développement. Elle ne figure pas dans le plan du site.",
+    "theme": {
+      "clair": "Thème clair",
+      "sombre": "Thème sombre"
+    },
+    "langue": {
+      "fr": "Français",
+      "ar": "Arabe"
+    },
+    "sections": {
+      "enTete": "En-tête et pied de page",
+      "typo": "Typographie",
+      "boutons": "Boutons",
+      "champs": "Champs",
+      "pastilles": "Pastilles de statut",
+      "marqueurs": "Marqueurs de la carte",
+      "cartes": "Cartes",
+      "etats": "Messages d'état",
+      "icones": "Icônes",
+      "motif": "Motif"
+    },
+    "typo": {
+      "titre": "Trouvez votre médicament",
+      "sousTitre": "Pharmacies près de vous",
+      "corps": "Stock déclaré par la pharmacie. Appelez avant de vous déplacer.",
+      "donnee": "Mis à jour il y a 2 h · 14 h 05",
+      "etiquette": "Stock déclaré par la pharmacie"
+    },
+    "boutons": {
+      "principal": "Chercher un médicament",
+      "menthe": "Appeler",
+      "secondaire": "Itinéraire",
+      "alerte": "Créer une alerte",
+      "lien": "Voir les pharmacies à appeler",
+      "desactive": "Bouton désactivé",
+      "chargement": "Envoi en cours"
+    },
+    "champs": {
+      "medicament": "Médicament",
+      "exemple": "Lévothyroxine",
+      "ville": "Ville",
+      "tunis": "Tunis",
+      "sfax": "Sfax",
+      "email": "E-mail",
+      "emailExemple": "nom@exemple.tn",
+      "emailAide": "Un lien vérifie votre e-mail.",
+      "emailErreur": "Saisissez une adresse e-mail valide.",
+      "motDePasse": "Mot de passe",
+      "motDePasseAide": "8 caractères au moins.",
+      "desactive": "Champ désactivé"
+    },
+    "cartes": {
+      "nom": "Pharmacie du Marché",
+      "detail": "Mis à jour il y a 2 h · 450 m",
+      "nomInconnue": "Pharmacie de la Gare",
+      "detailInconnue": "Stock non renseigné, appelez avant de vous déplacer."
+    },
+    "marqueurs": {
+      "inscrite": "Inscrite",
+      "nonInscrite": "Non inscrite",
+      "selectionne": "Sélectionné"
+    }
+  }
+}

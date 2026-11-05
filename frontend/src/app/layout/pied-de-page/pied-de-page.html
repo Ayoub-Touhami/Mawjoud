@@ -1,9 +1,9 @@
 <footer class="pied">
-  <p>Moins de tours, plus de secours.</p>
-  <nav aria-label="Navigation secondaire">
-    <a routerLink="/a-propos">À propos et contact</a>
-    <a routerLink="/alertes/creer">Créer une alerte</a>
-    <a routerLink="/pharmacien">Espace pharmacien</a>
-    <a routerLink="/admin">Administration</a>
+  <p class="slogan">{{ 'app.slogan' | transloco }}</p>
+  <nav [attr.aria-label]="'navigation.secondaire' | transloco">
+    <a routerLink="/a-propos">{{ 'navigation.aPropos' | transloco }}</a>
+    <a routerLink="/alertes/creer">{{ 'navigation.creerAlerte' | transloco }}</a>
+    <a routerLink="/pharmacien">{{ 'navigation.espacePharmacien' | transloco }}</a>
+    <a routerLink="/admin">{{ 'navigation.administration' | transloco }}</a>
   </nav>
 </footer>

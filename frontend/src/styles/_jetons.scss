@@ -1,0 +1,156 @@
+// Jetons de design de Mawjoud. Les valeurs viennent du PDF « Mawjoud : identité et écrans ».
+// Le bloc thématique est appliqué à :root et à tout élément portant data-theme.
+
+@mixin theme-clair {
+  color-scheme: light;
+
+  --fond: #f6f1e7;
+  --carte: #fffcf6;
+  --carte-bord: #ded8c9;
+  --texte: #10231b;
+  --texte-secondaire: #4a5b53;
+  --titre: #0b3d2e;
+  --lien: #1f6e9c;
+  --focus: #1f6e9c;
+  --champ-fond: #fffcf6;
+  --champ-bord: #78837c;
+  --erreur: #a3361f;
+
+  --action: #0b3d2e;
+  --action-survol: #145a44;
+  --action-texte: #fffcf6;
+  --tonal: #cdebdd;
+  --tonal-survol: #b9e2cd;
+  --tonal-texte: #0b3d2e;
+  --contour: #0b3d2e;
+  --contour-survol: #e9f4ee;
+  --alerte: #e5f0f6;
+  --alerte-survol: #d3e5ef;
+  --alerte-texte: #1a5c83;
+  --alerte-pleine: #1f6e9c;
+
+  --statut-disponible: #17703f;
+  --statut-disponible-fond: #ddf1e5;
+  --statut-limitee: #7f5200;
+  --statut-limitee-fond: #fae9bd;
+  --statut-rupture: #a3361f;
+  --statut-rupture-fond: #f8dbd3;
+  --statut-confirmer: #4a5b53;
+  --statut-confirmer-fond: #ede7db;
+  --statut-inconnu: #565e5a;
+  --statut-inconnu-fond: #e4e1d8;
+  --statut-tirets: #6b7268;
+
+  --carte-inconnue: #f1eee5;
+  --panneau-menthe: #e9f4ee;
+  --marqueur-plein: #0b3d2e;
+  --marqueur-signe: #fffcf6;
+  --marqueur-vide: #f1eee5;
+  --marqueur-halo: rgb(11 61 46 / 16%);
+
+  --ombre-carte: 0 1px 2px rgb(16 35 27 / 6%);
+  --ombre-haute: 0 12px 32px rgb(16 35 27 / 16%);
+
+  // Choisit la version d'une image selon le thème, y compris dans une zone à thème forcé.
+  --pour-clair: block;
+  --pour-sombre: none;
+}
+
+@mixin theme-sombre {
+  color-scheme: dark;
+
+  --fond: #0c1a14;
+  --carte: #14271f;
+  --carte-bord: #2b3c34;
+  --texte: #eef3ec;
+  --texte-secondaire: #a7b8b0;
+  --titre: #eef3ec;
+  --lien: #6bb4db;
+  --focus: #6bb4db;
+  --champ-fond: #14271f;
+  --champ-bord: #7d9186;
+  --erreur: #f59b8a;
+
+  --action: #7fd1a8;
+  --action-survol: #9bdfbd;
+  --action-texte: #0b3d2e;
+  --tonal: #16382a;
+  --tonal-survol: #1e4a38;
+  --tonal-texte: #7fd1a8;
+  --contour: #7fd1a8;
+  --contour-survol: #16382a;
+  --alerte: #17384a;
+  --alerte-survol: #1b4256;
+  --alerte-texte: #6bb4db;
+  --alerte-pleine: #6bb4db;
+
+  --statut-disponible: #7fd1a8;
+  --statut-disponible-fond: #16382a;
+  --statut-limitee: #f4c774;
+  --statut-limitee-fond: #3b2d10;
+  --statut-rupture: #f59b8a;
+  --statut-rupture-fond: #3e1d16;
+  --statut-confirmer: #a7b8b0;
+  --statut-confirmer-fond: #25302a;
+  --statut-inconnu: #a8b1ac;
+  --statut-inconnu-fond: #25302a;
+  --statut-tirets: #a8b1ac;
+
+  --carte-inconnue: #1a2b23;
+  --panneau-menthe: #16382a;
+  --marqueur-plein: #7fd1a8;
+  --marqueur-signe: #0b3d2e;
+  --marqueur-vide: #25302a;
+  --marqueur-halo: rgb(127 209 168 / 22%);
+
+  --ombre-carte: 0 1px 2px rgb(0 0 0 / 30%);
+  --ombre-haute: 0 12px 32px rgb(0 0 0 / 45%);
+
+  --pour-clair: none;
+  --pour-sombre: block;
+}
+
+:root {
+  --e-1: 4px;
+  --e-2: 8px;
+  --e-3: 12px;
+  --e-4: 16px;
+  --e-5: 24px;
+  --e-6: 32px;
+  --e-7: 48px;
+
+  --rayon-petit: 8px;
+  --rayon: 16px;
+  --rayon-grand: 24px;
+  --rayon-pastille: 999px;
+
+  --hauteur-bouton: 52px;
+  --cible-tactile: 44px;
+
+  --police-titre: 'Bricolage Grotesque', system-ui, sans-serif;
+  --police-texte: 'IBM Plex Sans', system-ui, sans-serif;
+  --etiquette-espacement: 0.08em;
+  --etiquette-casse: uppercase;
+}
+
+:lang(ar) {
+  --police-titre: 'Reem Kufi', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --police-texte: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --etiquette-espacement: 0;
+  --etiquette-casse: none;
+}
+
+:root,
+[data-theme='clair'] {
+  @include theme-clair;
+}
+
+[data-theme='sombre'] {
+  @include theme-sombre;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    @include theme-sombre;
+  }
+}

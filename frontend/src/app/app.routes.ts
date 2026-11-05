@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { environment } from '../environments/environment';
 
 /** Les 14 pages du plan du site, avec un fichier chargé à la demande par fonctionnalité. */
 export const routes: Routes = [
@@ -44,9 +45,10 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/a-propos/a-propos.routes').then((m) => m.A_PROPOS_ROUTES),
   },
+  ...environment.routesDeveloppement,
   {
     path: '**',
-    title: 'Page introuvable · Mawjoud',
+    title: 'pages.introuvable',
     loadComponent: () =>
       import('./features/introuvable/introuvable.page').then((m) => m.IntrouvablePage),
   },

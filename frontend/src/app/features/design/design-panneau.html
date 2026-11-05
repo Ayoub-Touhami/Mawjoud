@@ -1,0 +1,191 @@
+<h2 class="entete-panneau">
+  {{ 'design.langue.' + langue() | transloco }} · {{ 'design.theme.' + theme() | transloco }}
+</h2>
+
+<section>
+  <h3>{{ 'design.sections.enTete' | transloco }}</h3>
+  <div class="cadre"><app-en-tete /><app-pied-de-page /></div>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.typo' | transloco }}</h3>
+  <p class="titre-1">{{ 'design.typo.titre' | transloco }}</p>
+  <p class="titre-2">{{ 'design.typo.sousTitre' | transloco }}</p>
+  <p>{{ 'design.typo.corps' | transloco }}</p>
+  <p class="donnee">{{ 'design.typo.donnee' | transloco }}</p>
+  <p class="etiquette">{{ 'design.typo.etiquette' | transloco }}</p>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.boutons' | transloco }}</h3>
+  <div class="pile">
+    <button appBouton type="button">{{ 'design.boutons.principal' | transloco }}</button>
+    <button appBouton type="button" variante="menthe" icone="telephone">
+      {{ 'design.boutons.menthe' | transloco }}
+    </button>
+    <button appBouton type="button" variante="secondaire" icone="itineraire">
+      {{ 'design.boutons.secondaire' | transloco }}
+    </button>
+    <button appBouton type="button" variante="alerte" icone="alerte">
+      {{ 'design.boutons.alerte' | transloco }}
+    </button>
+    <button appBouton type="button" variante="lien">
+      {{ 'design.boutons.lien' | transloco }}
+    </button>
+    <button appBouton type="button" [desactive]="true">
+      {{ 'design.boutons.desactive' | transloco }}
+    </button>
+    <button appBouton type="button" [chargement]="true">
+      {{ 'design.boutons.chargement' | transloco }}
+    </button>
+  </div>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.champs' | transloco }}</h3>
+  <div class="pile">
+    <app-champ [libelle]="'design.champs.medicament' | transloco" icone="loupe">
+      <input appControle type="text" [value]="'design.champs.exemple' | transloco" />
+    </app-champ>
+    <app-champ [libelle]="'design.champs.ville' | transloco" [liste]="true">
+      <select appControle>
+        <option>{{ 'design.champs.tunis' | transloco }}</option>
+        <option>{{ 'design.champs.sfax' | transloco }}</option>
+      </select>
+    </app-champ>
+    <app-champ
+      [libelle]="'design.champs.email' | transloco"
+      icone="email"
+      [aide]="'design.champs.emailAide' | transloco"
+    >
+      <input
+        appControle
+        type="email"
+        dir="ltr"
+        [placeholder]="'design.champs.emailExemple' | transloco"
+      />
+    </app-champ>
+    <app-champ
+      [libelle]="'design.champs.email' | transloco"
+      icone="email"
+      [erreur]="'design.champs.emailErreur' | transloco"
+    >
+      <input appControle type="email" dir="ltr" value="nom@" />
+    </app-champ>
+    <app-champ
+      [libelle]="'design.champs.motDePasse' | transloco"
+      icone="cadenas"
+      [aide]="'design.champs.motDePasseAide' | transloco"
+    >
+      <input appControle type="password" autocomplete="off" />
+    </app-champ>
+    <app-champ [libelle]="'design.champs.desactive' | transloco">
+      <input appControle type="text" disabled [value]="'design.champs.exemple' | transloco" />
+    </app-champ>
+  </div>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.pastilles' | transloco }}</h3>
+  <div class="ligne">
+    @for (statut of pastilles; track statut) {
+      <app-pastille-statut [statut]="statut" />
+    }
+  </div>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.marqueurs' | transloco }}</h3>
+  <div class="ligne marqueurs">
+    <figure>
+      <app-marqueur-pharmacie [inscrite]="true" />
+      <figcaption>{{ 'design.marqueurs.inscrite' | transloco }}</figcaption>
+    </figure>
+    <figure>
+      <app-marqueur-pharmacie [inscrite]="false" />
+      <figcaption>{{ 'design.marqueurs.nonInscrite' | transloco }}</figcaption>
+    </figure>
+    <figure>
+      <app-marqueur-pharmacie [inscrite]="true" [selectionne]="true" />
+      <figcaption>{{ 'design.marqueurs.selectionne' | transloco }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.cartes' | transloco }}</h3>
+  <div class="pile">
+    <app-carte-conteneur>
+      <div class="entete-carte">
+        <strong>{{ 'design.cartes.nom' | transloco }}</strong>
+        <app-pastille-statut statut="disponible" />
+      </div>
+      <p class="donnee detail">{{ 'design.cartes.detail' | transloco }}</p>
+    </app-carte-conteneur>
+    <app-carte-conteneur [selectionnee]="true">
+      <div class="entete-carte">
+        <strong>{{ 'design.cartes.nom' | transloco }}</strong>
+        <app-pastille-statut statut="quantite-limitee" />
+      </div>
+      <p class="donnee detail">{{ 'design.cartes.detail' | transloco }}</p>
+    </app-carte-conteneur>
+    <app-carte-conteneur [pointilles]="true">
+      <div class="entete-carte">
+        <strong>{{ 'design.cartes.nomInconnue' | transloco }}</strong>
+        <app-pastille-statut statut="non-inscrite" />
+      </div>
+      <p class="detail">{{ 'design.cartes.detailInconnue' | transloco }}</p>
+    </app-carte-conteneur>
+  </div>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.etats' | transloco }}</h3>
+  <div class="pile">
+    <app-message-etat
+      type="erreur"
+      [titre]="'etat.erreur.titre' | transloco"
+      [texte]="'etat.erreur.texte' | transloco"
+    >
+      <button appBouton type="button" icone="reessayer">
+        {{ 'etat.erreur.action' | transloco }}
+      </button>
+    </app-message-etat>
+    <app-message-etat
+      type="vide"
+      [titre]="'etat.vide.titre' | transloco"
+      [texte]="'etat.vide.texte' | transloco"
+    >
+      <button appBouton type="button" icone="alerte">
+        {{ 'etat.vide.action' | transloco }}
+      </button>
+    </app-message-etat>
+    <app-message-etat
+      type="hors-connexion"
+      [titre]="'etat.horsConnexion.titre' | transloco"
+      [texte]="'etat.horsConnexion.texte' | transloco"
+    >
+      <button appBouton type="button" icone="reessayer">
+        {{ 'etat.horsConnexion.action' | transloco }}
+      </button>
+    </app-message-etat>
+    <app-message-etat type="chargement" [titre]="'etat.chargement.titre' | transloco" />
+  </div>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.icones' | transloco }}</h3>
+  <ul class="icones" dir="ltr">
+    @for (nom of icones; track nom) {
+      <li><app-icone [nom]="nom" [libelle]="nom" /></li>
+    }
+  </ul>
+</section>
+
+<section>
+  <h3>{{ 'design.sections.motif' | transloco }}</h3>
+  <div class="pile">
+    <app-motif class="motif-demo" ton="clair" />
+    <app-motif class="motif-demo" ton="sombre" />
+  </div>
+</section>

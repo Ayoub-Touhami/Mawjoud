@@ -10,17 +10,17 @@ export const ESPACE_PHARMACIEN_ROUTES: Routes = [
     pathMatch: 'full',
     component: EspacePharmacienPage,
     canActivate: [roleGuard('pharmacien')],
-    title: 'Espace pharmacien · Mawjoud',
+    title: 'pages.espacePharmacien',
   },
   {
     path: 'inscription',
     component: InscriptionPharmacienPage,
-    title: 'Inscription pharmacien · Mawjoud',
+    title: 'pages.inscriptionPharmacien',
   },
   {
     path: 'reclamer',
     component: ReclamerPharmaciePage,
     canActivate: [roleGuard('pharmacien')],
-    title: 'Réclamer ma pharmacie · Mawjoud',
+    title: 'pages.reclamerPharmacie',
   },
 ];

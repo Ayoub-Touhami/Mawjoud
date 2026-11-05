@@ -1,0 +1,147 @@
+{
+  "app": {
+    "nom": "موجود",
+    "slogan": "جولات أقل، إسعاف أسرع.",
+    "accueilLien": "موجود، العودة إلى الخريطة"
+  },
+  "pages": {
+    "accueil": "خريطة الصيدليات",
+    "resultats": "النتائج",
+    "fichePharmacie": "بطاقة الصيدلية",
+    "connexion": "تسجيل الدخول وإنشاء حساب",
+    "verificationEmail": "تأكيد البريد الإلكتروني",
+    "aPropos": "من نحن والتواصل",
+    "creerAlerte": "إنشاء تنبيه",
+    "mesAlertes": "تنبيهاتي",
+    "inscriptionPharmacien": "تسجيل صيدلي",
+    "espacePharmacien": "فضاء الصيدلي",
+    "reclamerPharmacie": "المطالبة بصيدليتي",
+    "reclamations": "طلبات المطالبة قيد التحقق",
+    "annuaire": "دليل الصيدليات",
+    "signalements": "بلاغات إساءة الاستخدام",
+    "introuvable": "الصفحة غير موجودة",
+    "design": "مكوّنات موجود"
+  },
+  "navigation": {
+    "principale": "التنقل الرئيسي",
+    "secondaire": "التنقل الثانوي",
+    "ouvrirMenu": "فتح القائمة",
+    "fermerMenu": "إغلاق القائمة",
+    "mesAlertes": "تنبيهاتي",
+    "jeSuisPharmacien": "أنا صيدلي",
+    "seConnecter": "تسجيل الدخول",
+    "aPropos": "من نحن والتواصل",
+    "creerAlerte": "إنشاء تنبيه",
+    "espacePharmacien": "فضاء الصيدلي",
+    "administration": "الإدارة"
+  },
+  "langue": {
+    "autre": "Français",
+    "autreCode": "fr",
+    "changer": "عرض الموقع بالفرنسية"
+  },
+  "theme": {
+    "versSombre": "التبديل إلى الوضع الداكن",
+    "versClair": "التبديل إلى الوضع الفاتح"
+  },
+  "introuvable": {
+    "texte": "هذا العنوان غير موجود على موجود.",
+    "retour": "العودة إلى الخريطة"
+  },
+  "statut": {
+    "disponible": "متوفّر",
+    "quantite-limitee": "كمية محدودة",
+    "en-rupture": "نفد المخزون",
+    "a-confirmer": "يحتاج إلى تأكيد",
+    "non-inscrite": "غير مسجَّلة",
+    "inscrite-verifiee": "مسجَّلة وموثَّقة"
+  },
+  "marqueur": {
+    "inscrite": "مسجَّلة، المخزون مُصرَّح به",
+    "nonInscrite": "غير مسجَّلة، اتصل أولاً"
+  },
+  "etat": {
+    "erreur": {
+      "titre": "حدث خطأ",
+      "texte": "تعذّر تحميل هذه الصفحة. أعد المحاولة بعد قليل.",
+      "action": "إعادة المحاولة"
+    },
+    "vide": {
+      "titre": "لا يوجد مخزون مُصرَّح به بعد",
+      "texte": "لم تصرّح أي صيدلية مسجَّلة بهذا الدواء في تونس حتى الآن. أنشئ تنبيهاً وسنراسلك فور توفّره.",
+      "action": "إنشاء تنبيه"
+    },
+    "horsConnexion": {
+      "titre": "انقطع الاتصال",
+      "texte": "تعود آخر خريطة إلى ساعتين. ربما تغيّر المخزون: اتصل بالصيدلية قبل أن تتنقّل.",
+      "action": "إعادة المحاولة"
+    },
+    "chargement": {
+      "titre": "جارٍ التحميل…"
+    }
+  },
+  "design": {
+    "reserve": "صفحة مخصصة للتطوير، وهي لا تظهر في خريطة الموقع.",
+    "theme": {
+      "clair": "الوضع الفاتح",
+      "sombre": "الوضع الداكن"
+    },
+    "langue": {
+      "fr": "الفرنسية",
+      "ar": "العربية"
+    },
+    "sections": {
+      "enTete": "الترويسة والتذييل",
+      "typo": "الخطوط",
+      "boutons": "الأزرار",
+      "champs": "الحقول",
+      "pastilles": "شارات الحالة",
+      "marqueurs": "علامات الخريطة",
+      "cartes": "البطاقات",
+      "etats": "رسائل الحالة",
+      "icones": "الأيقونات",
+      "motif": "الزخرفة"
+    },
+    "typo": {
+      "titre": "ابحث عن دوائك",
+      "sousTitre": "صيدليات قريبة منك",
+      "corps": "المخزون يصرّح به الصيدلي. اتصل قبل أن تتنقّل.",
+      "donnee": "آخر تحديث منذ ساعتين · 14:05",
+      "etiquette": "مخزون مُصرَّح به من الصيدلية"
+    },
+    "boutons": {
+      "principal": "البحث عن دواء",
+      "menthe": "اتصال",
+      "secondaire": "الاتجاهات",
+      "alerte": "إنشاء تنبيه",
+      "lien": "عرض الصيدليات للاتصال بها",
+      "desactive": "زر معطَّل",
+      "chargement": "جارٍ الإرسال"
+    },
+    "champs": {
+      "medicament": "الدواء",
+      "exemple": "ليفوثيروكسين",
+      "ville": "المدينة",
+      "tunis": "تونس",
+      "sfax": "صفاقس",
+      "email": "البريد الإلكتروني",
+      "emailExemple": "nom@exemple.tn",
+      "emailAide": "سنرسل رابطاً لتأكيد بريدك الإلكتروني.",
+      "emailErreur": "أدخل بريداً إلكترونياً صالحاً.",
+      "motDePasse": "كلمة المرور",
+      "motDePasseAide": "8 أحرف على الأقل.",
+      "desactive": "حقل معطَّل"
+    },
+    "cartes": {
+      "nom": "صيدلية السوق",
+      "detail": "آخر تحديث منذ ساعتين · 450 م",
+      "nomInconnue": "صيدلية المحطة",
+      "detailInconnue": "المخزون غير مُصرَّح به، اتصل قبل أن تتنقّل."
+    },
+    "marqueurs": {
+      "inscrite": "مسجَّلة",
+      "nonInscrite": "غير مسجَّلة",
+      "selectionne": "محدَّدة"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+@if (signe(); as nom) {
+  <app-motif class="illustration">
+    <span class="medaillon"><app-icone [nom]="nom" [taille]="56" /></span>
+  </app-motif>
+} @else {
+  <span class="roue" aria-hidden="true"></span>
+}
+<h2>{{ titre() }}</h2>
+@if (texte()) {
+  <p>{{ texte() }}</p>
+}
+<div class="actions"><ng-content /></div>

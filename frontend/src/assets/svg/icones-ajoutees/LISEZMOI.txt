@@ -1,0 +1,4 @@
+Icones absentes du dossier Mawjoud_SVG, dessinees pour le projet dans le meme style
+(grille 24 px, trait 1,75 px, currentColor). A comparer au PDF de design.
+Celles qui figurent sur les ecrans du PDF : fermer, question, chevron-bas, retour, cadenas, reessayer.
+Celles qui n'y figurent pas (besoin de l'interface) : menu, soleil, lune.

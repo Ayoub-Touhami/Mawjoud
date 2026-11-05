@@ -1,0 +1,9 @@
+Mawjoud - fichiers SVG (redessines a partir du PDF de design, qui ne contient que des images)
+
+logo/      marqueur (4 variantes), icone-application, favicon (svg, png, ico), logo-complet (clair et sombre)
+icones/    22 icones, grille 24 px, trait 1,75 px, couleur = currentColor (se colore avec la propriete CSS color)
+motif/     etoile a huit branches : tuile et deux fonds repetes (clair, sombre)
+
+Les textes du logo complet sont convertis en tracés (Bricolage Grotesque Bold, Reem Kufi Bold) : aucune police n'est requise.
+Ces dessins sont des reconstitutions fideles mais pas les fichiers originaux : comparez-les au PDF de design.
+Pour que les icones prennent la couleur du texte, utilisez-les en ligne (balise <svg> dans la page ou composant Angular), pas avec <img>.

@@ -23,11 +23,3 @@ export function estAConfirmer(stock: Stock, maintenant: Date = new Date()): bool
 export function statutStock(stock: Stock, maintenant: Date = new Date()): StatutStock {
   return estAConfirmer(stock, maintenant) ? 'a-confirmer' : stock.statutDeclare;
 }
-
-/** Un statut s'exprime toujours par un mot (R15). */
-export const LIBELLES_STATUT: Record<StatutStock, string> = {
-  disponible: 'Disponible',
-  'quantite-limitee': 'Quantité limitée',
-  'en-rupture': 'En rupture',
-  'a-confirmer': 'À confirmer',
-};

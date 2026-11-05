@@ -3,6 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
 import { GARDES_ACTIVES } from './core/guards/role.guard';
+import { fournirTraductionTest } from './core/i18n/traduction.test-outils';
 
 const PAGES: [string, string][] = [
   ['/', 'Carte des pharmacies'],
@@ -24,7 +25,11 @@ const PAGES: [string, string][] = [
 describe('routes du plan du site', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes), { provide: GARDES_ACTIVES, useValue: false }],
+      providers: [
+        provideRouter(routes),
+        fournirTraductionTest(),
+        { provide: GARDES_ACTIVES, useValue: false },
+      ],
     });
   });
 

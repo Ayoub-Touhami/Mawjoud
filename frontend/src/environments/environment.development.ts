@@ -1,3 +1,5 @@
+import { Routes } from '@angular/router';
+
 export const environment = {
   production: false,
   /**
@@ -5,4 +7,13 @@ export const environment = {
    * doivent rester ouvrables. Elles sont actives dans le build de production.
    */
   gardesActives: false,
+  /** Page de démonstration des composants, absente du plan du site. */
+  routesDeveloppement: [
+    {
+      path: 'design',
+      title: 'pages.design',
+      loadComponent: () =>
+        import('../app/features/design/design.page').then((m) => m.DesignPage),
+    },
+  ] as Routes,
 };

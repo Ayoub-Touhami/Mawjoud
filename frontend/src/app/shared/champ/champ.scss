@@ -1,0 +1,91 @@
+:host {
+  display: block;
+}
+
+.libelle {
+  display: block;
+  margin-block-end: var(--e-1);
+  font-weight: 600;
+  color: var(--texte);
+}
+
+.zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icone-debut,
+.icone-fin {
+  position: absolute;
+  color: var(--texte-secondaire);
+  pointer-events: none;
+}
+
+.icone-debut {
+  inset-inline-start: var(--e-3);
+}
+
+.icone-fin {
+  inset-inline-end: var(--e-3);
+}
+
+.zone ::ng-deep .controle {
+  inline-size: 100%;
+  min-block-size: var(--hauteur-bouton);
+  padding-block: var(--e-2);
+  padding-inline: var(--e-4);
+  font-family: var(--police-texte);
+  font-size: 16px;
+  color: var(--texte);
+  appearance: none;
+  background: var(--champ-fond);
+  border: 1.5px solid var(--champ-bord);
+  border-radius: var(--rayon);
+}
+
+.zone ::ng-deep .controle::placeholder {
+  color: var(--texte-secondaire);
+  opacity: 1;
+}
+
+.zone ::ng-deep .controle:disabled {
+  color: var(--texte-secondaire);
+  cursor: not-allowed;
+  background: var(--statut-inconnu-fond);
+}
+
+.zone:has(.icone-debut) ::ng-deep .controle {
+  padding-inline-start: 44px;
+}
+
+:host-context([dir='rtl']) .zone:has(.icone-debut) ::ng-deep .controle[dir='ltr'] {
+  padding-inline: var(--e-4) 44px;
+}
+
+.zone:has(.icone-fin) ::ng-deep .controle {
+  padding-inline-end: 44px;
+}
+
+.en-erreur ::ng-deep .controle {
+  border-color: var(--erreur);
+  border-width: 2px;
+}
+
+.aide,
+.erreur {
+  margin-block: var(--e-1) 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.aide {
+  color: var(--texte-secondaire);
+}
+
+.erreur {
+  display: flex;
+  gap: var(--e-1);
+  font-weight: 500;
+  color: var(--erreur);
+}

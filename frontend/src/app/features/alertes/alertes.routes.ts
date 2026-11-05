@@ -9,8 +9,8 @@ export const ALERTES_ROUTES: Routes = [
     pathMatch: 'full',
     component: MesAlertesPage,
     canActivate: [roleGuard('patient')],
-    title: 'Mes alertes · Mawjoud',
+    title: 'pages.mesAlertes',
   },
   // Sans garde : le compte se crée sur cet écran même (F9).
-  { path: 'creer', component: CreerAlertePage, title: 'Créer une alerte · Mawjoud' },
+  { path: 'creer', component: CreerAlertePage, title: 'pages.creerAlerte' },
 ];

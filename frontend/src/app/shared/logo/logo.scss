@@ -1,0 +1,40 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+
+img {
+  inline-size: auto;
+}
+
+.pour-clair {
+  display: var(--pour-clair);
+}
+
+.pour-sombre {
+  display: var(--pour-sombre);
+}
+
+.nom {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--titre);
+}
+
+.nom-arabe {
+  font-family: 'Reem Kufi', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--lien);
+}
+
+// L'en-tête doit tenir sur une ligne sur téléphone.
+@media (max-width: 480px) {
+  .nom-arabe {
+    display: none;
+  }
+}

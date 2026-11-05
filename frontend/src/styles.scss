@@ -1,25 +1,3 @@
-// Style de base : l'identité complète (polices, composants) viendra à la partie 2.
-// Les propriétés logiques (inline, block) préparent l'affichage de droite à gauche.
-:root {
-  --vert: #0b3d2e;
-  --bleu: #1f6e9c;
-  --sable: #f6f1e7;
-  --papier: #fffcf6;
-  --encre: #10231b;
-  --texte-secondaire: #4a5b53;
-  --bordure: #d9d3c6;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--encre);
-  background: var(--sable);
-}
-
-h1 {
-  margin-block-start: 0;
-  color: var(--vert);
-}
+@use 'styles/polices';
+@use 'styles/jetons';
+@use 'styles/base';

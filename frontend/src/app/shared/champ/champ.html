@@ -1,0 +1,19 @@
+<label class="libelle" [for]="id">{{ libelle() }}</label>
+<div class="zone" [class.en-erreur]="erreur()">
+  @if (icone(); as nom) {
+    <app-icone class="icone-debut" [nom]="nom" [taille]="22" />
+  }
+  <ng-content />
+  @if (liste()) {
+    <app-icone class="icone-fin" nom="chevron-bas" [taille]="22" />
+  }
+</div>
+@if (erreur()) {
+  <p class="erreur" [id]="idErreur">
+    <app-icone nom="fermer" [taille]="18" />
+    <span>{{ erreur() }}</span>
+  </p>
+}
+@if (aide()) {
+  <p class="aide" [id]="idAide">{{ aide() }}</p>
+}
