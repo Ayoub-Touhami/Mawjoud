@@ -1,0 +1,36 @@
+.en-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-block: 8px;
+  padding-inline: 16px;
+  background: var(--papier);
+  border-block-end: 1px solid var(--bordure);
+}
+
+.marque {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--vert);
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--encre);
+}
+
+nav a.actif {
+  font-weight: 600;
+  color: var(--vert);
+}
