@@ -9,7 +9,7 @@
 | F1 Carte de toutes les pharmacies | Terminé (simulé) | Données de test ; annuaire réel à fournir ; pas de fonctionnement après rechargement hors connexion |
 | F2 Recherche d'un médicament et d'une ville | Terminé (simulé) | Choix par gouvernorat et non par ville ; liste réelle à fournir ; recherche en lettres arabes sans données |
 | F3 Liste de résultats | Terminé (simulé) | Ordre de tri à confirmer (point 6) |
-| F4 Fiche pharmacie | Terminé (simulé) | Affichage des horaires vu seulement sur une fiche corrigée à la main : le CSV n'en contient pas |
+| F4 Fiche pharmacie | Terminé (simulé) | Horaires : calcul testé, affichage jamais vérifié à l'écran, car le CSV n'en contient pas |
 | F5 Compte pharmacien, réclamation, vérification | Terminé (simulé) | Fichier justificatif non envoyé ; méthode de vérification non décidée |
 | F6 Mise à jour du stock | Terminé (simulé) | Moins de 15 secondes non mesuré avec une vraie personne |
 | F7 « À confirmer » après 24 h | Terminé | Règle réunie dans `FraicheurService`, testée avec une horloge simulée |
