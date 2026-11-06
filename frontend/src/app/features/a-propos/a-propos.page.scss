@@ -1,0 +1,96 @@
+.page {
+  display: grid;
+  gap: var(--e-5);
+  max-inline-size: 640px;
+  margin-inline: auto;
+}
+
+header,
+section {
+  display: grid;
+  gap: var(--e-2);
+}
+
+h1,
+h2,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+h2 {
+  font-size: 21px;
+}
+
+.slogan {
+  font-style: italic;
+  color: var(--texte-secondaire);
+}
+
+ol,
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.etapes {
+  display: grid;
+  gap: var(--e-2);
+}
+
+.etapes li {
+  display: flex;
+  gap: var(--e-3);
+  align-items: center;
+  padding: var(--e-3);
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+.signe {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  color: var(--tonal-texte);
+  background: var(--tonal);
+  border-radius: var(--rayon-petit);
+}
+
+.statuts {
+  display: grid;
+  gap: var(--e-3);
+}
+
+.statuts li {
+  display: grid;
+  gap: var(--e-1);
+  justify-items: start;
+}
+
+.avertissement {
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+  background: var(--alerte);
+  border-radius: var(--rayon);
+}
+
+.equipe {
+  display: grid;
+  gap: var(--e-1);
+}
+
+.test {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+
+a[appBouton] {
+  justify-self: start;
+}

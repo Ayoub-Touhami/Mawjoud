@@ -1,0 +1,73 @@
+<article class="page">
+  <header>
+    <h1>{{ 'apropos.titre' | transloco }}</h1>
+    <p class="slogan">{{ 'app.slogan' | transloco }}</p>
+    <p>{{ 'apropos.intro' | transloco }}</p>
+  </header>
+
+  <section>
+    <h2>{{ 'apropos.etapes.titre' | transloco }}</h2>
+    <ol class="etapes">
+      @for (etape of etapes; track etape.cle; let rang = $index) {
+        <li>
+          <span class="signe"><app-icone [nom]="etape.icone" [taille]="26" /></span>
+          <span class="texte">
+            <strong>{{ rang + 1 }}. {{ 'apropos.etapes.' + etape.cle | transloco }}</strong>
+          </span>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section>
+    <h2>{{ 'apropos.pharmacies.titre' | transloco }}</h2>
+    <p>{{ 'apropos.pharmacies.texte' | transloco }}</p>
+    <app-legende-carte />
+  </section>
+
+  <section>
+    <h2>{{ 'apropos.statuts.titre' | transloco }}</h2>
+    <ul class="statuts">
+      @for (statut of statuts; track statut) {
+        <li>
+          <app-pastille-statut [statut]="statut" />
+          <span>{{ 'apropos.statuts.' + statut | transloco }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="avertissement">
+    <h2>{{ 'apropos.avertissement.titre' | transloco }}</h2>
+    <p>{{ 'apropos.avertissement.stock' | transloco }}</p>
+    <p>{{ 'apropos.avertissement.medical' | transloco }}</p>
+  </section>
+
+  <section>
+    <h2>{{ 'apropos.donnees.titre' | transloco }}</h2>
+    <p>{{ 'apropos.donnees.texte' | transloco }}</p>
+  </section>
+
+  <section>
+    <h2>{{ 'apropos.projet.titre' | transloco }}</h2>
+    <p>{{ 'apropos.projet.texte' | transloco }}</p>
+    <ul class="equipe">
+      <li>
+        {{ 'apropos.projet.auteurs' | transloco }}
+        <bdi lang="fr">Touhami AYOUB, Garma NOUR EL HOUDA</bdi>
+      </li>
+      <li>
+        {{ 'apropos.projet.encadrante' | transloco }}
+        <bdi lang="fr">Dr. Maroua Nouioua</bdi>
+      </li>
+    </ul>
+  </section>
+
+  @if (donneesTest) {
+    <p class="test">{{ 'apropos.test' | transloco }}</p>
+  }
+
+  <a appBouton variante="secondaire" icone="email" routerLink="/contact">
+    {{ 'pages.contact' | transloco }}
+  </a>
+</article>

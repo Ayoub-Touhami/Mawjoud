@@ -22,6 +22,8 @@ ECRANS = {
     'Alertes': ['alertes'],
     'E-mail': ['email'],
     'Pharmacien': ['pharmacien'],
+    'Contact': ['contact'],
+    'À propos': ['apropos'],
 }
 
 
