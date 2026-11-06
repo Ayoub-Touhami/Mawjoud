@@ -7,20 +7,20 @@ import { statutStock } from '../models';
 import { PharmacieApiMock } from './pharmacie-api.mock';
 
 describe('données de test', () => {
-  it('contient 30 pharmacies et 50 médicaments, sans identifiant en double', () => {
-    expect(PHARMACIES_TEST.length).toBe(30);
+  it('contient 162 pharmacies et 50 médicaments, sans identifiant en double', () => {
+    expect(PHARMACIES_TEST.length).toBe(162);
     expect(MEDICAMENTS_TEST.length).toBe(50);
-    expect(new Set(PHARMACIES_TEST.map((p) => p.id)).size).toBe(30);
+    expect(new Set(PHARMACIES_TEST.map((p) => p.id)).size).toBe(162);
     expect(new Set(MEDICAMENTS_TEST.map((m) => m.id)).size).toBe(50);
   });
 
-  it('place toutes les pharmacies en Tunisie et les marque comme inventées', () => {
+  it('place toutes les pharmacies en Tunisie et les marque comme données de test', () => {
     for (const p of PHARMACIES_TEST) {
       expect(p.latitude).toBeGreaterThan(30);
       expect(p.latitude).toBeLessThan(38);
       expect(p.longitude).toBeGreaterThan(7);
       expect(p.longitude).toBeLessThan(12);
-      expect(p.source).toContain('inventées');
+      expect(p.donneeTest).toBe(true);
     }
   });
 
@@ -61,9 +61,9 @@ describe('PharmacieApiMock', () => {
   });
 
   it('remplace le dernier statut déclaré sur sa propre pharmacie', async () => {
-    const [existant] = await firstValueFrom(api.stocksDePharmacie('ph-01'));
-    await firstValueFrom(api.declarerStock('u-03', 'ph-01', existant.medicamentId, 'en-rupture'));
-    const stocks = await firstValueFrom(api.stocksDePharmacie('ph-01'));
+    const [existant] = await firstValueFrom(api.stocksDePharmacie('T001'));
+    await firstValueFrom(api.declarerStock('u-03', 'T001', existant.medicamentId, 'en-rupture'));
+    const stocks = await firstValueFrom(api.stocksDePharmacie('T001'));
     const lignes = stocks.filter((s) => s.medicamentId === existant.medicamentId);
     expect(lignes.length).toBe(1);
     expect(lignes[0].statutDeclare).toBe('en-rupture');
@@ -71,13 +71,13 @@ describe('PharmacieApiMock', () => {
 
   it("refuse la déclaration sur la pharmacie d'un autre (R9)", async () => {
     await expect(
-      firstValueFrom(api.declarerStock('u-03', 'ph-02', 'med-01', 'disponible')),
+      firstValueFrom(api.declarerStock('u-03', 'T002', 'med-01', 'disponible')),
     ).rejects.toThrow();
   });
 
   it('refuse la déclaration à un compte non vérifié (R3)', async () => {
     await expect(
-      firstValueFrom(api.declarerStock('u-04', 'ph-08', 'med-01', 'disponible')),
+      firstValueFrom(api.declarerStock('u-04', 'T004', 'med-01', 'disponible')),
     ).rejects.toThrow();
   });
 
@@ -89,11 +89,11 @@ describe('PharmacieApiMock', () => {
   });
 
   it('inscrit la pharmacie seulement après validation', async () => {
-    expect((await firstValueFrom(api.obtenirPharmacie('ph-08')))?.etat).toBe('reclamee');
+    expect((await firstValueFrom(api.obtenirPharmacie('T004')))?.etat).toBe('reclamee');
     await firstValueFrom(api.validerDemande('dem-01'));
-    expect((await firstValueFrom(api.obtenirPharmacie('ph-08')))?.etat).toBe('inscrite');
+    expect((await firstValueFrom(api.obtenirPharmacie('T004')))?.etat).toBe('inscrite');
     await expect(
-      firstValueFrom(api.declarerStock('u-04', 'ph-08', 'med-01', 'disponible')),
+      firstValueFrom(api.declarerStock('u-04', 'T004', 'med-01', 'disponible')),
     ).resolves.toBeTruthy();
   });
 });

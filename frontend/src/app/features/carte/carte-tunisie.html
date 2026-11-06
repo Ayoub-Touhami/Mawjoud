@@ -1,0 +1,11 @@
+<div #surface class="surface-carte"></div>
+
+@if (visibles().length) {
+  <ul class="acces-clavier" [attr.aria-label]="'carte.acces.titre' | transloco">
+    @for (element of visibles(); track element.cle) {
+      <li>
+        <button type="button" (click)="element.action()">{{ element.libelle }}</button>
+      </li>
+    }
+  </ul>
+}

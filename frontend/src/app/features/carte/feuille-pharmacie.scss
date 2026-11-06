@@ -1,0 +1,107 @@
+:host {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--e-2);
+  max-block-size: 60dvh;
+  padding: var(--e-4);
+  padding-block-start: var(--e-2);
+  overflow-y: auto;
+  background: var(--carte);
+  border-start-start-radius: var(--rayon-grand);
+  border-start-end-radius: var(--rayon-grand);
+  box-shadow: var(--ombre-haute);
+}
+
+.poignee {
+  flex-shrink: 0;
+  inline-size: 44px;
+  block-size: 16px;
+  margin-inline: auto;
+  touch-action: none;
+  cursor: grab;
+  background: linear-gradient(var(--carte-bord), var(--carte-bord)) center / 40px 4px no-repeat;
+}
+
+.fermer {
+  position: absolute;
+  inset-block-start: var(--e-2);
+  inset-inline-end: var(--e-2);
+  display: grid;
+  place-items: center;
+  inline-size: var(--cible-tactile);
+  block-size: var(--cible-tactile);
+  color: var(--texte-secondaire);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--rayon-petit);
+}
+
+h2 {
+  padding-inline-end: var(--cible-tactile);
+  margin-block: 0;
+  font-size: 22px;
+  outline: none;
+}
+
+.statut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2) var(--e-3);
+  color: var(--texte-secondaire);
+}
+
+.ligne {
+  margin-block: 0;
+  color: var(--texte-secondaire);
+}
+
+.avec-icone {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+
+app-actions-pharmacie {
+  margin-block-start: var(--e-2);
+}
+
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--e-4);
+}
+
+.liens a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--cible-tactile);
+  color: var(--lien);
+}
+
+.test {
+  margin-block: 0;
+  font-size: 13px;
+  color: var(--texte-secondaire);
+}
+
+@media (min-width: 860px) {
+  :host {
+    position: absolute;
+    inset-block-end: 88px;
+    inset-inline-end: 88px;
+    inline-size: 372px;
+    max-block-size: calc(100% - 120px);
+    padding-block-start: var(--e-4);
+    border: 1px solid var(--carte-bord);
+    border-radius: var(--rayon-grand);
+  }
+
+  .poignee {
+    display: none;
+  }
+}

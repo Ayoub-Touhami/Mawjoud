@@ -99,3 +99,32 @@ app-icone svg {
     animation-duration: 1.5s !important;
   }
 }
+
+// Lisible par un lecteur d'écran, invisible à l'œil.
+.visuellement-masque {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// La mention de la source des fonds de carte reste lisible, dans les deux thèmes.
+.maplibregl-map .maplibregl-ctrl.maplibregl-ctrl-attrib {
+  font-family: var(--police-texte);
+  font-size: 11px;
+  background: color-mix(in srgb, var(--carte) 90%, transparent);
+}
+
+.maplibregl-map .maplibregl-ctrl-attrib-inner,
+.maplibregl-map .maplibregl-ctrl-attrib-inner a {
+  direction: ltr;
+  color: var(--texte-secondaire);
+}
+
+// La fiche chevauche le bas de la petite carte : la mention remonte au-dessus.
+app-mini-carte .maplibregl-ctrl-bottom-right {
+  inset-block-end: var(--e-5);
+}

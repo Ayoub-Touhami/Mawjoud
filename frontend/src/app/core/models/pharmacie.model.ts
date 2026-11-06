@@ -13,11 +13,17 @@ export interface Pharmacie {
   nom: string;
   adresse: string;
   ville: string;
+  codePostal?: string;
+  gouvernorat: string;
+  /** Vide si le numéro n'est pas connu. */
   telephone: string;
+  /** Vide si les horaires ne sont pas connus. */
   horaires: PlageHoraire[];
   latitude: number;
   longitude: number;
   etat: EtatPharmacie;
   /** Origine de la donnée (spécification, section 10). */
   source: string;
+  /** Position et statut simulés : la fiche l'indique clairement. */
+  donneeTest?: boolean;
 }

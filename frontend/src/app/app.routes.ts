@@ -14,7 +14,7 @@ export const routes: Routes = [
       import('./features/recherche/recherche.routes').then((m) => m.RECHERCHE_ROUTES),
   },
   {
-    path: 'pharmacies',
+    path: 'pharmacie',
     loadChildren: () =>
       import('./features/pharmacie/pharmacie.routes').then((m) => m.PHARMACIE_ROUTES),
   },

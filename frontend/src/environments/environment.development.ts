@@ -7,6 +7,11 @@ export const environment = {
    * doivent rester ouvrables. Elles sont actives dans le build de production.
    */
   gardesActives: false,
+  /** Fonds de carte : changer de fournisseur ne demande que ces deux adresses, sans clé. */
+  carte: {
+    tuiles: 'https://tiles.openfreemap.org/planet',
+    glyphes: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+  },
   /** Page de démonstration des composants, absente du plan du site. */
   routesDeveloppement: [
     {

@@ -1,0 +1,153 @@
+<h1 class="visuellement-masque">{{ 'pages.accueil' | transloco }}</h1>
+
+<div class="scene">
+  <div class="zone-carte">
+    <app-carte-tunisie
+      [pharmacies]="pharmacies()"
+      [position]="position()"
+      [(selection)]="selection"
+      (etat)="suivreCarte($event)"
+    />
+
+    <div class="haut">
+      @if (!enLigne()) {
+        <p class="bandeau-hors-connexion">
+          <app-icone nom="hors-connexion" />
+          {{ 'carte.horsConnexion.bandeau' | transloco }}
+        </p>
+      }
+      <app-barre-carte />
+      <app-legende-carte class="legende" />
+
+      @if (message(); as type) {
+        <div class="message" role="status">
+          @if (type === 'pourquoi') {
+            <p>{{ 'carte.position.pourquoi' | transloco }}</p>
+            <div class="choix">
+              <button type="button" appBouton (click)="accepterPosition()">
+                {{ 'carte.position.continuer' | transloco }}
+              </button>
+              <button type="button" appBouton variante="secondaire" (click)="message.set(null)">
+                {{ 'carte.position.annuler' | transloco }}
+              </button>
+            </div>
+          } @else {
+            <p>{{ 'carte.position.' + type | transloco }}</p>
+            <button
+              type="button"
+              class="fermer"
+              [attr.aria-label]="'carte.position.fermer' | transloco"
+              (click)="message.set(null)"
+            >
+              <app-icone nom="fermer" />
+            </button>
+          }
+        </div>
+      }
+
+      @if (etatCarte() === 'erreur-fond' && enLigne()) {
+        <div class="message" role="alert">
+          <div>
+            <p class="titre-message">{{ 'carte.erreurFond.titre' | transloco }}</p>
+            <p>{{ 'carte.erreurFond.texte' | transloco }}</p>
+          </div>
+          <button type="button" appBouton variante="secondaire" (click)="rechargerFond()">
+            {{ 'carte.erreurFond.action' | transloco }}
+          </button>
+        </div>
+      }
+    </div>
+
+    <app-commandes-carte
+      class="commandes"
+      [recherche]="rechercheEnCours()"
+      (position)="demanderPosition()"
+      (zoom)="zoomer($event)"
+    />
+
+    @if (etatCarte() === 'chargement' && enLigne()) {
+      <app-message-etat
+        class="etat"
+        type="chargement"
+        [titre]="'carte.chargement' | transloco"
+      />
+    }
+
+    @if (etatCarte() === 'impossible') {
+      <app-message-etat
+        class="etat"
+        type="erreur"
+        [titre]="'carte.impossible.titre' | transloco"
+        [texte]="'carte.impossible.texte' | transloco"
+      />
+    }
+
+    @if (echec()) {
+      <app-message-etat
+        class="etat"
+        type="erreur"
+        [titre]="'carte.erreurDonnees.titre' | transloco"
+        [texte]="'carte.erreurDonnees.texte' | transloco"
+      >
+        <button type="button" appBouton icone="reessayer" (click)="reessayerDonnees()">
+          {{ 'carte.erreurDonnees.action' | transloco }}
+        </button>
+      </app-message-etat>
+    }
+
+    @if (vide()) {
+      <app-message-etat
+        class="etat"
+        type="vide"
+        [titre]="'carte.vide.titre' | transloco"
+        [texte]="'carte.vide.texte' | transloco"
+      />
+    }
+  </div>
+
+  @if (selection(); as pharmacie) {
+    <app-feuille-pharmacie [pharmacie]="pharmacie" (fermer)="selection.set(null)" />
+  }
+</div>
+
+@if (ecranSignal()) {
+  <app-ecran-carte
+    class="ecran"
+    illustration="signal"
+    [titre]="'carte.horsConnexion.titre' | transloco"
+    [texte]="'carte.horsConnexion.texte' | transloco: { age: ageCarte() }"
+  >
+    <p haut class="bandeau-hors-connexion">
+      <app-icone nom="hors-connexion" />
+      {{ 'carte.horsConnexion.bandeau' | transloco }}
+    </p>
+    <button type="button" appBouton icone="reessayer" (click)="reessayerConnexion()">
+      {{ 'carte.horsConnexion.reessayer' | transloco }}
+    </button>
+    <button
+      type="button"
+      appBouton
+      variante="menthe"
+      icone="marqueur"
+      (click)="dernierecarteVue.set(true)"
+    >
+      {{ 'carte.horsConnexion.voir' | transloco }}
+    </button>
+  </app-ecran-carte>
+} @else if (ecranVille() && ville(); as nomVille) {
+  <app-ecran-carte
+    class="ecran"
+    illustration="ville"
+    [titre]="
+      (villeVide() ? 'carte.ville.aucune' : 'carte.ville.titre') | transloco: { ville: nomVille }
+    "
+    [texte]="'carte.ville.texte' | transloco"
+  >
+    <button type="button" appBouton icone="marqueur" (click)="ecranVilleFerme.set(true)">
+      {{ 'carte.ville.voir' | transloco: { ville: nomVille } }}
+    </button>
+    <a appBouton variante="secondaire" icone="verifiee" routerLink="/pharmacien/inscription">
+      {{ 'carte.ville.pharmacien' | transloco }}
+    </a>
+  </app-ecran-carte>
+}

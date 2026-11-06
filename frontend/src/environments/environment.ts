@@ -4,6 +4,11 @@ export const environment = {
   production: true,
   /** Les gardes d'accès aux espaces protégés sont actives. */
   gardesActives: true,
+  /** Fonds de carte : changer de fournisseur ne demande que ces deux adresses, sans clé. */
+  carte: {
+    tuiles: 'https://tiles.openfreemap.org/planet',
+    glyphes: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+  },
   /** Aucune page de développement dans le build de production. */
   routesDeveloppement: [] as Routes,
 };

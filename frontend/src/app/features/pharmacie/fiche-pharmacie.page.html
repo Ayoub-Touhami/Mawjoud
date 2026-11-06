@@ -1,0 +1,86 @@
+@if (pharmacie(); as p) {
+  <div class="tete">
+    <app-mini-carte [pharmacie]="p" [libelle]="titreCarte(p)" />
+    <a class="retour" routerLink="/" [attr.aria-label]="'fiche.retour' | transloco">
+      <app-icone nom="retour" />
+    </a>
+  </div>
+
+  <article class="contenu">
+    <h1>{{ p.nom }}</h1>
+    <div class="statut">
+      <app-pastille-statut [statut]="inscrite() ? 'inscrite-verifiee' : 'non-inscrite'" />
+      @if (distance(); as valeur) {
+        <span>{{ valeur }}</span>
+      }
+    </div>
+
+    <ul class="infos">
+      <li>
+        <app-icone nom="marqueur" />
+        <span>{{ p.adresse }}, {{ p.ville }}</span>
+      </li>
+      @if (ouverture(); as etat) {
+        <li>
+          <app-icone nom="horloge" />
+          <span>
+            {{
+              etat.ouverte
+                ? ('fiche.ouverte' | transloco: { heure: heureFermeture() })
+                : ('fiche.fermee' | transloco)
+            }}
+            @for (plage of plages(); track plage) {
+              <small>{{ plage }}</small>
+            }
+          </span>
+        </li>
+      }
+      @if (p.telephone) {
+        <li>
+          <app-icone nom="telephone" />
+          <span dir="ltr">{{ telephone() }}</span>
+        </li>
+      }
+    </ul>
+
+    <app-actions-pharmacie [pharmacie]="p" />
+
+    @if (inscrite()) {
+      <h2>{{ 'fiche.stockTitre' | transloco }}</h2>
+      @if (lignesStock().length) {
+        <ul class="stocks">
+          @for (ligne of lignesStock(); track ligne.id) {
+            <li>
+              <span>
+                <strong>{{ ligne.nom }}</strong>
+                <small>{{ ligne.detail }}</small>
+              </span>
+              <app-pastille-statut [statut]="ligne.statut" />
+            </li>
+          }
+        </ul>
+        <p class="note">{{ 'fiche.stockNote' | transloco }}</p>
+      } @else {
+        <p class="note">{{ 'fiche.stockAucun' | transloco }}</p>
+      }
+    } @else {
+      <p class="inconnu">{{ 'fiche.stockInconnu' | transloco }}</p>
+      <a appBouton variante="lien" routerLink="/pharmacien/reclamer">
+        {{ 'fiche.maPharmacie' | transloco }}
+      </a>
+    }
+
+    @if (p.donneeTest) {
+      <p class="note">{{ 'fiche.donneeTest' | transloco }}</p>
+    }
+  </article>
+} @else {
+  <h1 class="visuellement-masque">{{ 'fiche.introuvable.titre' | transloco }}</h1>
+  <app-message-etat
+    type="vide"
+    [titre]="'fiche.introuvable.titre' | transloco"
+    [texte]="'fiche.introuvable.texte' | transloco"
+  >
+    <a appBouton routerLink="/">{{ 'fiche.retour' | transloco }}</a>
+  </app-message-etat>
+}

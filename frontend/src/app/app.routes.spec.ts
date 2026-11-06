@@ -4,11 +4,13 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
 import { GARDES_ACTIVES } from './core/guards/role.guard';
 import { fournirTraductionTest } from './core/i18n/traduction.test-outils';
+import { PHARMACIE_API } from './core/services/pharmacie-api';
+import { PharmacieApiMock } from './core/services/pharmacie-api.mock';
 
 const PAGES: [string, string][] = [
   ['/', 'Carte des pharmacies'],
   ['/resultats', 'Résultats'],
-  ['/pharmacies/ph-01', 'Fiche pharmacie'],
+  ['/pharmacie/T001', 'Pharmacie Test 01'],
   ['/compte/connexion', 'Connexion et inscription'],
   ['/compte/verification-email', "Vérification de l'e-mail"],
   ['/a-propos', 'À propos et contact'],
@@ -29,6 +31,7 @@ describe('routes du plan du site', () => {
         provideRouter(routes),
         fournirTraductionTest(),
         { provide: GARDES_ACTIVES, useValue: false },
+        { provide: PHARMACIE_API, useClass: PharmacieApiMock },
       ],
     });
   });

@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  margin: calc(var(--e-4) * -1);
+}
+
+.tete {
+  position: relative;
+  block-size: 180px;
+}
+
+.retour {
+  position: absolute;
+  inset-block-start: var(--e-3);
+  inset-inline-start: var(--e-3);
+  display: grid;
+  place-items: center;
+  inline-size: var(--cible-tactile);
+  block-size: var(--cible-tactile);
+  color: var(--titre);
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+:host-context([dir='rtl']) .retour app-icone {
+  transform: scaleX(-1);
+}
+
+.contenu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-4);
+  max-inline-size: 640px;
+  padding: var(--e-5) var(--e-4) var(--e-6);
+  margin-block-start: calc(var(--e-5) * -1);
+  margin-inline: auto;
+  background: var(--fond);
+  border-start-start-radius: var(--rayon-grand);
+  border-start-end-radius: var(--rayon-grand);
+}
+
+h1 {
+  margin-block: 0;
+  overflow-wrap: anywhere;
+}
+
+h2 {
+  margin-block: var(--e-2) 0;
+  font-family: var(--police-texte);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texte-secondaire);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.statut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-3);
+  color: var(--texte-secondaire);
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.infos {
+  display: grid;
+  gap: var(--e-4);
+}
+
+.infos li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--e-4);
+}
+
+.infos app-icone {
+  flex-shrink: 0;
+  color: var(--titre);
+}
+
+small {
+  display: block;
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+
+.stocks li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  padding-block: var(--e-3);
+  border-block-end: 1px solid var(--carte-bord);
+}
+
+.stocks li:last-child {
+  border-block-end: 0;
+}
+
+.stocks app-pastille-statut {
+  flex-shrink: 0;
+}
+
+.note,
+.inconnu {
+  margin-block: 0;
+  color: var(--texte-secondaire);
+}
+
+.inconnu {
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+  background: var(--carte-inconnue);
+  border: 2px dashed var(--statut-tirets);
+  border-radius: var(--rayon);
+}
+
+a[appBouton] {
+  align-self: flex-start;
+}
+
+app-message-etat {
+  margin: var(--e-5);
+}

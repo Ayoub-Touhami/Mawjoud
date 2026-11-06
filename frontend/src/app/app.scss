@@ -1,4 +1,5 @@
 :host {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
@@ -7,4 +8,39 @@
 main {
   flex: 1;
   padding: 16px;
+}
+
+:host(.sur-carte) {
+  block-size: 100dvh;
+  overflow: hidden;
+}
+
+:host(.sur-carte) main {
+  display: flex;
+  min-block-size: 0;
+  padding: 0;
+}
+
+// Sur mobile, la barre de la carte remplace l'en-tête ; le menu le fait réapparaître par-dessus.
+@media (max-width: 859.98px) {
+  :host(.sur-carte) app-en-tete,
+  :host(.sur-carte) app-pied-de-page {
+    display: none;
+  }
+
+  :host(.sur-carte.menu-ouvert) app-en-tete {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: 20;
+    display: block;
+  }
+
+  :host(.sur-carte.menu-ouvert) app-pied-de-page {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    z-index: 20;
+    display: block;
+  }
 }

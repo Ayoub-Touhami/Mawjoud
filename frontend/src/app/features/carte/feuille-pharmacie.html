@@ -1,0 +1,57 @@
+<div
+  class="poignee"
+  aria-hidden="true"
+  (pointerdown)="commencerGlissement($event)"
+  (pointerup)="finirGlissement($event)"
+></div>
+
+<button
+  type="button"
+  class="fermer"
+  [attr.aria-label]="'fiche.fermer' | transloco"
+  (click)="fermer.emit()"
+>
+  <app-icone nom="fermer" />
+</button>
+
+<h2 #titre id="titre-feuille" tabindex="-1">{{ pharmacie().nom }}</h2>
+
+<div class="statut">
+  <app-pastille-statut [statut]="inscrite() ? 'inscrite-verifiee' : 'non-inscrite'" />
+  @if (distance(); as valeur) {
+    <span>{{ valeur }}</span>
+  }
+  @if (ouverture(); as etat) {
+    <span>
+      {{
+        etat.ouverte
+          ? ('fiche.ouverte' | transloco: { heure: heureFermeture() })
+          : ('fiche.fermee' | transloco)
+      }}
+    </span>
+  }
+</div>
+
+<p class="ligne">{{ pharmacie().adresse }}, {{ pharmacie().ville }}</p>
+
+@if (!inscrite()) {
+  <p class="ligne">{{ 'fiche.stockInconnu' | transloco }}</p>
+} @else if (miseAJour(); as age) {
+  <p class="ligne avec-icone">
+    <app-icone nom="horloge" [taille]="20" />
+    {{ 'fiche.misAJour' | transloco: { age: age } }}
+  </p>
+}
+
+<app-actions-pharmacie [pharmacie]="pharmacie()" />
+
+<div class="liens">
+  <a [routerLink]="['/pharmacie', pharmacie().id]">{{ 'fiche.voirFiche' | transloco }}</a>
+  @if (!inscrite()) {
+    <a routerLink="/pharmacien/reclamer">{{ 'fiche.maPharmacie' | transloco }}</a>
+  }
+</div>
+
+@if (pharmacie().donneeTest) {
+  <p class="test">{{ 'fiche.donneeTest' | transloco }}</p>
+}

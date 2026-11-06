@@ -13,7 +13,7 @@ export const COMPTES_TEST: Utilisateur[] = [
     role: 'pharmacien',
     emailVerifie: true,
     compteVerifie: true,
-    pharmacieId: 'ph-01',
+    pharmacieId: 'T001',
   },
   {
     id: 'u-04',
@@ -21,7 +21,7 @@ export const COMPTES_TEST: Utilisateur[] = [
     role: 'pharmacien',
     emailVerifie: true,
     compteVerifie: false,
-    pharmacieId: 'ph-08',
+    pharmacieId: 'T004',
   },
   {
     id: 'u-05',
@@ -42,21 +42,21 @@ export const ALERTES_TEST: Alerte[] = [
 export const DEMANDES_TEST: DemandeReclamation[] = [
   {
     id: 'dem-01',
-    pharmacieId: 'ph-08',
+    pharmacieId: 'T004',
     pharmacienId: 'u-04',
     etat: 'en-attente',
     creeeLe: '2026-11-03T09:30:00.000Z',
   },
   {
     id: 'dem-02',
-    pharmacieId: 'ph-18',
+    pharmacieId: 'T005',
     pharmacienId: 'u-05',
     etat: 'en-attente',
     creeeLe: '2026-11-04T14:05:00.000Z',
   },
   {
     id: 'dem-03',
-    pharmacieId: 'ph-24',
+    pharmacieId: 'T006',
     pharmacienId: 'u-05',
     etat: 'refusee',
     creeeLe: '2026-11-01T10:00:00.000Z',

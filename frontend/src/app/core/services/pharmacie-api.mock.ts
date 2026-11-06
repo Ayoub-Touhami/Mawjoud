@@ -25,7 +25,7 @@ function normaliser(texte: string): string {
 }
 
 /**
- * Simulation en mémoire, à partir de données de test inventées. Tout est perdu au rechargement
+ * Simulation en mémoire, à partir de données de test. Tout est perdu au rechargement
  * de la page. Le mot de passe n'est pas vérifié : ce rôle reviendra au back-end.
  */
 @Injectable()

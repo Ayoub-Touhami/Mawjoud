@@ -143,5 +143,110 @@
       "nonInscrite": "Non inscrite",
       "selectionne": "Sélectionné"
     }
+  },
+  "carte": {
+    "recherche": {
+      "libelle": "Chercher un médicament",
+      "placeholder": "Chercher un médicament"
+    },
+    "commandes": {
+      "zoomer": "Zoomer",
+      "dezoomer": "Dézoomer",
+      "maPosition": "Ma position",
+      "legende": "Légende de la carte",
+      "menu": "Ouvrir le menu"
+    },
+    "acces": {
+      "titre": "Pharmacies affichées sur la carte",
+      "grappe": "{{nombre}} pharmacies proches, zoomer sur ce groupe"
+    },
+    "regionCarte": "Carte de la Tunisie",
+    "chargement": "Chargement de la carte…",
+    "erreurFond": {
+      "titre": "Le fond de carte n'a pas pu être chargé",
+      "texte": "Les pharmacies restent affichées et vous pouvez les appeler.",
+      "action": "Réessayer"
+    },
+    "impossible": {
+      "titre": "La carte ne peut pas s'afficher",
+      "texte": "Votre navigateur ne permet pas d'afficher cette carte. Essayez un autre navigateur ou mettez celui-ci à jour.",
+      "action": "Réessayer"
+    },
+    "erreurDonnees": {
+      "titre": "Les pharmacies n'ont pas pu être chargées",
+      "texte": "Vérifiez votre connexion, puis réessayez.",
+      "action": "Réessayer"
+    },
+    "vide": {
+      "titre": "Aucune pharmacie trouvée",
+      "texte": "Aucune pharmacie n'est enregistrée pour le moment."
+    },
+    "ville": {
+      "titre": "Aucune pharmacie inscrite à {{ville}} pour l'instant",
+      "texte": "Les pharmacies de la ville restent visibles sur la carte : appelez avant de vous déplacer.",
+      "voir": "Voir la carte de {{ville}}",
+      "pharmacien": "Je suis pharmacien",
+      "aucune": "Aucune pharmacie trouvée à {{ville}}"
+    },
+    "horsConnexion": {
+      "bandeau": "Hors connexion",
+      "titre": "Le signal est coupé",
+      "texte": "La dernière carte a été chargée {{age}}. Les stocks ont pu changer : appelez la pharmacie avant de vous déplacer.",
+      "reessayer": "Réessayer",
+      "voir": "Voir la dernière carte"
+    },
+    "position": {
+      "pourquoi": "Mawjoud utilise votre position pour vous situer sur la carte et calculer la distance des pharmacies. Elle reste sur votre appareil : elle n'est ni enregistrée ni envoyée.",
+      "continuer": "Continuer",
+      "annuler": "Annuler",
+      "refusee": "Position refusée. Vous pouvez l'autoriser dans les réglages du navigateur. La carte reste utilisable sans elle.",
+      "indisponible": "Votre position n'a pas pu être trouvée. Réessayez dans un instant.",
+      "horsTunisie": "Vous semblez être hors de Tunisie",
+      "fermer": "Fermer ce message"
+    }
+  },
+  "fiche": {
+    "fermer": "Fermer la fiche",
+    "retour": "Retour à la carte",
+    "appeler": "Appeler",
+    "appelerNom": "Appeler {{nom}}",
+    "itineraire": "Itinéraire",
+    "itineraireNom": "Itinéraire vers {{nom}}",
+    "voirFiche": "Voir la fiche complète",
+    "maPharmacie": "C'est ma pharmacie",
+    "stockInconnu": "Stock non renseigné, appelez avant de vous déplacer.",
+    "pasDeTelephone": "Numéro non renseigné",
+    "misAJour": "Stock mis à jour {{age}}",
+    "ouverte": "Ouverte jusqu'à {{heure}}",
+    "fermee": "Fermée en ce moment",
+    "stockTitre": "Stock des médicaments suivis",
+    "stockAucun": "Aucun stock déclaré pour le moment.",
+    "stockNote": "Stock déclaré par la pharmacie. Appelez pour confirmer avant de vous déplacer.",
+    "dernierAvis": "dernier avis {{age}}, {{statut}}",
+    "donneeTest": "Données de test : la position et le statut de cette pharmacie sont simulés.",
+    "introuvable": {
+      "titre": "Pharmacie introuvable",
+      "texte": "Cette fiche n'existe pas ou n'est plus disponible."
+    },
+    "carte": "Emplacement de {{nom}}"
+  },
+  "temps": {
+    "instant": "à l'instant",
+    "minutes": "il y a {{n}} min",
+    "heures": "il y a {{n}} h",
+    "jours": "il y a {{n}} j"
+  },
+  "distance": {
+    "m": "{{n}} m",
+    "km": "{{n}} km"
+  },
+  "jours": {
+    "0": "Dim",
+    "1": "Lun",
+    "2": "Mar",
+    "3": "Mer",
+    "4": "Jeu",
+    "5": "Ven",
+    "6": "Sam"
   }
 }

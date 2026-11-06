@@ -1,0 +1,46 @@
+app-carte-tunisie {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--fond);
+}
+
+// MapLibre pose position: relative sur son conteneur, d'où la seconde règle.
+.surface-carte,
+.surface-carte.maplibregl-map {
+  position: absolute;
+  inset: 0;
+}
+
+.acces-clavier:not(:focus-within) {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.acces-clavier {
+  position: absolute;
+  inset-block-end: 36px;
+  inset-inline-start: var(--e-3);
+  z-index: 8;
+  max-block-size: 200px;
+  padding: var(--e-2);
+  margin: 0;
+  overflow-y: auto;
+  list-style: none;
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon-petit);
+}
+
+.acces-clavier button {
+  min-block-size: var(--cible-tactile);
+  padding-inline: var(--e-2);
+  font: inherit;
+  color: var(--texte);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
