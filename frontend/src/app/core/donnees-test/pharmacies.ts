@@ -7,9 +7,6 @@
 import { Pharmacie } from '../models';
 import pharmacies from './pharmacies-test.json';
 
-/** Réclamations en cours utilisées par les données de test des comptes. */
-const RECLAMEES = new Set(['T004', 'T005']);
-
 /** Positions simulées du CSV tombées dans l'eau (goulet de Bizerte, lac de Tunis). */
 const SUR_TERRE: Record<string, [number, number]> = {
   T032: [37.2714, 9.8655],
@@ -24,6 +21,5 @@ const SUR_TERRE: Record<string, [number, number]> = {
 
 export const PHARMACIES_TEST: Pharmacie[] = (pharmacies as Pharmacie[]).map((pharmacie) => {
   const [latitude, longitude] = SUR_TERRE[pharmacie.id] ?? [pharmacie.latitude, pharmacie.longitude];
-  const etat = RECLAMEES.has(pharmacie.id) ? 'reclamee' : pharmacie.etat;
-  return { ...pharmacie, latitude, longitude, etat };
+  return { ...pharmacie, latitude, longitude };
 });

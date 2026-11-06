@@ -5,7 +5,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { map, of, switchMap } from 'rxjs';
 import { FormatService } from '../../core/i18n/format.service';
 import { LangueService } from '../../core/i18n/langue.service';
-import { Pharmacie, statutStock, Stock } from '../../core/models';
+import { Pharmacie, Stock } from '../../core/models';
 import {
   distanceMetres,
   estInscrite,
@@ -13,8 +13,10 @@ import {
   telephoneLisible,
 } from '../../core/outils/pharmacie.outils';
 import { libelleMedicament } from '../../core/outils/recherche.outils';
+import { FraicheurService } from '../../core/services/fraicheur.service';
 import { PHARMACIE_API } from '../../core/services/pharmacie-api';
 import { PositionService } from '../../core/services/position.service';
+import { STOCK_SERVICE } from '../../core/services/stock.service';
 import { ActionsPharmacie } from '../../shared/actions-pharmacie/actions-pharmacie';
 import { Bouton } from '../../shared/bouton/bouton';
 import { Icone } from '../../shared/icone/icone';
@@ -40,6 +42,8 @@ import { MiniCarte } from './mini-carte';
 })
 export class FichePharmaciePage {
   private readonly api = inject(PHARMACIE_API);
+  private readonly stocksService = inject(STOCK_SERVICE);
+  private readonly fraicheur = inject(FraicheurService);
   private readonly format = inject(FormatService);
   private readonly transloco = inject(TranslocoService);
   private readonly langue = inject(LangueService).langue;
@@ -52,7 +56,7 @@ export class FichePharmaciePage {
   );
   private readonly stocks = toSignal(
     toObservable(this.pharmacie).pipe(
-      switchMap((p) => (p ? this.api.stocksDePharmacie(p.id) : of<Stock[]>([]))),
+      switchMap((p) => (p ? this.stocksService.stocksDePharmacie(p.id) : of<Stock[]>([]))),
     ),
     { initialValue: [] },
   );
@@ -84,21 +88,13 @@ export class FichePharmaciePage {
   });
 
   private ligne(stock: Stock) {
-    const statut = statutStock(stock);
     const medicament = this.medicaments()?.get(stock.medicamentId);
-    const age = this.format.age(stock.declareLe);
+    const { statut, detail } = this.fraicheur.lire(stock);
     return {
       id: stock.medicamentId,
       nom: medicament ? libelleMedicament(medicament) : stock.medicamentId,
       statut,
-      // Après 24 h, le statut déclaré reste lisible à côté de « À confirmer ».
-      detail:
-        statut === 'a-confirmer'
-          ? this.transloco.translate('fiche.dernierAvis', {
-              age,
-              statut: this.transloco.translate(`statut.${stock.statutDeclare}`).toLocaleLowerCase(),
-            })
-          : age,
+      detail,
     };
   }
 

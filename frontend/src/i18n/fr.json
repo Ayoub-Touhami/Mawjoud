@@ -24,7 +24,8 @@
     "apercuEmail": "Aperçu de l'e-mail d'alerte",
     "motDePasseOublie": "Mot de passe oublié",
     "desabonnement": "Désabonnement",
-    "suppressionCompte": "Supprimer mon compte"
+    "suppressionCompte": "Supprimer mon compte",
+    "attenteVerification": "Vérification en cours"
   },
   "navigation": {
     "principale": "Navigation principale",

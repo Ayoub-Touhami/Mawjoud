@@ -77,6 +77,11 @@ function scoreDuMot(mot: string, champ: string, large: boolean): number | null {
   return ecart <= admises ? 2 + ecart : null;
 }
 
+/** Même tolérance que la recherche de médicament, pour l'annuaire des pharmacies. */
+export function motTrouve(mot: string, champ: string): boolean {
+  return scoreDuMot(mot, champ, false) !== null;
+}
+
 function scoreMedicament(medicament: Medicament, mots: string[], large: boolean): number | null {
   const principaux = [medicament.nom, medicament.nomArabe]
     .filter((v): v is string => !!v)

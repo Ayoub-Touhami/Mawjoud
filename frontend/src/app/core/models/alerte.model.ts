@@ -7,4 +7,6 @@ export interface Alerte {
   /** null signifie « toutes les villes ». */
   ville: string | null;
   etat: EtatAlerte;
+  /** Date à laquelle une déclaration a déclenché l'alerte. */
+  declencheeLe?: string;
 }

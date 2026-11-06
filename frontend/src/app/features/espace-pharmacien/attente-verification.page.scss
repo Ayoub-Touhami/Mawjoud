@@ -1,0 +1,36 @@
+.bloque {
+  display: grid;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  background: var(--carte);
+  border: 2px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+.statuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--e-2);
+}
+
+.statuts span {
+  display: grid;
+  gap: var(--e-1);
+  place-items: center;
+  min-block-size: 64px;
+  padding: var(--e-1);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texte-secondaire);
+  text-align: center;
+  background: var(--statut-confirmer-fond);
+  border-radius: var(--rayon-petit);
+}
+
+.outils {
+  display: grid;
+  gap: var(--e-2);
+  padding: var(--e-3) var(--e-4);
+  border: 2px dashed var(--statut-tirets);
+  border-radius: var(--rayon);
+}

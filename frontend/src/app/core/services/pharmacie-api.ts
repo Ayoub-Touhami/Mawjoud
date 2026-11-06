@@ -1,12 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  DemandeReclamation,
-  Medicament,
-  Pharmacie,
-  StatutDeclare,
-  Stock,
-} from '../models';
+import { Medicament, Pharmacie } from '../models';
 
 /**
  * Contrat entre les pages et les données. Les pages injectent PHARMACIE_API et ignorent
@@ -24,21 +18,6 @@ export interface PharmacieApi {
   chercherMedicaments(texte: string): Observable<Medicament[]>;
   /** Noms plus éloignés, à proposer quand la recherche ne trouve rien. */
   medicamentsProches(texte: string): Observable<Medicament[]>;
-
-  stocksDePharmacie(pharmacieId: string): Observable<Stock[]>;
-  stocksDeMedicament(medicamentId: string, ville?: string): Observable<Stock[]>;
-  /** Refusé si le compte n'est pas vérifié ou si la pharmacie n'est pas la sienne (R3, R9). */
-  declarerStock(
-    utilisateurId: string,
-    pharmacieId: string,
-    medicamentId: string,
-    statut: StatutDeclare,
-  ): Observable<Stock>;
-
-  listerDemandes(): Observable<DemandeReclamation[]>;
-  creerDemande(pharmacienId: string, pharmacieId: string): Observable<DemandeReclamation>;
-  validerDemande(id: string): Observable<DemandeReclamation>;
-  refuserDemande(id: string, motif: string): Observable<DemandeReclamation>;
 }
 
 export const PHARMACIE_API = new InjectionToken<PharmacieApi>('PHARMACIE_API');

@@ -1,0 +1,79 @@
+// Mise en page commune aux écrans du parcours pharmacien.
+.page {
+  display: grid;
+  gap: var(--e-4);
+  max-inline-size: 520px;
+  margin-inline: auto;
+}
+
+h1,
+h2,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+.surtitre {
+  font-weight: 600;
+  color: var(--texte-secondaire);
+}
+
+form,
+.formulaire {
+  display: grid;
+  gap: var(--e-4);
+}
+
+.erreur,
+.motif {
+  display: grid;
+  gap: var(--e-2);
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+  background: var(--statut-rupture-fond);
+  border-radius: var(--rayon);
+}
+
+.erreur p {
+  margin-block: 0;
+}
+
+.encart {
+  display: flex;
+  gap: var(--e-3);
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+  background: var(--statut-confirmer-fond);
+  border: 2px dashed var(--statut-tirets);
+  border-radius: var(--rayon);
+}
+
+.encart app-icone {
+  flex-shrink: 0;
+  color: var(--texte-secondaire);
+}
+
+.encart strong {
+  display: block;
+}
+
+.note {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+
+.lien {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  min-block-size: var(--cible-tactile);
+  font-weight: 600;
+  color: var(--lien);
+}

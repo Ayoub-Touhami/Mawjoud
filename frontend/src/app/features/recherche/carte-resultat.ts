@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { FormatService } from '../../core/i18n/format.service';
-import { LangueService } from '../../core/i18n/langue.service';
+import { FraicheurService } from '../../core/services/fraicheur.service';
 import { Icone } from '../../shared/icone/icone';
 import { MarqueurPharmacie } from '../../shared/marqueur-pharmacie/marqueur-pharmacie';
 import { PastilleStatut } from '../../shared/pastille-statut/pastille-statut';
@@ -144,8 +144,7 @@ export class CarteResultat {
   readonly choisir = output<void>();
 
   private readonly format = inject(FormatService);
-  private readonly transloco = inject(TranslocoService);
-  private readonly langue = inject(LangueService).langue;
+  private readonly fraicheur = inject(FraicheurService);
 
   protected readonly pointilles = computed(
     () => this.type() === 'non-inscrite' || this.ligne().statut === 'a-confirmer',
@@ -155,17 +154,7 @@ export class CarteResultat {
     return metres === null ? null : this.format.distance(metres);
   });
   protected readonly age = computed(() => {
-    this.langue();
-    const { stock, statut } = this.ligne();
-    if (!stock) {
-      return '';
-    }
-    const age = this.format.age(stock.declareLe);
-    return statut === 'a-confirmer'
-      ? this.transloco.translate('fiche.dernierAvis', {
-          age,
-          statut: this.transloco.translate(`statut.${stock.statutDeclare}`).toLocaleLowerCase(),
-        })
-      : age;
+    const { stock } = this.ligne();
+    return stock ? this.fraicheur.lire(stock).detail : '';
   });
 }

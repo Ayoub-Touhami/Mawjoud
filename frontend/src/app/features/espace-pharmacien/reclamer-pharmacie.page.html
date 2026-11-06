@@ -1,0 +1,123 @@
+<section class="page">
+  <p class="surtitre">{{ 'pages.espacePharmacien' | transloco }}</p>
+  <app-etapes-pharmacien [active]="2" />
+  <h1>{{ 'pharmacien.reclamer.titre' | transloco }}</h1>
+  <p>{{ 'pharmacien.reclamer.intro' | transloco }}</p>
+
+  @if (demande()?.etat === 'refusee') {
+    <div class="motif" role="alert">
+      <strong>{{ 'pharmacien.reclamer.refusee' | transloco }}</strong>
+      @if (demande()?.motifRefus; as motif) {
+        <span>{{ motif }}</span>
+      }
+      <span>{{ 'pharmacien.reclamer.refuseeSuite' | transloco }}</span>
+    </div>
+  }
+
+  @if (echec()) {
+    <div class="erreur" role="alert">
+      <p>{{ 'compte.erreurs.indisponible' | transloco }}</p>
+    </div>
+  }
+
+  @if (ajout()) {
+    <form novalidate (submit)="demanderAjout($event)">
+      <h2>{{ 'pharmacien.ajout.titre' | transloco }}</h2>
+      <p>{{ 'pharmacien.ajout.intro' | transloco }}</p>
+      <app-champ [libelle]="'pharmacien.ajout.nom' | transloco">
+        <input appControle autocomplete="off" (input)="nom.set($any($event.target).value)" />
+      </app-champ>
+      <app-champ [libelle]="'pharmacien.ajout.adresse' | transloco">
+        <input appControle autocomplete="off" (input)="adresse.set($any($event.target).value)" />
+      </app-champ>
+      <app-champ [libelle]="'pharmacien.ajout.ville' | transloco">
+        <input appControle autocomplete="off" (input)="ville.set($any($event.target).value)" />
+      </app-champ>
+      <app-champ [libelle]="'pharmacien.ajout.telephone' | transloco">
+        <input
+          appControle
+          type="tel"
+          dir="ltr"
+          autocomplete="off"
+          (input)="telephone.set($any($event.target).value)"
+        />
+      </app-champ>
+      <app-champ-justificatif [(valeur)]="justificatif" />
+      @if (champsManquants()) {
+        <div class="erreur" role="alert">
+          <p>{{ 'pharmacien.ajout.manquants' | transloco }}</p>
+        </div>
+      }
+      <button type="submit" appBouton [chargement]="envoi()">
+        {{ 'pharmacien.ajout.envoyer' | transloco }}
+      </button>
+      <button type="button" appBouton variante="lien" (click)="ajout.set(false)">
+        {{ 'pharmacien.ajout.retour' | transloco }}
+      </button>
+    </form>
+  } @else {
+    <app-champ icone="loupe" [libelle]="'pharmacien.reclamer.recherche' | transloco">
+      <input
+        appControle
+        type="search"
+        autocomplete="off"
+        [placeholder]="'pharmacien.reclamer.exemple' | transloco"
+        (input)="saisir($any($event.target).value)"
+      />
+    </app-champ>
+
+    @if (assezLong() && !resultats().length) {
+      <p role="status">{{ 'pharmacien.reclamer.aucune' | transloco }}</p>
+    }
+
+    <ul class="resultats">
+      @for (pharmacie of resultats(); track pharmacie.id) {
+        <li [class.choisie]="choisie()?.id === pharmacie.id">
+          <button
+            type="button"
+            class="carte"
+            [attr.aria-expanded]="choisie()?.id === pharmacie.id"
+            (click)="choisie.set(pharmacie)"
+          >
+            <span class="texte">
+              <strong>{{ pharmacie.nom }}</strong>
+              <span>{{ pharmacie.adresse }}, {{ pharmacie.ville }}</span>
+            </span>
+            @if (choisie()?.id === pharmacie.id) {
+              <span class="coche"><app-icone nom="coche" [taille]="18" /></span>
+            }
+          </button>
+          @if (choisie()?.id === pharmacie.id) {
+            <div class="formulaire suite">
+              @if (pharmacie.etat !== 'non-inscrite') {
+                <p class="note">{{ 'pharmacien.reclamer.dejaReclamee' | transloco }}</p>
+              }
+              <app-champ-justificatif [(valeur)]="justificatif" />
+              <button
+                type="button"
+                appBouton
+                icone="verifiee"
+                [chargement]="envoi()"
+                (click)="reclamer(pharmacie)"
+              >
+                {{ 'pharmacien.reclamer.action' | transloco }}
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+
+    <button type="button" appBouton variante="lien" (click)="ajout.set(true)">
+      {{ 'pharmacien.reclamer.absente' | transloco }}
+    </button>
+  }
+
+  <aside class="encart">
+    <app-icone nom="horloge" />
+    <p>
+      <strong>{{ 'pharmacien.reclamer.ensuiteTitre' | transloco }}</strong>
+      {{ 'pharmacien.reclamer.ensuiteTexte' | transloco }}
+    </p>
+  </aside>
+</section>

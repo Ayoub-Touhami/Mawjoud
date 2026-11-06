@@ -1,6 +1,7 @@
 /*
- * COMPTES DE TEST INVENTÉS, pour les règles de stock. Ils n'ont aucun mot de passe. Le domaine
- * .example est réservé et n'envoie aucun courrier.
+ * COMPTES ET DEMANDES DE TEST INVENTÉS. Ces comptes n'ont aucun mot de passe et ne se connectent
+ * pas ; leurs demandes servent à essayer le cas « pharmacie déjà réclamée ». Le domaine .example
+ * est réservé et n'envoie aucun courrier.
  */
 import { DemandeReclamation, Utilisateur } from '../models';
 

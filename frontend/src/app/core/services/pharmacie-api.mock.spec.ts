@@ -1,3 +1,4 @@
+import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { COMPTES_TEST } from '../donnees-test/comptes';
 import { MEDICAMENTS_TEST } from '../donnees-test/medicaments';
@@ -24,8 +25,8 @@ describe('données de test', () => {
     }
   });
 
-  it('couvre les trois états de pharmacie', () => {
-    expect(new Set(PHARMACIES_TEST.map((p) => p.etat)).size).toBe(3);
+  it('couvre les pharmacies inscrites et non inscrites', () => {
+    expect(new Set(PHARMACIES_TEST.map((p) => p.etat)).size).toBe(2);
   });
 
   it('couvre les quatre statuts visibles, pour des pharmacies inscrites seulement', () => {
@@ -46,7 +47,9 @@ describe('données de test', () => {
 describe('PharmacieApiMock', () => {
   let api: PharmacieApiMock;
   beforeEach(() => {
-    api = new PharmacieApiMock();
+    localStorage.clear();
+    TestBed.configureTestingModule({ providers: [PharmacieApiMock] });
+    api = TestBed.inject(PharmacieApiMock);
   });
 
   it('filtre par ville', async () => {
@@ -60,33 +63,7 @@ describe('PharmacieApiMock', () => {
     expect(resultats.length).toBe(2);
   });
 
-  it('remplace le dernier statut déclaré sur sa propre pharmacie', async () => {
-    const [existant] = await firstValueFrom(api.stocksDePharmacie('T001'));
-    await firstValueFrom(api.declarerStock('u-03', 'T001', existant.medicamentId, 'en-rupture'));
-    const stocks = await firstValueFrom(api.stocksDePharmacie('T001'));
-    const lignes = stocks.filter((s) => s.medicamentId === existant.medicamentId);
-    expect(lignes.length).toBe(1);
-    expect(lignes[0].statutDeclare).toBe('en-rupture');
-  });
-
-  it("refuse la déclaration sur la pharmacie d'un autre (R9)", async () => {
-    await expect(
-      firstValueFrom(api.declarerStock('u-03', 'T002', 'M001', 'disponible')),
-    ).rejects.toThrow();
-  });
-
-  it('refuse la déclaration à un compte non vérifié (R3)', async () => {
-    await expect(
-      firstValueFrom(api.declarerStock('u-04', 'T004', 'M001', 'disponible')),
-    ).rejects.toThrow();
-  });
-
-  it('inscrit la pharmacie seulement après validation', async () => {
+  it('marque une pharmacie déjà réclamée', async () => {
     expect((await firstValueFrom(api.obtenirPharmacie('T004')))?.etat).toBe('reclamee');
-    await firstValueFrom(api.validerDemande('dem-01'));
-    expect((await firstValueFrom(api.obtenirPharmacie('T004')))?.etat).toBe('inscrite');
-    await expect(
-      firstValueFrom(api.declarerStock('u-04', 'T004', 'M001', 'disponible')),
-    ).resolves.toBeTruthy();
   });
 });

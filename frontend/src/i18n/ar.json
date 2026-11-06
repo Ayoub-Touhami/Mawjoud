@@ -24,7 +24,8 @@
     "apercuEmail": "معاينة رسالة التنبيه",
     "motDePasseOublie": "نسيت كلمة المرور",
     "desabonnement": "إلغاء الاشتراك",
-    "suppressionCompte": "حذف حسابي"
+    "suppressionCompte": "حذف حسابي",
+    "attenteVerification": "التحقق جارٍ"
   },
   "navigation": {
     "principale": "التنقل الرئيسي",

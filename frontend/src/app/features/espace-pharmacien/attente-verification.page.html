@@ -1,0 +1,46 @@
+<section class="page">
+  <p class="surtitre">{{ 'pages.espacePharmacien' | transloco }}</p>
+  <app-etapes-pharmacien [active]="3" />
+  <h1>{{ 'pages.attenteVerification' | transloco }}</h1>
+  <p>{{ 'pharmacien.attente.texte' | transloco: { nom: nom() } }}</p>
+
+  @if (demande()?.conflit) {
+    <p class="encart">
+      <app-icone nom="horloge" />
+      <span>{{ 'pharmacien.attente.conflit' | transloco }}</span>
+    </p>
+  }
+  @if (demande()?.ajout) {
+    <p class="encart">
+      <app-icone nom="horloge" />
+      <span>{{ 'pharmacien.attente.ajout' | transloco }}</span>
+    </p>
+  }
+
+  <div class="bloque" role="status">
+    <strong>{{ 'pharmacien.attente.bloque' | transloco }}</strong>
+    <div class="statuts" aria-hidden="true">
+      <span><app-icone nom="coche" [taille]="20" />{{ 'statut.disponible' | transloco }}</span>
+      <span>
+        <app-icone nom="moins" [taille]="20" />{{ 'statut.quantite-limitee' | transloco }}
+      </span>
+      <span><app-icone nom="fermer" [taille]="20" />{{ 'statut.en-rupture' | transloco }}</span>
+    </div>
+  </div>
+
+  <p class="note">{{ 'pharmacien.attente.note' | transloco }}</p>
+
+  @if (outils) {
+    <aside class="outils">
+      <p class="note">{{ 'pharmacien.outils.texte' | transloco }}</p>
+      @if (!demande()?.ajout) {
+        <button type="button" appBouton variante="secondaire" (click)="valider()">
+          {{ 'pharmacien.outils.valider' | transloco }}
+        </button>
+      }
+      <button type="button" appBouton variante="secondaire" (click)="refuser()">
+        {{ 'pharmacien.outils.refuser' | transloco }}
+      </button>
+    </aside>
+  }
+</section>

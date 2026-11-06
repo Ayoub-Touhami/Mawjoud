@@ -4,12 +4,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
 import { GARDES_ACTIVES } from './core/guards/role.guard';
 import { fournirTraductionTest } from './core/i18n/traduction.test-outils';
-import { ALERT_SERVICE } from './core/services/alert.service';
-import { AUTH_SERVICE } from './core/services/auth.service';
-import { PHARMACIE_API } from './core/services/pharmacie-api';
-import { PharmacieApiMock } from './core/services/pharmacie-api.mock';
-import { AlertServiceSimule } from './core/simulation/alert.service.simule';
-import { AuthServiceSimule } from './core/simulation/auth.service.simule';
+import { fournirSimulation } from './core/simulation/fournir-simulation';
 
 const PAGES: [string, string][] = [
   ['/', 'Carte des pharmacies'],
@@ -20,8 +15,6 @@ const PAGES: [string, string][] = [
   ['/a-propos', 'À propos et contact'],
   ['/alertes/creer', "Être prévenu dès qu'il est disponible"],
   ['/pharmacien/inscription', 'Inscription pharmacien'],
-  ['/pharmacien', 'Espace pharmacien'],
-  ['/pharmacien/reclamer', 'Réclamer ma pharmacie'],
   ['/admin/reclamations', 'Réclamations à valider'],
   ['/admin/annuaire', 'Annuaire des pharmacies'],
   ['/admin/signalements', "Signalements d'abus"],
@@ -35,21 +28,22 @@ describe('routes du plan du site', () => {
         provideRouter(routes),
         fournirTraductionTest(),
         { provide: GARDES_ACTIVES, useValue: false },
-        { provide: PHARMACIE_API, useClass: PharmacieApiMock },
-        { provide: AUTH_SERVICE, useExisting: AuthServiceSimule },
-        { provide: ALERT_SERVICE, useExisting: AlertServiceSimule },
+        fournirSimulation(),
       ],
     });
   });
 
-  it('couvre les 13 pages sans connexion', () => {
-    expect(PAGES.length).toBe(13);
+  it('couvre les 11 pages sans connexion', () => {
+    expect(PAGES.length).toBe(11);
   });
 
-  it('demande la connexion pour Mes alertes, même en développement', async () => {
-    await RouterTestingHarness.create('/alertes');
-    expect(TestBed.inject(Router).url).toBe('/compte/connexion?retour=%2Falertes');
-  });
+  it.each(['/alertes', '/pharmacien', '/pharmacien/reclamer', '/pharmacien/attente'])(
+    'demande la connexion pour %s, même en développement',
+    async (adresse) => {
+      await RouterTestingHarness.create(adresse);
+      expect(TestBed.inject(Router).url).toContain('/compte/connexion?retour=');
+    },
+  );
 
   it.each(PAGES)('%s affiche « %s »', async (adresse, titre) => {
     const harness = await RouterTestingHarness.create(adresse);

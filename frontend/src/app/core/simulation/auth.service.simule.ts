@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { defer, from, Observable, throwError } from 'rxjs';
-import { Utilisateur } from '../models';
+import { Role, Utilisateur } from '../models';
 import { AuthService, ErreurAuth } from '../services/auth.service';
 import { SessionService } from '../services/session.service';
 import { CompteSimule, StockageSimulation } from './stockage-simulation';
@@ -27,8 +27,10 @@ function versUtilisateur(compte: CompteSimule): Utilisateur {
   return {
     id: compte.id,
     email: compte.email,
-    role: 'patient',
+    role: compte.role ?? 'patient',
     emailVerifie: compte.emailVerifie,
+    ...(compte.compteVerifie !== undefined ? { compteVerifie: compte.compteVerifie } : {}),
+    ...(compte.pharmacieId ? { pharmacieId: compte.pharmacieId } : {}),
   };
 }
 
@@ -48,8 +50,12 @@ export class AuthServiceSimule implements AuthService {
     }
   }
 
-  creerCompte(email: string, motDePasse: string): Observable<Utilisateur> {
-    return defer(() => from(this.creer(normaliserEmail(email), motDePasse)));
+  creerCompte(
+    email: string,
+    motDePasse: string,
+    role: Role = 'patient',
+  ): Observable<Utilisateur> {
+    return defer(() => from(this.creer(normaliserEmail(email), motDePasse, role)));
   }
 
   seConnecter(email: string, motDePasse: string): Observable<Utilisateur> {
@@ -91,6 +97,14 @@ export class AuthServiceSimule implements AuthService {
     });
   }
 
+  /** Après une décision sur le compte : la session reprend son état enregistré. */
+  rafraichirSession(): void {
+    const compte = this.stockage.comptes.find((c) => c.id === this.utilisateur()?.id);
+    if (compte) {
+      this.session.ouvrir(versUtilisateur(compte));
+    }
+  }
+
   /** Jeton du dernier lien envoyé, ou de celui du compte connecté. */
   jetonEnAttente(): string | null {
     const id = this.utilisateur()?.id;
@@ -106,7 +120,7 @@ export class AuthServiceSimule implements AuthService {
     this.modifier(jeton, { expirationJeton: 0 });
   }
 
-  private async creer(email: string, motDePasse: string): Promise<Utilisateur> {
+  private async creer(email: string, motDePasse: string, role: Role): Promise<Utilisateur> {
     if (this.stockage.comptes.some((c) => c.email === email)) {
       throw 'email-utilise' satisfies ErreurAuth;
     }
@@ -114,6 +128,8 @@ export class AuthServiceSimule implements AuthService {
     const compte: CompteSimule = {
       id: crypto.randomUUID(),
       email,
+      role,
+      ...(role === 'pharmacien' ? { compteVerifie: false } : {}),
       sel,
       empreinte: await hacher(motDePasse, sel),
       emailVerifie: false,

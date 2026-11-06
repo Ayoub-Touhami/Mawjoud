@@ -1,0 +1,69 @@
+.resultats {
+  display: grid;
+  gap: var(--e-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.resultats:empty {
+  display: none;
+}
+
+li {
+  background: var(--carte);
+  border: 2px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+li.choisie {
+  border-color: var(--contour);
+}
+
+.carte {
+  display: flex;
+  gap: var(--e-3);
+  align-items: flex-start;
+  justify-content: space-between;
+  inline-size: 100%;
+  min-block-size: var(--cible-tactile);
+  padding: var(--e-3) var(--e-4);
+  font: inherit;
+  color: var(--texte);
+  text-align: start;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--rayon);
+}
+
+.texte {
+  display: grid;
+  gap: var(--e-1);
+  min-inline-size: 0;
+}
+
+.texte strong {
+  font-family: var(--police-titre);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.texte span {
+  color: var(--texte-secondaire);
+}
+
+.coche {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  color: var(--action-texte);
+  background: var(--action);
+  border-radius: 50%;
+}
+
+.suite {
+  padding: 0 var(--e-4) var(--e-4);
+}

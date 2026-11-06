@@ -12,13 +12,15 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { catchError, combineLatest, forkJoin, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { GOUVERNORATS } from '../../core/gouvernorats';
-import { FormatService } from '../../core/i18n/format.service';
 import { LangueService } from '../../core/i18n/langue.service';
 import { Medicament, Pharmacie, Stock } from '../../core/models';
 import { contientArabe, libelleMedicament } from '../../core/outils/recherche.outils';
 import { ConnexionService } from '../../core/services/connexion.service';
+import { FraicheurService } from '../../core/services/fraicheur.service';
+import { HORLOGE } from '../../core/services/horloge';
 import { PHARMACIE_API } from '../../core/services/pharmacie-api';
 import { PositionService } from '../../core/services/position.service';
+import { STOCK_SERVICE } from '../../core/services/stock.service';
 import { Bouton } from '../../shared/bouton/bouton';
 import { Icone } from '../../shared/icone/icone';
 import { MessageEtat } from '../../shared/message-etat/message-etat';
@@ -71,7 +73,9 @@ export class ResultatsPage {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly connexion = inject(ConnexionService);
-  private readonly format = inject(FormatService);
+  private readonly stocksService = inject(STOCK_SERVICE);
+  private readonly fraicheur = inject(FraicheurService);
+  private readonly horloge = inject(HORLOGE);
   private readonly transloco = inject(TranslocoService);
   private readonly langue = inject(LangueService).langue;
   private readonly carte = viewChild(CarteTunisie);
@@ -116,7 +120,13 @@ export class ResultatsPage {
   protected readonly groupes = computed(() => {
     const resultat = this.resultat();
     return resultat
-      ? construireGroupes(this.toutes(), resultat.stocks, this.zone(), this.position())
+      ? construireGroupes(
+          this.toutes(),
+          resultat.stocks,
+          this.zone(),
+          this.position(),
+          this.horloge(),
+        )
       : null;
   });
   protected readonly nonInscritesVisibles = computed(
@@ -257,26 +267,19 @@ export class ResultatsPage {
     }
   }
 
-  private detail(ligne: LigneResultat): string {
-    if (!ligne.stock) {
+  private detail({ stock }: LigneResultat): string {
+    if (!stock) {
       return '';
     }
-    const age = this.format.age(ligne.stock.declareLe);
-    return ligne.statut === 'a-confirmer'
-      ? this.transloco.translate('fiche.dernierAvis', {
-          age,
-          statut: this.transloco
-            .translate(`statut.${ligne.stock.statutDeclare}`)
-            .toLocaleLowerCase(),
-        })
-      : this.transloco.translate('recherche.misAJour', { age });
+    const { aConfirmer, age, detail } = this.fraicheur.lire(stock);
+    return aConfirmer ? detail : this.transloco.translate('recherche.misAJour', { age });
   }
 
   private charger(id: string | null, texte: string | null): Observable<Vue> {
     if (id) {
       return forkJoin({
         medicament: this.api.obtenirMedicament(id),
-        stocks: this.api.stocksDeMedicament(id),
+        stocks: this.stocksService.stocksDeMedicament(id),
       }).pipe(
         map(({ medicament, stocks }): Vue =>
           medicament
