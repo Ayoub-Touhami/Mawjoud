@@ -16,6 +16,7 @@ import { switchMap } from 'rxjs';
 import { FormatService } from '../../core/i18n/format.service';
 import { Pharmacie, StatutStock } from '../../core/models';
 import { distanceMetres, estInscrite, etatOuverture } from '../../core/outils/pharmacie.outils';
+import { FraicheurService } from '../../core/services/fraicheur.service';
 import { PositionService } from '../../core/services/position.service';
 import { STOCK_SERVICE } from '../../core/services/stock.service';
 import { ActionsPharmacie } from '../../shared/actions-pharmacie/actions-pharmacie';
@@ -53,6 +54,7 @@ export class FeuillePharmacie {
 
   private readonly stocksService = inject(STOCK_SERVICE);
   private readonly format = inject(FormatService);
+  private readonly fraicheur = inject(FraicheurService);
   private readonly position = inject(PositionService).position;
   private readonly titre = viewChild.required<ElementRef<HTMLElement>>('titre');
   private departGlissement = 0;
@@ -72,9 +74,10 @@ export class FeuillePharmacie {
     const position = this.position();
     return position ? this.format.distance(distanceMetres(position, this.pharmacie())) : null;
   });
+  /** La déclaration la plus récente dit si la fiche est encore fraîche. */
   protected readonly miseAJour = computed(() => {
-    const dates = this.stocks().map((s) => new Date(s.declareLe).getTime());
-    return dates.length ? this.format.age(Math.max(...dates)) : null;
+    const [recente] = [...this.stocks()].sort((a, b) => b.declareLe.localeCompare(a.declareLe));
+    return recente ? this.fraicheur.lire(recente) : null;
   });
 
   constructor() {

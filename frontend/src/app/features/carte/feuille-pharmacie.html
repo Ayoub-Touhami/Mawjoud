@@ -49,10 +49,13 @@
   } @else {
     <p class="ligne">{{ 'fiche.nonDeclare' | transloco }}</p>
   }
-} @else if (miseAJour(); as age) {
+} @else if (miseAJour(); as lecture) {
   <p class="ligne avec-icone">
     <app-icone nom="horloge" [taille]="20" />
-    {{ 'fiche.misAJour' | transloco: { age: age } }}
+    {{ 'fiche.misAJour' | transloco: { age: lecture.age } }}
+    @if (lecture.aConfirmer) {
+      · {{ 'statut.a-confirmer' | transloco }}
+    }
   </p>
 }
 
