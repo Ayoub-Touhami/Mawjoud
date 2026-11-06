@@ -1,0 +1,113 @@
+.page {
+  display: grid;
+  gap: var(--e-4);
+  max-inline-size: 560px;
+  margin-inline: auto;
+}
+
+h1,
+h2,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 20px;
+  outline: none;
+}
+
+form {
+  display: grid;
+  gap: var(--e-4);
+}
+
+.sante,
+.pharmacie {
+  display: flex;
+  gap: var(--e-2);
+  align-items: flex-start;
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--rayon);
+}
+
+.sante {
+  color: var(--texte);
+  background: var(--alerte);
+}
+
+.sante app-icone {
+  flex-shrink: 0;
+  color: var(--alerte-texte);
+}
+
+.pharmacie {
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+}
+
+.pharmacie app-icone {
+  flex-shrink: 0;
+  color: var(--titre);
+}
+
+.erreur {
+  display: grid;
+  gap: var(--e-2);
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+  background: var(--statut-rupture-fond);
+  border-radius: var(--rayon);
+}
+
+.confirmation {
+  display: grid;
+  gap: var(--e-3);
+  justify-items: start;
+  padding: var(--e-4);
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+.signe {
+  display: grid;
+  place-items: center;
+  inline-size: 56px;
+  block-size: 56px;
+  color: var(--tonal-texte);
+  background: var(--tonal);
+  border-radius: var(--rayon);
+}
+
+.coordonnees {
+  display: grid;
+  gap: var(--e-2);
+  padding-block-start: var(--e-4);
+  border-block-start: 2px solid var(--carte-bord);
+}
+
+dl {
+  display: grid;
+  gap: var(--e-1);
+  margin: 0;
+}
+
+dt {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texte-secondaire);
+}
+
+dd {
+  margin: 0 0 var(--e-2);
+}
+
+dd a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--cible-tactile);
+}

@@ -48,6 +48,10 @@ export const routes: Routes = [
       import('./features/a-propos/a-propos.routes').then((m) => m.A_PROPOS_ROUTES),
   },
   {
+    path: 'contact',
+    loadChildren: () => import('./features/contact/contact.routes').then((m) => m.CONTACT_ROUTES),
+  },
+  {
     path: 'acces-refuse',
     title: 'pages.accesRefuse',
     loadComponent: () =>

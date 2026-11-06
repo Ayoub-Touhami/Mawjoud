@@ -1,0 +1,126 @@
+<section class="page">
+  <h1>{{ 'pages.contact' | transloco }}</h1>
+
+  @if (envoye()) {
+    <div class="confirmation" role="status">
+      <span class="signe"><app-icone nom="coche" [taille]="32" /></span>
+      <h2 #confirmation tabindex="-1">{{ 'contact.envoye.titre' | transloco }}</h2>
+      <p>{{ 'contact.envoye.texte' | transloco }}</p>
+      <button type="button" appBouton variante="secondaire" (click)="recommencer()">
+        {{ 'contact.envoye.autre' | transloco }}
+      </button>
+    </div>
+  } @else {
+    <p>{{ 'contact.intro' | transloco }}</p>
+    <p class="sante">
+      <app-icone nom="alerte" [taille]="22" />
+      <span>{{ 'contact.sante' | transloco }}</span>
+    </p>
+
+    <form novalidate (submit)="envoyer($event)">
+      <app-champ [libelle]="'contact.nom' | transloco">
+        <input
+          appControle
+          autocomplete="name"
+          [value]="nom()"
+          (input)="nom.set($any($event.target).value)"
+        />
+      </app-champ>
+
+      <app-champ
+        icone="email"
+        [libelle]="'contact.email' | transloco"
+        [erreur]="erreurs().email ? (erreurs().email! | transloco) : ''"
+      >
+        <input
+          appControle
+          type="email"
+          dir="ltr"
+          autocomplete="email"
+          inputmode="email"
+          required
+          placeholder="nom@exemple.tn"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+        />
+      </app-champ>
+
+      <app-champ
+        [liste]="true"
+        [libelle]="'contact.sujet' | transloco"
+        [erreur]="erreurs().sujet ? (erreurs().sujet! | transloco) : ''"
+      >
+        <select appControle required (change)="sujet.set($any($event.target).value)">
+          <option value="" [selected]="!sujet()">{{ 'contact.choisir' | transloco }}</option>
+          @for (choix of sujets; track choix) {
+            <option [value]="choix" [selected]="choix === sujet()">
+              {{ 'contact.sujets.' + choix | transloco }}
+            </option>
+          }
+        </select>
+      </app-champ>
+
+      @if (pharmacie(); as p) {
+        <p class="pharmacie">
+          <app-icone nom="marqueur" [taille]="22" />
+          <span>
+            {{ 'contact.pharmacie' | transloco }}
+            <strong><bdi>{{ p.nom }}</bdi></strong>
+          </span>
+        </p>
+      }
+
+      <app-champ
+        [libelle]="'contact.message' | transloco"
+        [aide]="'contact.messageAide' | transloco: { n: maximum }"
+        [erreur]="erreurs().message ? (erreurs().message! | transloco) : ''"
+      >
+        <textarea
+          appControle
+          rows="6"
+          required
+          [attr.maxlength]="maximum"
+          [value]="message()"
+          (input)="message.set($any($event.target).value)"
+        ></textarea>
+      </app-champ>
+
+      @if (echec()) {
+        <div class="erreur" role="alert">
+          <p>{{ 'contact.echec' | transloco }}</p>
+          <button type="button" appBouton variante="secondaire" (click)="envoyer()">
+            {{ 'carte.horsConnexion.reessayer' | transloco }}
+          </button>
+        </div>
+      }
+
+      <button type="submit" appBouton icone="email" [chargement]="envoi()">
+        {{ 'contact.envoyer' | transloco }}
+      </button>
+    </form>
+  }
+
+  <section class="coordonnees">
+    <h2>{{ 'contact.coordonnees.titre' | transloco }}</h2>
+    <dl>
+      <dt>{{ 'contact.coordonnees.email' | transloco }}</dt>
+      <dd>
+        @if (coordonnees.email; as adresse) {
+          <a dir="ltr" [href]="'mailto:' + adresse">{{ adresse }}</a>
+        } @else {
+          {{ 'contact.coordonnees.aRenseignerEmail' | transloco }}
+        }
+      </dd>
+      <dt>{{ 'contact.coordonnees.telephone' | transloco }}</dt>
+      <dd>
+        @if (coordonnees.telephone; as numero) {
+          <a dir="ltr" [href]="'tel:' + numero">{{ numero }}</a>
+        } @else {
+          {{ 'contact.coordonnees.aRenseignerTelephone' | transloco }}
+        }
+      </dd>
+      <dt>{{ 'contact.coordonnees.adresse' | transloco }}</dt>
+      <dd>{{ coordonnees.adresse ?? ('contact.coordonnees.aRenseignerAdresse' | transloco) }}</dd>
+    </dl>
+  </section>
+</section>

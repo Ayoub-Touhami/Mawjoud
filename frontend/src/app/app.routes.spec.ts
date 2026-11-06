@@ -11,7 +11,8 @@ const PAGES: [string, string][] = [
   ['/pharmacie/T001', 'Pharmacie Test 01'],
   ['/compte/connexion', 'Connexion et inscription'],
   ['/compte/verification-email', 'Vérifiez votre boîte mail'],
-  ['/a-propos', 'À propos et contact'],
+  ['/a-propos', 'À propos de Mawjoud'],
+  ['/contact', 'Nous contacter'],
   ['/alertes/creer', "Être prévenu dès qu'il est disponible"],
   ['/pharmacien/inscription', 'Créez votre compte'],
 ];
@@ -28,8 +29,8 @@ describe('routes du plan du site', () => {
     });
   });
 
-  it('couvre les 8 pages sans connexion', () => {
-    expect(PAGES.length).toBe(8);
+  it('couvre les 9 pages sans connexion', () => {
+    expect(PAGES.length).toBe(9);
   });
 
   it.each(['/alertes', '/pharmacien', '/pharmacien/attente', '/admin', '/admin/annuaire'])(

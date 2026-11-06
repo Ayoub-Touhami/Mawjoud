@@ -9,6 +9,7 @@ const ECRANS = [
   ['/compte/verification-email', 'التحقق'],
   ['/pharmacien/inscription', ''],
   ['/a-propos', ''],
+  ['/contact', ''],
   ['/adresse-inconnue', ''],
 ] as const;
 

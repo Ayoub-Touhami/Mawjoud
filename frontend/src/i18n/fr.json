@@ -11,7 +11,7 @@
     "fichePharmacie": "Fiche pharmacie",
     "connexion": "Connexion et inscription",
     "verificationEmail": "Vérification de l'e-mail",
-    "aPropos": "À propos et contact",
+    "aPropos": "À propos",
     "creerAlerte": "Créer une alerte",
     "mesAlertes": "Mes alertes",
     "inscriptionPharmacien": "Inscription pharmacien",
@@ -29,7 +29,8 @@
     "attenteVerification": "Vérification en cours",
     "accesRefuse": "Accès refusé",
     "administration": "Administration",
-    "journal": "Journal des actions"
+    "journal": "Journal des actions",
+    "contact": "Nous contacter"
   },
   "navigation": {
     "principale": "Navigation principale",
@@ -39,13 +40,14 @@
     "mesAlertes": "Mes alertes",
     "jeSuisPharmacien": "Je suis pharmacien",
     "seConnecter": "Se connecter",
-    "aPropos": "À propos et contact",
+    "aPropos": "À propos",
     "creerAlerte": "Créer une alerte",
     "espacePharmacien": "Espace pharmacien",
     "administration": "Administration",
     "seDeconnecter": "Se déconnecter",
     "continuer": "Continuer",
-    "evitement": "Aller au contenu"
+    "evitement": "Aller au contenu",
+    "contact": "Contact"
   },
   "langue": {
     "autre": "عربية",
@@ -237,7 +239,8 @@
       "texte": "Cette fiche n'existe pas ou n'est plus disponible."
     },
     "carte": "Emplacement de {{nom}}",
-    "nonDeclare": "Non déclaré pour ce médicament, appelez."
+    "nonDeclare": "Non déclaré pour ce médicament, appelez.",
+    "signaler": "Signaler une erreur sur cette pharmacie"
   },
   "temps": {
     "instant": "à l'instant",
@@ -717,5 +720,81 @@
         "supprimer-compte": "Suppression de compte"
       }
     }
+  },
+  "contact": {
+    "intro": "Une question, une erreur à signaler ? Écrivez-nous.",
+    "sante": "Ne donnez aucune information de santé dans ce formulaire : ni diagnostic, ni ordonnance, ni traitement.",
+    "nom": "Nom (facultatif)",
+    "email": "Votre e-mail",
+    "sujet": "Sujet",
+    "choisir": "Choisir un sujet",
+    "sujets": {
+      "question": "Question",
+      "erreur-pharmacie": "Signaler une erreur sur une pharmacie",
+      "pharmacien": "Je suis pharmacien",
+      "autre": "Autre"
+    },
+    "pharmacie": "Pharmacie concernée :",
+    "message": "Message",
+    "messageAide": "{{n}} caractères au maximum.",
+    "envoyer": "Envoyer le message",
+    "echec": "Votre message n'a pas pu être envoyé. Vérifiez votre connexion, puis réessayez.",
+    "erreurs": {
+      "sujet": "Choisissez un sujet.",
+      "messageVide": "Écrivez votre message.",
+      "messageCourt": "Votre message doit compter au moins 10 caractères.",
+      "messageLong": "Votre message est trop long."
+    },
+    "envoye": {
+      "titre": "Votre message est enregistré",
+      "texte": "Merci. Ce site est encore en test : ce message n'est pas transmis à une personne pour le moment.",
+      "autre": "Écrire un autre message"
+    },
+    "coordonnees": {
+      "titre": "Nos coordonnées",
+      "email": "E-mail",
+      "telephone": "Téléphone",
+      "adresse": "Adresse",
+      "aRenseignerEmail": "Adresse e-mail de contact à renseigner",
+      "aRenseignerTelephone": "Téléphone de contact à renseigner",
+      "aRenseignerAdresse": "Adresse postale à renseigner"
+    }
+  },
+  "apropos": {
+    "titre": "À propos de Mawjoud",
+    "intro": "Mawjoud veut dire « disponible » en arabe. Ce site montre les pharmacies de Tunisie sur une carte et indique, pour celles qui sont inscrites, les médicaments qu'elles déclarent avoir en stock. Vous savez où aller avant de vous déplacer.",
+    "etapes": {
+      "titre": "Comment ça marche",
+      "chercher": "Je cherche un médicament",
+      "voir": "Je vois les pharmacies",
+      "appeler": "J'appelle avant de me déplacer"
+    },
+    "pharmacies": {
+      "titre": "Pharmacies inscrites et non inscrites",
+      "texte": "Une pharmacie inscrite a été vérifiée et déclare elle-même son stock. Une pharmacie non inscrite reste visible sur la carte, mais son stock n'est pas connu : appelez-la."
+    },
+    "statuts": {
+      "titre": "Les statuts d'un médicament",
+      "disponible": "La pharmacie déclare l'avoir en stock.",
+      "quantite-limitee": "Il en reste peu, selon la pharmacie.",
+      "en-rupture": "La pharmacie déclare ne plus en avoir.",
+      "a-confirmer": "Aucune mise à jour depuis plus de 24 h : le dernier statut reste affiché, mais il est peut-être dépassé."
+    },
+    "avertissement": {
+      "titre": "À savoir",
+      "stock": "Le stock est déclaré par les pharmacies et peut changer vite. Appelez la pharmacie avant de vous déplacer.",
+      "medical": "Mawjoud ne remplace pas un pharmacien et n'est pas un service médical."
+    },
+    "donnees": {
+      "titre": "Vos données",
+      "texte": "Aucune donnée de santé n'est demandée. Pour les alertes, seuls votre e-mail, votre mot de passe protégé, le médicament et la ville sont conservés."
+    },
+    "projet": {
+      "titre": "Le projet",
+      "texte": "Projet universitaire de SUP'COM, année 2025/2026.",
+      "auteurs": "Réalisé par :",
+      "encadrante": "Encadré par :"
+    },
+    "test": "Données de test : les pharmacies, les stocks et les comptes affichés sont simulés."
   }
 }

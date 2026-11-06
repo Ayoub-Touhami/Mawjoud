@@ -6,6 +6,7 @@ import {
   SIGNALEMENTS_TEST,
 } from '../donnees-test/comptes';
 import { Alerte, DemandeReclamation, Pharmacie, Role, Signalement, Stock } from '../models';
+import { MessageContact } from '../services/contact.service';
 
 /**
  * SIMULATION PROVISOIRE, à remplacer par le back-end. Seuls l'e-mail, le mot de passe protégé,
@@ -51,6 +52,8 @@ interface DonneesSimulees {
   signalements: Signalement[];
   /** Entrées du journal d'administration, sans dépendance vers son module. */
   journal: EntreeStockee[];
+  /** Messages de contact : à traiter côté back-end. */
+  contacts: (MessageContact & { id: string; date: string })[];
 }
 
 /** Forme d'une entrée du journal : son type complet reste dans l'administration. */
@@ -139,6 +142,10 @@ export class StockageSimulation {
     return this.donnees.signalements;
   }
 
+  get contacts(): DonneesSimulees['contacts'] {
+    return this.donnees.contacts;
+  }
+
   get journal(): EntreeStockee[] {
     return this.donnees.journal;
   }
@@ -168,6 +175,7 @@ export class StockageSimulation {
       stocksFabriquesRetires: [],
       signalements: SIGNALEMENTS_TEST,
       journal: [],
+      contacts: [],
     };
     try {
       return { ...vide, ...JSON.parse(localStorage.getItem(CLE) ?? '{}') };

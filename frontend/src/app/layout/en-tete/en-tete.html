@@ -30,6 +30,8 @@
     <a routerLink="/pharmacien/inscription" routerLinkActive="actif">
       {{ 'navigation.jeSuisPharmacien' | transloco }}
     </a>
+    <a routerLink="/a-propos" routerLinkActive="actif">{{ 'navigation.aPropos' | transloco }}</a>
+    <a routerLink="/contact" routerLinkActive="actif">{{ 'navigation.contact' | transloco }}</a>
     @if (utilisateur()) {
       <button type="button" class="connexion" appBouton variante="secondaire" (click)="sortir()">
         {{ 'navigation.seDeconnecter' | transloco }}
