@@ -1,0 +1,97 @@
+<section class="page">
+  <h1>{{ 'pages.mesAlertes' | transloco }}</h1>
+
+  @if (chargee() && !lignes().length) {
+    <p class="vide">{{ 'alertes.mes.vide' | transloco }}</p>
+  }
+
+  <ul>
+    @for (ligne of lignes(); track ligne.alerte.id) {
+      <li class="alerte" [class.terminee]="ligne.alerte.etat === 'terminee'">
+        <div class="tete">
+          <strong>{{ ligne.nom }}</strong>
+          <span class="etat">
+            <app-icone [nom]="ligne.alerte.etat === 'active' ? 'coche' : 'horloge'" [taille]="18" />
+            {{ 'alertes.mes.etat.' + ligne.alerte.etat | transloco }}
+          </span>
+        </div>
+        <p>
+          <app-icone nom="marqueur" [taille]="20" />
+          {{
+            ligne.alerte.ville
+              ? ('gouvernorats.' + ligne.alerte.ville | transloco)
+              : ('alertes.toutes' | transloco)
+          }}
+        </p>
+
+        @if (enEdition() === ligne.alerte.id) {
+          <app-champ [liste]="true" [libelle]="'alertes.zone' | transloco">
+            <select appControle (change)="zoneEditee.set($any($event.target).value)">
+              <option [value]="toutes" [selected]="zoneEditee() === toutes">
+                {{ 'alertes.toutes' | transloco }}
+              </option>
+              @for (nom of gouvernorats; track nom) {
+                <option [value]="nom" [selected]="nom === zoneEditee()">
+                  {{ 'gouvernorats.' + nom | transloco }}
+                </option>
+              }
+            </select>
+          </app-champ>
+          @if (erreur()?.id === ligne.alerte.id) {
+            <p class="erreur" role="alert">{{ 'alertes.mes.doublon' | transloco }}</p>
+          }
+          <div class="boutons">
+            <button type="button" appBouton (click)="enregistrer(ligne.alerte)">
+              {{ 'alertes.mes.enregistrer' | transloco }}
+            </button>
+            <button type="button" appBouton variante="secondaire" (click)="enEdition.set(null)">
+              {{ 'carte.position.annuler' | transloco }}
+            </button>
+          </div>
+        } @else if (aSupprimer() === ligne.alerte.id) {
+          <p class="erreur" role="alert">{{ 'alertes.mes.confirmer' | transloco }}</p>
+          <div class="boutons">
+            <button type="button" appBouton (click)="supprimer(ligne.alerte.id)">
+              {{ 'alertes.mes.oui' | transloco }}
+            </button>
+            <button type="button" appBouton variante="secondaire" (click)="aSupprimer.set(null)">
+              {{ 'carte.position.annuler' | transloco }}
+            </button>
+          </div>
+        } @else {
+          <div class="boutons">
+            @if (ligne.alerte.etat === 'active') {
+              <button
+                type="button"
+                appBouton
+                variante="secondaire"
+                [attr.aria-label]="'alertes.mes.modifierNom' | transloco: { nom: ligne.nom }"
+                (click)="modifier(ligne.alerte)"
+              >
+                {{ 'alertes.mes.modifier' | transloco }}
+              </button>
+            }
+            <button
+              type="button"
+              appBouton
+              variante="secondaire"
+              [attr.aria-label]="'alertes.mes.supprimerNom' | transloco: { nom: ligne.nom }"
+              (click)="demanderSuppression(ligne.alerte.id)"
+            >
+              {{ 'alertes.mes.supprimer' | transloco }}
+            </button>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+
+  <a appBouton icone="alerte" routerLink="/alertes/creer">
+    {{ 'recherche.alerte.action' | transloco }}
+  </a>
+
+  <p class="note">{{ 'alertes.donnees' | transloco }}</p>
+  <a class="suppression" routerLink="/compte/suppression">
+    {{ 'pages.suppressionCompte' | transloco }}
+  </a>
+</section>
