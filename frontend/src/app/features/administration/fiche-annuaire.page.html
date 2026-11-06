@@ -156,7 +156,7 @@
         (annuler)="confirmation.set(null)"
       >
         @if (type === 'retirer') {
-          <app-champ-motif [erreur]="motifManquant()" (change)="motif.set($event)" />
+          <app-champ-motif [erreur]="motifManquant()" (motifChoisi)="motif.set($event)" />
         }
       </app-confirmation-admin>
     }
