@@ -9,6 +9,7 @@ import { FraicheurService } from '../services/fraicheur.service';
 import { HORLOGE } from '../services/horloge';
 import { PHARMACIE_API } from '../services/pharmacie-api';
 import { STOCK_SERVICE } from '../services/stock.service';
+import { AdminClaimServiceSimule } from '../../features/administration/services/admin.simule';
 import { AlertServiceSimule } from './alert.service.simule';
 import { AuthServiceSimule } from './auth.service.simule';
 import { ClaimServiceSimule } from './claim.service.simule';
@@ -28,6 +29,7 @@ describe('espace pharmacien simulé', () => {
   let pharmaciens: PharmacistAuthServiceSimule;
   let claims: ClaimServiceSimule;
   let stocks: StockServiceSimule;
+  let admin: AdminClaimServiceSimule;
 
   beforeEach(() => {
     localStorage.clear();
@@ -44,6 +46,7 @@ describe('espace pharmacien simulé', () => {
     pharmaciens = TestBed.inject(PharmacistAuthServiceSimule);
     claims = TestBed.inject(ClaimServiceSimule);
     stocks = TestBed.inject(StockServiceSimule);
+    admin = TestBed.inject(AdminClaimServiceSimule);
   });
 
   async function compteEmailVerifie(email = 'ph@exemple.tn') {
@@ -54,7 +57,7 @@ describe('espace pharmacien simulé', () => {
   async function pharmacienValide(pharmacieId = NON_INSCRITE) {
     await compteEmailVerifie();
     const demande = await firstValueFrom(claims.reclamer(pharmacieId, {}));
-    await firstValueFrom(claims.validerDemande(demande.id));
+    await firstValueFrom(admin.validerDemande(demande.id));
   }
 
   const etatPharmacie = async (id: string) =>
@@ -106,7 +109,7 @@ describe('espace pharmacien simulé', () => {
     expect(await etatPharmacie(NON_INSCRITE)).toBe('non-inscrite');
     const demande = await firstValueFrom(claims.reclamer(NON_INSCRITE, {}));
     expect(await etatPharmacie(NON_INSCRITE)).toBe('reclamee');
-    await firstValueFrom(claims.validerDemande(demande.id));
+    await firstValueFrom(admin.validerDemande(demande.id));
     expect(await etatPharmacie(NON_INSCRITE)).toBe('inscrite');
     expect(pharmaciens.peutDeclarer()).toBe(true);
   });
@@ -124,8 +127,8 @@ describe('espace pharmacien simulé', () => {
   it('montre le motif du refus et permet une nouvelle réclamation', async () => {
     await compteEmailVerifie();
     const demande = await firstValueFrom(claims.reclamer(NON_INSCRITE, {}));
-    await firstValueFrom(claims.refuserDemande(demande.id, 'Justificatif illisible'));
-    expect((await firstValueFrom(claims.maDemande()))?.motifRefus).toBe('Justificatif illisible');
+    await firstValueFrom(admin.refuserDemande(demande.id, { code: 'justificatif-illisible' }));
+    expect((await firstValueFrom(claims.maDemande()))?.motifCode).toBe('justificatif-illisible');
     expect(adresse(await garde('/pharmacien/reclamer'))).toBe(true);
     expect(await etatPharmacie(NON_INSCRITE)).toBe('non-inscrite');
     await expect(firstValueFrom(claims.reclamer(NON_INSCRITE, {}))).resolves.toBeTruthy();

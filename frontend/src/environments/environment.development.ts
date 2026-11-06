@@ -2,11 +2,6 @@ import { Routes } from '@angular/router';
 
 export const environment = {
   production: false,
-  /**
-   * Désactivées avec `ng serve` : la connexion n'existe pas encore, et toutes les pages
-   * doivent rester ouvrables. Elles sont actives dans le build de production.
-   */
-  gardesActives: false,
   /** Montre les liens de test des e-mails simulés. */
   outilsSimulation: true,
   /** Fonds de carte : changer de fournisseur ne demande que ces deux adresses, sans clé. */

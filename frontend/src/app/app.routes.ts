@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { environment } from '../environments/environment';
+import { adminGuard } from './core/guards/admin.guard';
 
 /** Les 14 pages du plan du site, avec un fichier chargé à la demande par fonctionnalité. */
 export const routes: Routes = [
@@ -35,6 +36,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
+    canMatch: [adminGuard],
     loadChildren: () =>
       import('./features/administration/administration.routes').then(
         (m) => m.ADMINISTRATION_ROUTES,
@@ -44,6 +46,12 @@ export const routes: Routes = [
     path: 'a-propos',
     loadChildren: () =>
       import('./features/a-propos/a-propos.routes').then((m) => m.A_PROPOS_ROUTES),
+  },
+  {
+    path: 'acces-refuse',
+    title: 'pages.accesRefuse',
+    loadComponent: () =>
+      import('./features/compte/acces-refuse.page').then((m) => m.AccesRefusePage),
   },
   ...environment.routesDeveloppement,
   {

@@ -4,6 +4,8 @@
     <a routerLink="/a-propos">{{ 'navigation.aPropos' | transloco }}</a>
     <a routerLink="/alertes/creer">{{ 'navigation.creerAlerte' | transloco }}</a>
     <a routerLink="/pharmacien">{{ 'navigation.espacePharmacien' | transloco }}</a>
-    <a routerLink="/admin">{{ 'navigation.administration' | transloco }}</a>
+    @if (administrateur()) {
+      <a routerLink="/admin">{{ 'navigation.administration' | transloco }}</a>
+    }
   </nav>
 </footer>

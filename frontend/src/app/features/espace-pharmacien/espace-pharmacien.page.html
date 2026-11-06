@@ -10,7 +10,9 @@
 <section class="contenu">
   <h2>{{ 'pharmacien.espace.titre' | transloco }}</h2>
 
-  @if (!peutDeclarer()) {
+  @if (suspendu()) {
+    <p class="annonce" role="alert">{{ 'pharmacien.espace.suspendu' | transloco }}</p>
+  } @else if (!peutDeclarer()) {
     <p class="annonce" role="alert">{{ 'pharmacien.attente.bloque' | transloco }}</p>
   }
   @if (!lignes().length) {

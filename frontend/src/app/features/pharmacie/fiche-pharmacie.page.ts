@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { map, of, switchMap } from 'rxjs';
 import { FormatService } from '../../core/i18n/format.service';
@@ -41,6 +41,8 @@ import { MiniCarte } from './mini-carte';
   styleUrl: './fiche-pharmacie.page.scss',
 })
 export class FichePharmaciePage {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly api = inject(PHARMACIE_API);
   private readonly stocksService = inject(STOCK_SERVICE);
   private readonly fraicheur = inject(FraicheurService);
@@ -50,7 +52,7 @@ export class FichePharmaciePage {
   private readonly position = inject(PositionService).position;
 
   protected readonly pharmacie = toSignal(
-    inject(ActivatedRoute).paramMap.pipe(
+    this.route.paramMap.pipe(
       switchMap((params) => this.api.obtenirPharmacie(params.get('id') ?? '')),
     ),
   );
@@ -86,6 +88,15 @@ export class FichePharmaciePage {
     this.langue();
     return this.stocks().map((stock) => this.ligne(stock));
   });
+
+  constructor() {
+    effect(() => {
+      const pharmacie = this.pharmacie();
+      if (pharmacie && pharmacie.id !== this.route.snapshot.paramMap.get('id')) {
+        void this.router.navigate(['/pharmacie', pharmacie.id], { replaceUrl: true });
+      }
+    });
+  }
 
   private ligne(stock: Stock) {
     const medicament = this.medicaments()?.get(stock.medicamentId);

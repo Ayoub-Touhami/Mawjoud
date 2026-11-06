@@ -10,4 +10,6 @@ export interface Utilisateur {
   compteVerifie?: boolean;
   /** Pharmacien uniquement. */
   pharmacieId?: string;
+  /** Pharmacien uniquement : suspendu par l'administrateur, il ne déclare plus de stock. */
+  suspendu?: boolean;
 }

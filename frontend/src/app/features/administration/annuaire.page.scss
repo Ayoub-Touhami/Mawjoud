@@ -1,0 +1,21 @@
+.filtres {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  align-items: end;
+}
+
+.case {
+  display: inline-flex;
+  gap: var(--e-2);
+  align-items: center;
+  min-block-size: var(--cible-tactile);
+  cursor: pointer;
+}
+
+.case input {
+  inline-size: 24px;
+  block-size: 24px;
+}
+
+td span + span::before {
+  content: ' · ';
+}

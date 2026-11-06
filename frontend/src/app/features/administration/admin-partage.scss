@@ -1,0 +1,100 @@
+// Styles communs aux écrans d'administration.
+:host {
+  display: grid;
+  gap: var(--e-4);
+}
+
+h1,
+h2,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+.defilement {
+  overflow-x: auto;
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+table {
+  inline-size: 100%;
+  min-inline-size: 640px;
+  border-collapse: collapse;
+}
+
+caption {
+  padding: var(--e-3) var(--e-4);
+  font-weight: 600;
+  color: var(--texte-secondaire);
+  text-align: start;
+}
+
+th,
+td {
+  padding: var(--e-3) var(--e-4);
+  text-align: start;
+  vertical-align: middle;
+  border-block-start: 1px solid var(--carte-bord);
+}
+
+th {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texte-secondaire);
+}
+
+.lien {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--cible-tactile);
+  font-weight: 600;
+  color: var(--lien);
+}
+
+.panneau {
+  display: grid;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+.boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+.erreur {
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+  background: var(--statut-rupture-fond);
+  border-radius: var(--rayon);
+}
+
+.note {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+
+.vide {
+  padding: var(--e-4);
+  color: var(--texte-secondaire);
+}
+
+.etat {
+  display: inline-flex;
+  gap: var(--e-1);
+  align-items: center;
+  font-weight: 600;
+}

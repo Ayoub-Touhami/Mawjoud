@@ -17,11 +17,6 @@ export interface ClaimService {
     pharmacie: PharmacieProposee,
     justificatif: Justificatif,
   ): Observable<DemandeReclamation>;
-
-  /** Pour l'administration. Seule cette validation humaine rend une pharmacie inscrite (F8). */
-  listerDemandes(): Observable<DemandeReclamation[]>;
-  validerDemande(id: string): Observable<DemandeReclamation>;
-  refuserDemande(id: string, motif: string): Observable<DemandeReclamation>;
 }
 
 export const CLAIM_SERVICE = new InjectionToken<ClaimService>('CLAIM_SERVICE');

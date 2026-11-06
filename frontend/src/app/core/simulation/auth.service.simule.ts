@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { defer, from, Observable, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Role, Utilisateur } from '../models';
 import { AuthService, ErreurAuth } from '../services/auth.service';
 import { SessionService } from '../services/session.service';
@@ -31,6 +32,7 @@ function versUtilisateur(compte: CompteSimule): Utilisateur {
     emailVerifie: compte.emailVerifie,
     ...(compte.compteVerifie !== undefined ? { compteVerifie: compte.compteVerifie } : {}),
     ...(compte.pharmacieId ? { pharmacieId: compte.pharmacieId } : {}),
+    ...(compte.suspendu ? { suspendu: true } : {}),
   };
 }
 
@@ -60,6 +62,15 @@ export class AuthServiceSimule implements AuthService {
 
   seConnecter(email: string, motDePasse: string): Observable<Utilisateur> {
     return defer(() => from(this.connecter(normaliserEmail(email), motDePasse)));
+  }
+
+  /** Développement uniquement : remplace le mot de passe qu'aucun fichier ne doit contenir. */
+  connecterAdministrateurTest(): void {
+    const compte = this.stockage.comptes.find((c) => c.role === 'administrateur');
+    if (compte && environment.outilsSimulation) {
+      this.stockage.enregistrer({ sessionId: compte.id });
+      this.session.ouvrir(versUtilisateur(compte));
+    }
   }
 
   seDeconnecter(): void {

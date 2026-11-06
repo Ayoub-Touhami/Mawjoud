@@ -1,0 +1,108 @@
+<h1>{{ 'pages.signalements' | transloco }}</h1>
+
+<div class="defilement" tabindex="0" role="region" [attr.aria-label]="'pages.signalements' | transloco">
+  <table>
+    <caption>{{ 'admin.abus.legende' | transloco: { n: signalements().length } }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ 'admin.demandes.date' | transloco }}</th>
+        <th scope="col">{{ 'admin.abus.compte' | transloco }}</th>
+        <th scope="col">{{ 'admin.demandes.pharmacie' | transloco }}</th>
+        <th scope="col">{{ 'admin.abus.texte' | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of signalements(); track s.id) {
+        <tr>
+          <td>{{ s.creeLe | dateFr }}</td>
+          <td>{{ emails().get(s.compteId) ?? s.compteId }}</td>
+          <td>{{ s.pharmacieId }}</td>
+          <td>{{ s.texte }}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="vide">{{ 'admin.abus.vide' | transloco }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<h2>{{ 'admin.abus.comptes' | transloco }}</h2>
+<div class="defilement" tabindex="0" role="region" [attr.aria-label]="'admin.abus.comptes' | transloco">
+  <table>
+    <caption>{{ 'admin.abus.comptesLegende' | transloco: { n: comptes().length } }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ 'admin.abus.compte' | transloco }}</th>
+        <th scope="col">{{ 'admin.demandes.pharmacie' | transloco }}</th>
+        <th scope="col">{{ 'admin.demandes.etat' | transloco }}</th>
+        <th scope="col">{{ 'admin.abus.actions' | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (compte of comptes(); track compte.id) {
+        <tr>
+          <td>{{ compte.email }}</td>
+          <td>{{ compte.pharmacie ?? '—' }}</td>
+          <td>
+            <span class="etat">
+              <app-icone
+                [nom]="compte.suspendu ? 'fermer' : compte.compteVerifie ? 'coche' : 'horloge'"
+                [taille]="18"
+              />
+              {{
+                (compte.suspendu
+                  ? 'admin.abus.suspendu'
+                  : compte.compteVerifie
+                    ? 'admin.abus.verifie'
+                    : 'admin.abus.attente'
+                ) | transloco
+              }}
+            </span>
+          </td>
+          <td>
+            <div class="boutons">
+              @if (compte.suspendu) {
+                <button type="button" appBouton variante="secondaire" (click)="retablir(compte.id)">
+                  {{ 'admin.abus.retablir' | transloco }}
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  appBouton
+                  variante="secondaire"
+                  (click)="enCours.set({ id: compte.id, action: 'suspendre' })"
+                >
+                  {{ 'admin.abus.suspendre' | transloco }}
+                </button>
+              }
+              <button
+                type="button"
+                appBouton
+                variante="secondaire"
+                (click)="enCours.set({ id: compte.id, action: 'supprimer' })"
+              >
+                {{ 'admin.abus.supprimer' | transloco }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (enCours(); as decision) {
+  <app-confirmation-admin
+    [texte]="
+      (decision.action === 'suspendre'
+        ? 'admin.abus.confirmerSuspendre'
+        : 'admin.abus.confirmerSupprimer'
+      ) | transloco: { email: emails().get(decision.id) }
+    "
+    [action]="'admin.demandes.confirmerAction' | transloco"
+    (confirmer)="confirmer()"
+    (annuler)="enCours.set(null)"
+  />
+}

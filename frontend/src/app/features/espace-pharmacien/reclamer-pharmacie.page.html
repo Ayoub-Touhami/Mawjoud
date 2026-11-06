@@ -4,11 +4,19 @@
   <h1>{{ 'pharmacien.reclamer.titre' | transloco }}</h1>
   <p>{{ 'pharmacien.reclamer.intro' | transloco }}</p>
 
-  @if (demande()?.etat === 'refusee') {
+  @if (demande()?.motifCode; as motif) {
     <div class="motif" role="alert">
-      <strong>{{ 'pharmacien.reclamer.refusee' | transloco }}</strong>
-      @if (demande()?.motifRefus; as motif) {
-        <span>{{ motif }}</span>
+      <strong>
+        {{
+          (demande()?.etat === 'retiree'
+            ? 'pharmacien.reclamer.retiree'
+            : 'pharmacien.reclamer.refusee'
+          ) | transloco
+        }}
+      </strong>
+      <span>{{ 'pharmacien.motifs.' + motif | transloco }}</span>
+      @if (demande()?.motifPrecision; as precision) {
+        <span dir="auto">{{ precision }}</span>
       }
       <span>{{ 'pharmacien.reclamer.refuseeSuite' | transloco }}</span>
     </div>

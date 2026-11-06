@@ -29,6 +29,7 @@ export class EspacePharmacienPage {
 
   protected readonly pharmacieId = this.pharmaciens.pharmacien()?.pharmacieId ?? '';
   protected readonly peutDeclarer = this.pharmaciens.peutDeclarer;
+  protected readonly suspendu = computed(() => !!this.pharmaciens.pharmacien()?.suspendu);
   protected readonly pharmacie = toSignal(
     this.pharmacieId ? this.api.obtenirPharmacie(this.pharmacieId) : of(undefined),
   );

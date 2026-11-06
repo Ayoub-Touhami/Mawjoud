@@ -52,4 +52,10 @@
   </div>
 
   <p class="note">{{ 'compte.notePatient' | transloco }}</p>
+
+  @if (outils) {
+    <button type="button" appBouton variante="lien" (click)="connecterAdministrateurTest()">
+      {{ 'compte.test.administrateur' | transloco }}
+    </button>
+  }
 </div>

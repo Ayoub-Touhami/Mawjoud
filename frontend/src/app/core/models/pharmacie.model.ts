@@ -26,4 +26,6 @@ export interface Pharmacie {
   source: string;
   /** Position et statut simulés : la fiche l'indique clairement. */
   donneeTest?: boolean;
+  /** Marquée fermée par l'administrateur : elle ne se montre plus au public. */
+  fermee?: boolean;
 }

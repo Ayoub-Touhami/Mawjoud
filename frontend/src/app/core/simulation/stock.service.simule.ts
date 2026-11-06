@@ -5,6 +5,7 @@ import { StatutDeclare, Stock } from '../models';
 import { HORLOGE } from '../services/horloge';
 import { SessionService } from '../services/session.service';
 import { ErreurStock, EVALUATEUR_ALERTES, StockService } from '../services/stock.service';
+import { AnnuaireSimule } from './annuaire-simule';
 import { StockageSimulation } from './stockage-simulation';
 
 const refus = (erreur: ErreurStock) => throwError(() => erreur);
@@ -19,17 +20,23 @@ const HEURE_MS = 60 * 60 * 1000;
 export class StockServiceSimule implements StockService {
   private readonly stockage = inject(StockageSimulation);
   private readonly session = inject(SessionService);
+  private readonly annuaire = inject(AnnuaireSimule);
   private readonly horloge = inject(HORLOGE);
   private readonly evaluateur = inject(EVALUATEUR_ALERTES);
   private readonly fabriques = fabriquerStocks(this.horloge());
   private panneSimulee = false;
 
   stocksDePharmacie(pharmacieId: string): Observable<Stock[]> {
-    return of(this.tous().filter((s) => s.pharmacieId === pharmacieId));
+    const id = this.annuaire.resoudre(pharmacieId);
+    return of(this.tous().filter((s) => s.pharmacieId === id && this.lisible(id)));
   }
 
   stocksDeMedicament(medicamentId: string): Observable<Stock[]> {
-    return of(this.tous().filter((s) => s.medicamentId === medicamentId));
+    return of(
+      this.tous().filter(
+        (s) => s.medicamentId === medicamentId && this.annuaire.stocksVisibles(s.pharmacieId),
+      ),
+    );
   }
 
   medicamentsSuivis(pharmacieId: string): Observable<string[]> {
@@ -118,16 +125,27 @@ export class StockServiceSimule implements StockService {
     );
   }
 
+  /** Le public ne voit que les pharmacies inscrites ; le pharmacien garde sa liste. */
+  private lisible(pharmacieId: string): boolean {
+    return (
+      this.annuaire.stocksVisibles(pharmacieId) ||
+      this.session.utilisateur()?.pharmacieId === pharmacieId
+    );
+  }
+
   private tous(): Stock[] {
     const declares = new Set(
       this.stockage.stocksDeclares.map((s) => cle(s.pharmacieId, s.medicamentId)),
     );
     const retires = new Set(this.stockage.stocksRetires);
+    const sansStock = new Set(this.stockage.stocksFabriquesRetires);
     return [
-      ...this.fabriques.filter((s) => {
-        const c = cle(s.pharmacieId, s.medicamentId);
-        return !declares.has(c) && !retires.has(c);
-      }),
+      ...this.fabriques
+        .map((s) => ({ ...s, pharmacieId: this.annuaire.resoudre(s.pharmacieId) }))
+        .filter((s) => {
+          const c = cle(s.pharmacieId, s.medicamentId);
+          return !declares.has(c) && !retires.has(c) && !sansStock.has(s.pharmacieId);
+        }),
       ...this.stockage.stocksDeclares,
     ];
   }
@@ -147,8 +165,9 @@ export class StockServiceSimule implements StockService {
 
   /** Compte vérifié, sur sa propre pharmacie (R3, R9). La panne passe après ce contrôle. */
   private controler(pharmacieId: string): ErreurStock | null {
-    const compte = this.session.utilisateur();
-    if (!compte?.compteVerifie || compte.pharmacieId !== pharmacieId) {
+    const id = this.session.utilisateur()?.id;
+    const compte = this.stockage.comptes.find((c) => c.id === id);
+    if (!compte?.compteVerifie || compte.suspendu || compte.pharmacieId !== pharmacieId) {
       return 'non-autorise';
     }
     return this.panneSimulee || !navigator.onLine ? 'reseau' : null;

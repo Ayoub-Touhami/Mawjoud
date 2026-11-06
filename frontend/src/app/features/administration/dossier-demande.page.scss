@@ -1,0 +1,30 @@
+.colonnes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--e-3);
+}
+
+dl {
+  display: grid;
+  gap: var(--e-1);
+  margin: 0;
+}
+
+dt {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texte-secondaire);
+}
+
+dd {
+  display: grid;
+  gap: var(--e-1);
+  margin: 0 0 var(--e-2);
+  overflow-wrap: anywhere;
+}
+
+.deux {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--e-3);
+}

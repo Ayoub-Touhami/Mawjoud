@@ -25,7 +25,10 @@
     "motDePasseOublie": "Mot de passe oublié",
     "desabonnement": "Désabonnement",
     "suppressionCompte": "Supprimer mon compte",
-    "attenteVerification": "Vérification en cours"
+    "attenteVerification": "Vérification en cours",
+    "accesRefuse": "Accès refusé",
+    "administration": "Administration",
+    "journal": "Journal des actions"
   },
   "navigation": {
     "principale": "Navigation principale",
@@ -376,7 +379,8 @@
     "test": {
       "texte": "Développement uniquement : aucun e-mail n'est envoyé, ce lien le remplace.",
       "ouvrir": "Ouvrir le lien de vérification",
-      "expirer": "Tester un lien expiré"
+      "expirer": "Tester un lien expiré",
+      "administrateur": "Se connecter comme administrateur de test (développement)"
     },
     "desabonnement": {
       "encours": "Désabonnement en cours…",
@@ -390,7 +394,8 @@
       "confirmer": "Supprimer définitivement",
       "succesTitre": "Votre compte est supprimé",
       "succesTexte": "Votre adresse e-mail et vos alertes ont été effacées. Vous pouvez continuer à consulter la carte sans compte."
-    }
+    },
+    "accesRefuse": "Cet espace est réservé à l'administrateur."
   },
   "alertes": {
     "etape": "Étape 2 sur 2",
@@ -469,7 +474,8 @@
       "refusee": "Votre réclamation a été refusée.",
       "refuseeSuite": "Vous pouvez déposer une nouvelle réclamation.",
       "ensuiteTitre": "Ensuite : vérification en attente",
-      "ensuiteTexte": "Nous contrôlons votre pharmacie, puis vous recevez un e-mail. Le stock se déclare après validation."
+      "ensuiteTexte": "Nous contrôlons votre pharmacie, puis vous recevez un e-mail. Le stock se déclare après validation.",
+      "retiree": "L'inscription de votre pharmacie a été retirée."
     },
     "justificatif": {
       "texte": "Informations pour la vérification (facultatif)",
@@ -520,7 +526,36 @@
       "toutAJour": "Tout est à jour",
       "toutConfirmer": "Confirmez-vous les {{n}} statuts déclarés ? Leur heure de mise à jour sera renouvelée.",
       "toutOui": "Oui, tout confirmer",
-      "note": "Sans mise à jour, le statut passe à « à confirmer » après 24 h."
+      "note": "Sans mise à jour, le statut passe à « à confirmer » après 24 h.",
+      "suspendu": "Votre compte est suspendu : vous ne pouvez plus déclarer de stock. Votre pharmacie apparaît comme non inscrite."
+    },
+    "motifs": {
+      "justificatif-illisible": "Le justificatif est illisible.",
+      "informations-incompletes": "Les informations sont incomplètes.",
+      "pharmacie-attribuee": "Cette pharmacie a été attribuée à un autre compte.",
+      "pharmacie-fermee": "Cette pharmacie est fermée.",
+      "compte-supprime": "Le compte a été supprimé.",
+      "autre": "Votre demande ne remplit pas les conditions."
+    }
+  },
+  "admin": {
+    "navigation": "Navigation de l'administration",
+    "bord": {
+      "titre": "Tableau de bord",
+      "reclamations": "Réclamations en attente",
+      "ajouts": "Demandes d'ajout",
+      "signalements": "Signalements d'abus",
+      "inscrites": "Pharmacies inscrites",
+      "nonInscrites": "Pharmacies non inscrites",
+      "ouvrir": "Ouvrir"
+    },
+    "erreurs": {
+      "introuvable": "Cet élément n'existe plus.",
+      "motif-requis": "Choisissez un motif.",
+      "deja-inscrite": "Cette pharmacie est déjà inscrite. Retirez d'abord son inscription depuis l'annuaire.",
+      "deux-inscrites": "Les deux fiches sont inscrites. Retirez d'abord une inscription.",
+      "hors-tunisie": "Cette position est hors de Tunisie.",
+      "non-inscrite": "Cette pharmacie n'est pas inscrite."
     }
   }
 }

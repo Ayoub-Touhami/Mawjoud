@@ -1,0 +1,119 @@
+<a class="lien" routerLink="/admin/reclamations">{{ 'admin.demandes.retour' | transloco }}</a>
+<h1>{{ (plusieurs() ? 'admin.demandes.comparer' : 'admin.demandes.detail') | transloco }}</h1>
+
+@if (termine()) {
+  <p class="panneau" role="status">{{ 'admin.demandes.traitee' | transloco }}</p>
+}
+@if (erreur(); as code) {
+  <p class="erreur" role="alert">{{ 'admin.erreurs.' + code | transloco }}</p>
+}
+@if (!dossier().length) {
+  <p class="panneau">{{ 'admin.erreurs.introuvable' | transloco }}</p>
+}
+
+<div class="colonnes">
+  @for (ligne of dossier(); track ligne.demande.id) {
+    <article class="panneau">
+      <h2>{{ ligne.pharmacie?.nom ?? ligne.demande.ajout?.nom }}</h2>
+      <dl>
+        <dt>{{ 'admin.demandes.adresse' | transloco }}</dt>
+        <dd>
+          {{ ligne.pharmacie?.adresse ?? ligne.demande.ajout?.adresse }},
+          {{ ligne.pharmacie?.ville ?? ligne.demande.ajout?.ville }}
+        </dd>
+        <dt>{{ 'admin.demandes.demandeur' | transloco }}</dt>
+        <dd>{{ ligne.email }}</dd>
+        <dt>{{ 'admin.demandes.date' | transloco }}</dt>
+        <dd>{{ ligne.demande.creeeLe | dateFr }}</dd>
+        <dt>{{ 'admin.demandes.justificatif' | transloco }}</dt>
+        <dd>
+          @if (ligne.demande.justificatif?.texte; as texte) {
+            <span>{{ texte }}</span>
+          }
+          @if (ligne.demande.justificatif?.fichier; as fichier) {
+            <span>{{ fichier.nom }}</span>
+          }
+          @if (!ligne.demande.justificatif?.texte && !ligne.demande.justificatif?.fichier) {
+            <span>{{ 'admin.demandes.aucun' | transloco }}</span>
+          }
+        </dd>
+        <dt>{{ 'admin.demandes.etat' | transloco }}</dt>
+        <dd>{{ 'admin.demandes.etats.' + ligne.demande.etat | transloco }}</dd>
+      </dl>
+      @if (ligne.demande.etat === 'en-attente') {
+        <div class="boutons">
+          @if (ligne.demande.ajout) {
+            <button type="button" appBouton (click)="ouvrir({ type: 'ajout' })">
+              {{ 'admin.demandes.creerFiche' | transloco }}
+            </button>
+          } @else {
+            <button type="button" appBouton (click)="ouvrir({ type: 'valider', demande: ligne })">
+              {{ (plusieurs() ? 'admin.demandes.choisir' : 'admin.demandes.valider') | transloco }}
+            </button>
+          }
+          <button
+            type="button"
+            appBouton
+            variante="secondaire"
+            (click)="ouvrir({ type: 'refuser', demande: ligne })"
+          >
+            {{ 'admin.demandes.refuser' | transloco }}
+          </button>
+        </div>
+      }
+    </article>
+  }
+</div>
+
+@if (plusieurs() && enAttente().length > 1) {
+  <button type="button" appBouton variante="secondaire" (click)="ouvrir({ type: 'refuser-tout' })">
+    {{ 'admin.demandes.refuserTout' | transloco }}
+  </button>
+}
+
+@if (decision()?.type === 'ajout') {
+  <section class="panneau">
+    <h2>{{ 'admin.demandes.creerFiche' | transloco }}</h2>
+    <app-champ [liste]="true" [libelle]="'admin.fiche.gouvernorat' | transloco">
+      <select appControle (change)="gouvernorat.set($any($event.target).value)">
+        @for (nom of gouvernorats; track nom) {
+          <option [value]="nom" [selected]="nom === gouvernorat()">{{ nom }}</option>
+        }
+      </select>
+    </app-champ>
+    <div class="deux">
+      <app-champ [libelle]="'admin.fiche.latitude' | transloco">
+        <input
+          appControle
+          type="number"
+          step="0.0001"
+          [value]="position().latitude"
+          (change)="deplacer(+$any($event.target).value, position().longitude)"
+        />
+      </app-champ>
+      <app-champ [libelle]="'admin.fiche.longitude' | transloco">
+        <input
+          appControle
+          type="number"
+          step="0.0001"
+          [value]="position().longitude"
+          (change)="deplacer(position().latitude, +$any($event.target).value)"
+        />
+      </app-champ>
+    </div>
+    <app-carte-position [position]="position()" (deplacer)="position.set($event)" />
+  </section>
+}
+
+@if (decision()) {
+  <app-confirmation-admin
+    [texte]="question()"
+    [action]="'admin.demandes.confirmerAction' | transloco"
+    (confirmer)="confirmer()"
+    (annuler)="decision.set(null)"
+  >
+    @if (motifDemande()) {
+      <app-champ-motif [erreur]="motifManquant()" (change)="motif.set($event)" />
+    }
+  </app-confirmation-admin>
+}

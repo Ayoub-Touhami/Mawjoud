@@ -1,0 +1,85 @@
+<h1>{{ 'pages.annuaire' | transloco }}</h1>
+
+<section class="panneau filtres" [attr.aria-label]="'admin.annuaire.filtres' | transloco">
+  <app-champ icone="loupe" [libelle]="'admin.annuaire.recherche' | transloco">
+    <input appControle type="search" (input)="texte.set($any($event.target).value)" />
+  </app-champ>
+  <app-champ [liste]="true" [libelle]="'admin.fiche.gouvernorat' | transloco">
+    <select appControle (change)="gouvernorat.set($any($event.target).value)">
+      <option value="">{{ 'admin.annuaire.tous' | transloco }}</option>
+      @for (nom of gouvernorats; track nom) {
+        <option [value]="nom">{{ nom }}</option>
+      }
+    </select>
+  </app-champ>
+  <app-champ [liste]="true" [libelle]="'admin.fiche.ville' | transloco">
+    <select appControle (change)="ville.set($any($event.target).value)">
+      <option value="">{{ 'admin.annuaire.toutes' | transloco }}</option>
+      @for (nom of villes(); track nom) {
+        <option [value]="nom">{{ nom }}</option>
+      }
+    </select>
+  </app-champ>
+  <app-champ [liste]="true" [libelle]="'admin.annuaire.inscription' | transloco">
+    <select appControle (change)="inscription.set($any($event.target).value)">
+      <option value="">{{ 'admin.annuaire.toutes' | transloco }}</option>
+      <option value="inscrite">{{ 'statut.inscrite-verifiee' | transloco }}</option>
+      <option value="non-inscrite">{{ 'statut.non-inscrite' | transloco }}</option>
+    </select>
+  </app-champ>
+  <label class="case">
+    <input type="checkbox" (change)="doublons.set($any($event.target).checked)" />
+    {{ 'admin.annuaire.doublons' | transloco }}
+  </label>
+</section>
+
+<div class="defilement" tabindex="0" role="region" [attr.aria-label]="'pages.annuaire' | transloco">
+  <table>
+    <caption aria-live="polite">
+      {{ 'admin.annuaire.legende' | transloco: { n: filtrees().length } }}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ 'admin.fiche.nom' | transloco }}</th>
+        <th scope="col">{{ 'admin.fiche.ville' | transloco }}</th>
+        <th scope="col">{{ 'admin.fiche.gouvernorat' | transloco }}</th>
+        <th scope="col">{{ 'admin.annuaire.inscription' | transloco }}</th>
+        <th scope="col">{{ 'admin.annuaire.remarques' | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (fiche of visibles(); track fiche.id) {
+        <tr>
+          <td>
+            <a class="lien" [routerLink]="['/admin/annuaire', fiche.id]">{{ fiche.nom }}</a>
+          </td>
+          <td>{{ fiche.ville }}</td>
+          <td>{{ fiche.gouvernorat }}</td>
+          <td>
+            <app-pastille-statut
+              [statut]="fiche.etat === 'inscrite' ? 'inscrite-verifiee' : 'non-inscrite'"
+            />
+          </td>
+          <td>
+            @if (fiche.fermee) {
+              <span>{{ 'admin.fiche.fermee' | transloco }}</span>
+            }
+            @if (fiche.doublons.length) {
+              <span>{{ 'admin.annuaire.doublon' | transloco }}</span>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="vide">{{ 'admin.annuaire.vide' | transloco }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (filtrees().length > limite()) {
+  <button type="button" appBouton variante="secondaire" (click)="voirPlus()">
+    {{ 'admin.annuaire.voirPlus' | transloco }}
+  </button>
+}

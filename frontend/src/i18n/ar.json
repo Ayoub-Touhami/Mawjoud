@@ -25,7 +25,10 @@
     "motDePasseOublie": "نسيت كلمة المرور",
     "desabonnement": "إلغاء الاشتراك",
     "suppressionCompte": "حذف حسابي",
-    "attenteVerification": "التحقق جارٍ"
+    "attenteVerification": "التحقق جارٍ",
+    "accesRefuse": "الوصول مرفوض",
+    "administration": "الإدارة",
+    "journal": "سجل الإجراءات"
   },
   "navigation": {
     "principale": "التنقل الرئيسي",
@@ -376,7 +379,8 @@
     "test": {
       "texte": "للتطوير فقط: لا تُرسل أي رسالة، وهذا الرابط يعوّضها.",
       "ouvrir": "فتح رابط التحقق",
-      "expirer": "تجربة رابط منتهي الصلاحية"
+      "expirer": "تجربة رابط منتهي الصلاحية",
+      "administrateur": "الدخول كمشرف تجريبي (للتطوير)"
     },
     "desabonnement": {
       "encours": "جارٍ إلغاء الاشتراك…",
@@ -390,7 +394,8 @@
       "confirmer": "حذف نهائي",
       "succesTitre": "تم حذف حسابك",
       "succesTexte": "تم مسح بريدك الإلكتروني وتنبيهاتك. يمكنك مواصلة تصفح الخريطة بدون حساب."
-    }
+    },
+    "accesRefuse": "هذا الفضاء مخصص للمشرف."
   },
   "alertes": {
     "etape": "الخطوة 2 من 2",
@@ -469,7 +474,8 @@
       "refusee": "تم رفض طلبك.",
       "refuseeSuite": "يمكنك تقديم طلب جديد.",
       "ensuiteTitre": "الخطوة التالية: التحقق قيد الانتظار",
-      "ensuiteTexte": "نراجع صيدليتك ثم تصلك رسالة إلكترونية. يتم التصريح بالمخزون بعد الموافقة."
+      "ensuiteTexte": "نراجع صيدليتك ثم تصلك رسالة إلكترونية. يتم التصريح بالمخزون بعد الموافقة.",
+      "retiree": "تم سحب تسجيل صيدليتك."
     },
     "justificatif": {
       "texte": "معلومات للتحقق (اختياري)",
@@ -520,7 +526,36 @@
       "toutAJour": "كل شيء محدَّث",
       "toutConfirmer": "هل تؤكد الحالات المصرَّح بها وعددها {{n}}؟ سيتم تجديد وقت تحديثها.",
       "toutOui": "نعم، أكّد الكل",
-      "note": "بدون تحديث، تصبح الحالة «يحتاج إلى تأكيد» بعد 24 ساعة."
+      "note": "بدون تحديث، تصبح الحالة «يحتاج إلى تأكيد» بعد 24 ساعة.",
+      "suspendu": "تم تعليق حسابك: لم يعد بإمكانك التصريح بالمخزون. تظهر صيدليتك كغير مسجَّلة."
+    },
+    "motifs": {
+      "justificatif-illisible": "الوثيقة الداعمة غير مقروءة.",
+      "informations-incompletes": "المعلومات غير مكتملة.",
+      "pharmacie-attribuee": "أُسندت هذه الصيدلية إلى حساب آخر.",
+      "pharmacie-fermee": "هذه الصيدلية مغلقة.",
+      "compte-supprime": "تم حذف الحساب.",
+      "autre": "طلبك لا يستوفي الشروط."
+    }
+  },
+  "admin": {
+    "navigation": "Navigation de l'administration",
+    "bord": {
+      "titre": "Tableau de bord",
+      "reclamations": "Réclamations en attente",
+      "ajouts": "Demandes d'ajout",
+      "signalements": "Signalements d'abus",
+      "inscrites": "Pharmacies inscrites",
+      "nonInscrites": "Pharmacies non inscrites",
+      "ouvrir": "Ouvrir"
+    },
+    "erreurs": {
+      "introuvable": "Cet élément n'existe plus.",
+      "motif-requis": "Choisissez un motif.",
+      "deja-inscrite": "Cette pharmacie est déjà inscrite. Retirez d'abord son inscription depuis l'annuaire.",
+      "deux-inscrites": "Les deux fiches sont inscrites. Retirez d'abord une inscription.",
+      "hors-tunisie": "Cette position est hors de Tunisie.",
+      "non-inscrite": "Cette pharmacie n'est pas inscrite."
     }
   }
 }

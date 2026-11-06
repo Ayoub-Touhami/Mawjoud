@@ -6,7 +6,7 @@ import { ClaimService, ErreurReclamation } from '../services/claim.service';
 import { HORLOGE } from '../services/horloge';
 import { PHARMACIE_API } from '../services/pharmacie-api';
 import { SessionService } from '../services/session.service';
-import { AuthServiceSimule } from './auth.service.simule';
+import { AnnuaireSimule } from './annuaire-simule';
 import { StockageSimulation } from './stockage-simulation';
 
 const refus = (erreur: ErreurReclamation) => throwError(() => erreur);
@@ -17,7 +17,7 @@ const RESULTATS_MAX = 20;
 export class ClaimServiceSimule implements ClaimService {
   private readonly stockage = inject(StockageSimulation);
   private readonly session = inject(SessionService);
-  private readonly auth = inject(AuthServiceSimule);
+  private readonly annuaire = inject(AnnuaireSimule);
   private readonly api = inject(PHARMACIE_API);
   private readonly horloge = inject(HORLOGE);
 
@@ -48,9 +48,11 @@ export class ClaimServiceSimule implements ClaimService {
     if (refusee) {
       return refus(refusee);
     }
-    const conflit = this.stockage.demandes.some(
-      (d) => d.pharmacieId === pharmacieId && d.etat !== 'refusee',
-    );
+    const conflit =
+      this.annuaire.trouver(pharmacieId)?.etat !== 'non-inscrite' ||
+      this.stockage.demandes.some(
+        (d) => d.pharmacieId === pharmacieId && d.etat === 'en-attente',
+      );
     return of(this.creer({ pharmacieId, justificatif, ...(conflit ? { conflit } : {}) }));
   }
 
@@ -60,40 +62,6 @@ export class ClaimServiceSimule implements ClaimService {
   ): Observable<DemandeReclamation> {
     const refusee = this.controler();
     return refusee ? refus(refusee) : of(this.creer({ pharmacieId: null, ajout, justificatif }));
-  }
-
-  listerDemandes(): Observable<DemandeReclamation[]> {
-    return of(this.stockage.demandes);
-  }
-
-  validerDemande(id: string): Observable<DemandeReclamation> {
-    const demande = this.stockage.demandes.find((d) => d.id === id);
-    if (!demande) {
-      return refus('introuvable');
-    }
-    const validee: DemandeReclamation = { ...demande, etat: 'validee' };
-    this.stockage.enregistrer({
-      demandes: this.stockage.demandes.map((d) => (d.id === id ? validee : d)),
-      comptes: this.stockage.comptes.map((c) =>
-        c.id === demande.pharmacienId
-          ? { ...c, compteVerifie: true, pharmacieId: demande.pharmacieId ?? undefined }
-          : c,
-      ),
-    });
-    this.auth.rafraichirSession();
-    return of(validee);
-  }
-
-  refuserDemande(id: string, motif: string): Observable<DemandeReclamation> {
-    const demande = this.stockage.demandes.find((d) => d.id === id);
-    if (!demande) {
-      return refus('introuvable');
-    }
-    const refusee: DemandeReclamation = { ...demande, etat: 'refusee', motifRefus: motif };
-    this.stockage.enregistrer({
-      demandes: this.stockage.demandes.map((d) => (d.id === id ? refusee : d)),
-    });
-    return of(refusee);
   }
 
   private controler(): ErreurReclamation | null {

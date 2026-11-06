@@ -4,6 +4,8 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { Utilisateur } from '../../core/models';
 import { AUTH_SERVICE, ErreurAuth } from '../../core/services/auth.service';
+import { AuthServiceSimule } from '../../core/simulation/auth.service.simule';
+import { environment } from '../../../environments/environment';
 import { Bouton } from '../../shared/bouton/bouton';
 import { Motif } from '../../shared/motif/motif';
 import { Segment, Segments } from '../../shared/segments/segments';
@@ -13,6 +15,9 @@ type Mode = 'connexion' | 'creation';
 
 /** La page de connexion est commune : le rôle du compte décide de la suite. */
 function destinationParDefaut({ role, emailVerifie }: Utilisateur): string {
+  if (role === 'administrateur') {
+    return '/admin';
+  }
   if (role === 'pharmacien') {
     return '/pharmacien';
   }
@@ -31,7 +36,9 @@ export class ConnexionPage {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly transloco = inject(TranslocoService);
+  private readonly simulation = inject(AuthServiceSimule);
 
+  protected readonly outils = environment.outilsSimulation;
   protected readonly mode = signal<Mode>('connexion');
   protected readonly email = signal('');
   protected readonly motDePasse = signal('');
@@ -43,6 +50,11 @@ export class ConnexionPage {
     { valeur: 'connexion', libelle: this.transloco.translate('compte.onglets.connexion') },
     { valeur: 'creation', libelle: this.transloco.translate('compte.onglets.creation') },
   ]);
+
+  protected connecterAdministrateurTest(): void {
+    this.simulation.connecterAdministrateurTest();
+    void this.router.navigateByUrl('/admin');
+  }
 
   protected changerMode(mode: Mode): void {
     this.mode.set(mode);

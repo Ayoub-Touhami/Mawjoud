@@ -1,0 +1,168 @@
+<a class="lien" routerLink="/admin/annuaire">{{ 'admin.annuaire.retour' | transloco }}</a>
+
+@if (fiche(); as f) {
+  <h1>{{ f.nom }}</h1>
+  <p class="boutons">
+    <app-pastille-statut [statut]="f.etat === 'inscrite' ? 'inscrite-verifiee' : 'non-inscrite'" />
+    @if (f.fermee) {
+      <span class="etat">{{ 'admin.fiche.fermee' | transloco }}</span>
+    }
+  </p>
+
+  @if (erreur(); as code) {
+    <p class="erreur" role="alert">{{ 'admin.erreurs.' + code | transloco }}</p>
+  }
+  @if (enregistre()) {
+    <p class="panneau" role="status">{{ 'admin.fiche.enregistree' | transloco }}</p>
+  }
+
+  <section class="panneau">
+    <h2>{{ 'admin.fiche.informations' | transloco }}</h2>
+    <div class="grille">
+      <app-champ [libelle]="'admin.fiche.nom' | transloco">
+        <input appControle [value]="f.nom" (input)="changer('nom', $any($event.target).value)" />
+      </app-champ>
+      <app-champ [libelle]="'admin.fiche.adresse' | transloco">
+        <input
+          appControle
+          [value]="f.adresse"
+          (input)="changer('adresse', $any($event.target).value)"
+        />
+      </app-champ>
+      <app-champ [libelle]="'admin.fiche.ville' | transloco">
+        <input appControle [value]="f.ville" (input)="changer('ville', $any($event.target).value)" />
+      </app-champ>
+      <app-champ [liste]="true" [libelle]="'admin.fiche.gouvernorat' | transloco">
+        <select appControle (change)="changer('gouvernorat', $any($event.target).value)">
+          @for (nom of gouvernorats; track nom) {
+            <option [value]="nom" [selected]="nom === f.gouvernorat">{{ nom }}</option>
+          }
+        </select>
+      </app-champ>
+      <app-champ [libelle]="'admin.fiche.telephone' | transloco">
+        <input
+          appControle
+          type="tel"
+          [value]="f.telephone"
+          (input)="changer('telephone', $any($event.target).value)"
+        />
+      </app-champ>
+    </div>
+
+    <h2>{{ 'admin.fiche.horaires' | transloco }}</h2>
+    @for (plage of horaires(); track $index; let rang = $index) {
+      <fieldset>
+        <legend>{{ 'admin.fiche.plage' | transloco: { n: rang + 1 } }}</legend>
+        <div class="jours">
+          @for (jour of jours; track jour) {
+            <label>
+              <input
+                type="checkbox"
+                [checked]="plage.jours.includes(jour)"
+                (change)="basculerJour(rang, jour)"
+              />
+              {{ 'jours.' + jour | transloco }}
+            </label>
+          }
+        </div>
+        <div class="grille">
+          <app-champ [libelle]="'admin.fiche.ouverture' | transloco">
+            <input
+              appControle
+              type="time"
+              [value]="plage.ouverture"
+              (change)="modifierPlage(rang, { ouverture: $any($event.target).value })"
+            />
+          </app-champ>
+          <app-champ [libelle]="'admin.fiche.fermeture' | transloco">
+            <input
+              appControle
+              type="time"
+              [value]="plage.fermeture"
+              (change)="modifierPlage(rang, { fermeture: $any($event.target).value })"
+            />
+          </app-champ>
+        </div>
+        <button type="button" appBouton variante="lien" (click)="retirerPlage(rang)">
+          {{ 'admin.fiche.retirerPlage' | transloco }}
+        </button>
+      </fieldset>
+    }
+    <button type="button" appBouton variante="secondaire" (click)="ajouterPlage()">
+      {{ 'admin.fiche.ajouterPlage' | transloco }}
+    </button>
+
+    <h2>{{ 'admin.fiche.position' | transloco }}</h2>
+    <div class="grille">
+      <app-champ [libelle]="'admin.fiche.latitude' | transloco">
+        <input
+          appControle
+          type="number"
+          step="0.0001"
+          [value]="position().latitude"
+          (change)="changer('latitude', +$any($event.target).value)"
+        />
+      </app-champ>
+      <app-champ [libelle]="'admin.fiche.longitude' | transloco">
+        <input
+          appControle
+          type="number"
+          step="0.0001"
+          [value]="position().longitude"
+          (change)="changer('longitude', +$any($event.target).value)"
+        />
+      </app-champ>
+    </div>
+    <app-carte-position
+      [position]="position()"
+      (deplacer)="changer('latitude', $event.latitude); changer('longitude', $event.longitude)"
+    />
+
+    <button type="button" appBouton (click)="enregistrer()">
+      {{ 'admin.fiche.enregistrer' | transloco }}
+    </button>
+  </section>
+
+  <section class="panneau">
+    <h2>{{ 'admin.fiche.actions' | transloco }}</h2>
+    <div class="boutons">
+      @if (f.etat === 'inscrite') {
+        <button type="button" appBouton variante="secondaire" (click)="ouvrir('retirer')">
+          {{ 'admin.fiche.retirer' | transloco }}
+        </button>
+      }
+      @if (f.fermee) {
+        <button type="button" appBouton variante="secondaire" (click)="rouvrir()">
+          {{ 'admin.fiche.rouvrir' | transloco }}
+        </button>
+      } @else {
+        <button type="button" appBouton variante="secondaire" (click)="ouvrir('fermer')">
+          {{ 'admin.fiche.fermer' | transloco }}
+        </button>
+      }
+    </div>
+    @if (confirmation(); as type) {
+      <app-confirmation-admin
+        [texte]="
+          (type === 'fermer'
+            ? f.etat === 'inscrite'
+              ? 'admin.fiche.confirmerFermerInscrite'
+              : 'admin.fiche.confirmerFermer'
+            : 'admin.fiche.confirmerRetirer'
+          ) | transloco
+        "
+        [action]="'admin.demandes.confirmerAction' | transloco"
+        (confirmer)="confirmer()"
+        (annuler)="confirmation.set(null)"
+      >
+        @if (type === 'retirer') {
+          <app-champ-motif [erreur]="motifManquant()" (change)="motif.set($event)" />
+        }
+      </app-confirmation-admin>
+    }
+  </section>
+
+  <app-fusion-fiches [fiche]="f" (fusionnee)="charger()" />
+} @else {
+  <p class="panneau">{{ 'admin.erreurs.introuvable' | transloco }}</p>
+}

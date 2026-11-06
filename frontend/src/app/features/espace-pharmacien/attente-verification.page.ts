@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Injector } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -9,9 +9,6 @@ import { Bouton } from '../../shared/bouton/bouton';
 import { Icone } from '../../shared/icone/icone';
 import { environment } from '../../../environments/environment';
 import { EtapesPharmacien } from './etapes-pharmacien';
-
-/** Motif affiché par le bouton de refus réservé au développement. */
-const MOTIF_TEST = 'Justificatif illisible (exemple de test).';
 
 @Component({
   selector: 'app-attente-verification-page',
@@ -24,6 +21,7 @@ export class AttenteVerificationPage {
   private readonly claims = inject(CLAIM_SERVICE);
   private readonly api = inject(PHARMACIE_API);
   private readonly router = inject(Router);
+  private readonly injecteur = inject(Injector);
 
   protected readonly outils = environment.outilsSimulation;
   protected readonly demande = toSignal(this.claims.maDemande());
@@ -34,13 +32,25 @@ export class AttenteVerificationPage {
   );
   protected readonly nom = computed(() => this.pharmacie()?.nom ?? this.demande()?.ajout?.nom ?? '');
 
+  /** Raccourci de développement : chargé à la demande, il suit le vrai flux d'administration. */
+  private async administration() {
+    const { AdminClaimServiceSimule } = await import(
+      '../administration/services/admin.simule'
+    );
+    return this.injecteur.get(AdminClaimServiceSimule);
+  }
+
   protected async valider(): Promise<void> {
-    await firstValueFrom(this.claims.validerDemande(this.demande()?.id as string));
+    const service = await this.administration();
+    const motif = { code: 'pharmacie-attribuee' as const };
+    await firstValueFrom(service.validerDemande(this.demande()?.id as string, motif));
     await this.router.navigate(['/pharmacien']);
   }
 
   protected async refuser(): Promise<void> {
-    await firstValueFrom(this.claims.refuserDemande(this.demande()?.id as string, MOTIF_TEST));
+    const service = await this.administration();
+    const motif = { code: 'justificatif-illisible' as const, precision: 'Exemple de test.' };
+    await firstValueFrom(service.refuserDemande(this.demande()?.id as string, motif));
     await this.router.navigate(['/pharmacien/reclamer']);
   }
 }

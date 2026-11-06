@@ -9,6 +9,7 @@ import { HORLOGE } from '../../core/services/horloge';
 import { STOCK_SERVICE } from '../../core/services/stock.service';
 import { AuthServiceSimule } from '../../core/simulation/auth.service.simule';
 import { fournirSimulation } from '../../core/simulation/fournir-simulation';
+import { AdminClaimServiceSimule } from '../administration/services/admin.simule';
 
 const PHARMACIE = 'T006';
 const MEDICAMENT = 'M037';
@@ -34,7 +35,7 @@ describe('statut déclaré, vu du public', () => {
     await firstValueFrom(auth.creerCompte('ph@exemple.tn', 'mot-de-passe-test', 'pharmacien'));
     await firstValueFrom(auth.verifierEmail(auth.jetonEnAttente() as string));
     const demande = await firstValueFrom(claims.reclamer(PHARMACIE, {}));
-    await firstValueFrom(claims.validerDemande(demande.id));
+    await firstValueFrom(TestBed.inject(AdminClaimServiceSimule).validerDemande(demande.id));
     await firstValueFrom(
       TestBed.inject(STOCK_SERVICE).declarer(PHARMACIE, MEDICAMENT, 'disponible'),
     );

@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { PHARMACIES_TEST } from '../donnees-test/pharmacies';
 import { Stock } from '../models';
 import { HORLOGE } from '../services/horloge';
 import { EvaluateurAlertes } from '../services/stock.service';
+import { AnnuaireSimule } from './annuaire-simule';
 import { StockageSimulation } from './stockage-simulation';
 
 /**
@@ -13,9 +13,10 @@ import { StockageSimulation } from './stockage-simulation';
 export class EvaluateurAlertesSimule implements EvaluateurAlertes {
   private readonly stockage = inject(StockageSimulation);
   private readonly horloge = inject(HORLOGE);
+  private readonly annuaire = inject(AnnuaireSimule);
 
   evaluer(stock: Stock): void {
-    const gouvernorat = PHARMACIES_TEST.find((p) => p.id === stock.pharmacieId)?.gouvernorat;
+    const gouvernorat = this.annuaire.trouver(stock.pharmacieId)?.gouvernorat;
     if (stock.statutDeclare !== 'disponible' || !gouvernorat) {
       return;
     }

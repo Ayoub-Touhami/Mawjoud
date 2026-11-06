@@ -2,8 +2,6 @@ import { Routes } from '@angular/router';
 
 export const environment = {
   production: true,
-  /** Les gardes d'accès aux espaces protégés sont actives. */
-  gardesActives: true,
   /** Montre les liens de test des e-mails simulés. */
   outilsSimulation: false,
   /** Fonds de carte : changer de fournisseur ne demande que ces deux adresses, sans clé. */

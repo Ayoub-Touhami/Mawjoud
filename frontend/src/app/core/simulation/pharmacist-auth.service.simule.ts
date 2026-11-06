@@ -15,7 +15,7 @@ export class PharmacistAuthServiceSimule implements PharmacistAuthService {
   });
   readonly peutDeclarer = computed(() => {
     const compte = this.pharmacien();
-    return !!compte?.compteVerifie && !!compte.pharmacieId;
+    return !!compte?.compteVerifie && !!compte.pharmacieId && !compte.suspendu;
   });
 
   creerCompte(email: string, motDePasse: string): Observable<Utilisateur> {
