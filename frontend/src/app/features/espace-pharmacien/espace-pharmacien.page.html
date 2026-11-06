@@ -1,0 +1,83 @@
+<header class="bandeau">
+  <p class="surtitre">{{ 'pages.espacePharmacien' | transloco }}</p>
+  <h1>{{ pharmacie()?.nom }}</h1>
+  <span class="badge">
+    <app-icone nom="verifiee" [taille]="20" />
+    {{ 'pharmacien.espace.verifiee' | transloco }}
+  </span>
+</header>
+
+<section class="contenu">
+  <h2>{{ 'pharmacien.espace.titre' | transloco }}</h2>
+
+  @if (!peutDeclarer()) {
+    <p class="annonce" role="alert">{{ 'pharmacien.attente.bloque' | transloco }}</p>
+  }
+  @if (!lignes().length) {
+    <p class="annonce">{{ 'pharmacien.espace.vide' | transloco }}</p>
+  }
+
+  <div class="lignes">
+    @for (ligne of lignes(); track ligne.id) {
+      <app-ligne-stock
+        [nom]="ligne.nom"
+        [lecture]="ligne.lecture"
+        [echec]="ligne.echec"
+        [enCours]="enCours() === ligne.id"
+        [desactive]="!peutDeclarer()"
+        (choisir)="declarer(ligne.id, $event)"
+        (retirer)="retirer(ligne.id)"
+      />
+    }
+  </div>
+
+  @if (ajout()) {
+    <div class="ajout">
+      <app-recherche-medicament
+        choix
+        [libelleVisible]="'pharmacien.espace.ajouter' | transloco"
+        (choisi)="ajouter($event)"
+      />
+      <button type="button" appBouton variante="lien" (click)="ajout.set(false)">
+        {{ 'carte.position.annuler' | transloco }}
+      </button>
+    </div>
+  } @else {
+    <button type="button" class="ajouter" (click)="ajout.set(true)">
+      <app-icone nom="plus" />
+      {{ 'pharmacien.espace.ajouter' | transloco }}
+    </button>
+  }
+
+  @if (echecGlobal()) {
+    <p class="annonce" role="alert">{{ 'pharmacien.espace.nonEnregistree' | transloco }}</p>
+  }
+
+  @if (confirmation()) {
+    <div class="annonce" role="alert">
+      <p>{{ 'pharmacien.espace.toutConfirmer' | transloco: { n: declares() } }}</p>
+      <div class="choix">
+        <button type="button" appBouton (click)="toutConfirmer()">
+          {{ 'pharmacien.espace.toutOui' | transloco }}
+        </button>
+        <button type="button" appBouton variante="secondaire" (click)="confirmation.set(false)">
+          {{ 'carte.position.annuler' | transloco }}
+        </button>
+      </div>
+    </div>
+  } @else {
+    <button
+      type="button"
+      appBouton
+      icone="coche"
+      [desactive]="!declares() || !peutDeclarer()"
+      (click)="confirmation.set(true)"
+    >
+      {{ 'pharmacien.espace.toutAJour' | transloco }}
+    </button>
+  }
+
+  <p class="note">{{ 'pharmacien.espace.note' | transloco }}</p>
+
+  <app-outils-stock [pharmacieId]="pharmacieId" (change)="charger()" />
+</section>

@@ -1,0 +1,113 @@
+:host {
+  display: block;
+  margin: calc(var(--e-4) * -1);
+}
+
+// Vert fixe, comme le bandeau de la maquette, dans les deux thèmes.
+.bandeau {
+  display: grid;
+  gap: var(--e-2);
+  justify-items: start;
+  padding: var(--e-5) var(--e-4);
+  color: #fffcf6;
+  background: #0b3d2e;
+  border-end-start-radius: var(--rayon-grand);
+  border-end-end-radius: var(--rayon-grand);
+}
+
+.surtitre {
+  margin-block: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #cdebdd;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  margin-block: 0;
+  font-size: 28px;
+  color: #fffcf6;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  display: inline-flex;
+  gap: var(--e-1);
+  align-items: center;
+  padding: var(--e-1) var(--e-3);
+  font-weight: 600;
+  color: #0b3d2e;
+  background: #cdebdd;
+  border-radius: var(--rayon-pastille);
+}
+
+.contenu {
+  display: grid;
+  gap: var(--e-3);
+  max-inline-size: 560px;
+  padding: var(--e-5) var(--e-4);
+  margin-inline: auto;
+}
+
+h2 {
+  margin-block: 0;
+  font-size: 24px;
+}
+
+.lignes {
+  display: grid;
+  gap: var(--e-3);
+}
+
+.lignes:empty {
+  display: none;
+}
+
+.ajouter {
+  display: flex;
+  gap: var(--e-2);
+  align-items: center;
+  justify-content: center;
+  min-block-size: 52px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--titre);
+  cursor: pointer;
+  background: transparent;
+  border: 2px dashed var(--statut-tirets);
+  border-radius: var(--rayon);
+}
+
+.ajout {
+  display: grid;
+  gap: var(--e-2);
+}
+
+.annonce {
+  display: grid;
+  gap: var(--e-2);
+  padding: var(--e-3) var(--e-4);
+  margin-block: 0;
+  color: var(--texte);
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+.annonce p {
+  margin-block: 0;
+}
+
+.choix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--e-2);
+}
+
+.note {
+  margin-block: 0;
+  font-size: 14px;
+  color: var(--texte-secondaire);
+  text-align: center;
+}

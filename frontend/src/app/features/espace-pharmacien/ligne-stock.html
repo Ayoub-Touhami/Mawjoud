@@ -1,0 +1,68 @@
+<div class="tete">
+  <h3>{{ nom() }}</h3>
+  <span class="temps">
+    @if (lecture(); as etat) {
+      {{ etat.age }}
+      @if (etat.aConfirmer) {
+        <span class="confirmer">
+          <app-icone nom="horloge" [taille]="16" />
+          {{ 'statut.a-confirmer' | transloco }}
+        </span>
+      }
+    } @else {
+      {{ 'pharmacien.espace.nonDeclare' | transloco }}
+    }
+  </span>
+</div>
+
+<div class="statuts" role="group" [attr.aria-label]="nom()">
+  @for (statut of statuts; track statut.valeur) {
+    <button
+      type="button"
+      [class]="statut.valeur"
+      [class.actif]="lecture()?.statutDeclare === statut.valeur"
+      [disabled]="desactive() || enCours()"
+      [attr.aria-pressed]="lecture()?.statutDeclare === statut.valeur"
+      [attr.aria-label]="
+        'pharmacien.espace.declarer'
+          | transloco: { statut: 'statut.' + statut.valeur | transloco, nom: nom() }
+      "
+      (click)="choisir.emit(statut.valeur)"
+    >
+      <app-icone [nom]="statut.signe" [taille]="24" />
+      <span>{{ 'statut.' + statut.valeur | transloco }}</span>
+    </button>
+  }
+</div>
+
+@if (echec(); as statut) {
+  <div class="echec" role="alert">
+    <p>{{ 'pharmacien.espace.nonEnregistree' | transloco }}</p>
+    <button type="button" appBouton variante="secondaire" (click)="choisir.emit(statut)">
+      {{ 'carte.horsConnexion.reessayer' | transloco }}
+    </button>
+  </div>
+}
+
+@if (confirmation()) {
+  <div class="retrait" role="alert">
+    <p>{{ 'pharmacien.espace.retirerConfirmer' | transloco }}</p>
+    <div class="choix">
+      <button type="button" appBouton (click)="retirer.emit()">
+        {{ 'pharmacien.espace.retirerOui' | transloco }}
+      </button>
+      <button type="button" appBouton variante="secondaire" (click)="confirmation.set(false)">
+        {{ 'carte.position.annuler' | transloco }}
+      </button>
+    </div>
+  </div>
+} @else {
+  <button
+    type="button"
+    class="retirer"
+    [attr.aria-label]="'pharmacien.espace.retirerNom' | transloco: { nom: nom() }"
+    (click)="confirmation.set(true)"
+  >
+    {{ 'pharmacien.espace.retirer' | transloco }}
+  </button>
+}
