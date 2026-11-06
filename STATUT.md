@@ -33,8 +33,8 @@
 
 | Mesure | Résultat |
 |---|---|
-| Tests unitaires | 112 réussis |
-| Tests de bout en bout | 54 réussis (`npm run e2e`) |
+| Tests unitaires | 120 réussis |
+| Tests de bout en bout | 65 réussis (`npm run e2e`) |
 | Contraste minimal du texte, 72 captures | 4,95:1 |
 | Fluidité, 3 000 marqueurs, processeur ralenti 4 fois | 39 à 40 images par seconde (95 % des images sous 50 ms) |
 | Saut de mise en page | 0,05 (seuil courant : 0,1) |
@@ -53,6 +53,8 @@ Les libellés de l'administration restent dans `fr.json`, chargé par tous : ce 
 | Appeler depuis la carte | 2 |
 | Chercher, résultat, appeler | 3 en passant par une suggestion ; **4 si le nom reste ambigu et qu'on valide sans suggestion** |
 | Mes alertes, sur mobile | 2 (menu, lien) |
+| À propos ou Contact | 1 sur ordinateur et depuis le pied de page, 2 sur mobile (menu, lien) |
+| Signaler une erreur depuis une fiche | 1 |
 | Créer une alerte depuis les résultats | 1 |
 | Mettre à jour un stock, depuis l'espace | 1 |
 | Réclamer ma pharmacie | Parcours à étapes, avec création de compte |
@@ -64,6 +66,7 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 | Interface | Implémentation simulée |
 |---|---|
 | `PharmacieApi` | `PharmacieApiMock`, annuaire `AnnuaireSimule` |
+| `ContactService` | `ContactServiceSimule` (mémoire et localStorage : personne ne reçoit le message) |
 | `AuthService` | `AuthServiceSimule` (SHA-256 provisoire, session locale) |
 | `AlertService` | `AlertServiceSimule` |
 | `EvaluateurAlertes` | `EvaluateurAlertesSimule` (aucun e-mail) |
@@ -72,7 +75,7 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 | `StockService` | `StockServiceSimule` |
 | `AdminAuthService`, `AdminClaimService`, `AdminDirectoryService`, `AdminAbuseService`, `AuditLogService` | `admin.simule.ts` |
 
-À faire côté serveur : authentification et hachage de mot de passe réels, contrôle des droits (les gardes actuelles guident seulement la navigation), envoi des e-mails et du gabarit, dépôt des justificatifs, géocodage des fiches créées. **Toutes les données vivent dans le navigateur : sans back-end, le site n'est pas utilisable à plusieurs.**
+À faire côté serveur : réception et traitement des messages de contact (aucun écran d'administration n'est prévu pour eux, ni limite contre les envois abusifs), authentification et hachage de mot de passe réels, contrôle des droits (les gardes actuelles guident seulement la navigation), envoi des e-mails et du gabarit, dépôt des justificatifs, géocodage des fiches créées. **Toutes les données vivent dans le navigateur : sans back-end, le site n'est pas utilisable à plusieurs.**
 
 ## Spécification, section 15 : points encore à décider
 
@@ -92,10 +95,12 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 | 12 | Ville pilote | À décider |
 | 13 | Choix techniques | Angular et MapLibre avec OpenFreeMap retenus. Back-end, base, e-mails, hébergement à décider |
 | 14 | Textes arabes et vocabulaire médical | À valider : `TEXTES_ARABES_A_RELIRE.xlsx` |
-| 15 | Écrans non maquettés | Conçus ici : à valider |
+| 15 | Écrans non maquettés | Conçus ici, y compris Contact et À propos : à valider |
 
 ## Autres décisions ouvertes
 
+- Coordonnées publiques : aucune n'est inventée. E-mail, téléphone et adresse restent « à renseigner » dans `frontend/src/app/core/coordonnees.config.ts`, seul fichier à remplir.
+- L'arborescence prévoit une page unique « À propos et contact » : elle est séparée en deux pages à votre demande. Le diaporama cite aussi des « mentions » dans le pied de page : cette page n'existe pas.
 - Détail des actions d'abus, et origine des signalements : seules suspendre, rétablir et supprimer existent.
 - Service worker pour le hors connexion : non ajouté.
 - Données de test : noms et téléphones qui semblent réels à côté de stocks inventés. **Ne pas publier le site tel quel.**
