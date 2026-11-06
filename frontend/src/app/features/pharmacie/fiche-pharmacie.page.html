@@ -73,6 +73,14 @@
     @if (p.donneeTest) {
       <p class="note">{{ 'fiche.donneeTest' | transloco }}</p>
     }
+
+    <a
+      class="signaler"
+      routerLink="/contact"
+      [queryParams]="{ sujet: 'erreur-pharmacie', pharmacie: p.id }"
+    >
+      {{ 'fiche.signaler' | transloco }}
+    </a>
   </article>
 } @else {
   <h1 class="visuellement-masque">{{ 'fiche.introuvable.titre' | transloco }}</h1>

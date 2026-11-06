@@ -126,6 +126,14 @@ a[appBouton] {
   align-self: flex-start;
 }
 
+.signaler {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-block-size: var(--cible-tactile);
+  color: var(--lien);
+}
+
 app-message-etat {
   margin: var(--e-5);
 }
