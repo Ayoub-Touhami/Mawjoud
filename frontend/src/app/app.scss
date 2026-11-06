@@ -21,6 +21,11 @@ main {
   padding: 0;
 }
 
+// Comme sur le PDF, la liste et la carte occupent tout l'écran sous l'en-tête.
+:host(.sur-resultats) app-pied-de-page {
+  display: none;
+}
+
 // Sur mobile, la barre de la carte remplace l'en-tête ; le menu le fait réapparaître par-dessus.
 @media (max-width: 859.98px) {
   :host(.sur-carte) app-en-tete,

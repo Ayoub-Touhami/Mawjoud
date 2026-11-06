@@ -7,11 +7,11 @@ import { statutStock } from '../models';
 import { PharmacieApiMock } from './pharmacie-api.mock';
 
 describe('données de test', () => {
-  it('contient 162 pharmacies et 50 médicaments, sans identifiant en double', () => {
+  it('contient 162 pharmacies et 40 médicaments, sans identifiant en double', () => {
     expect(PHARMACIES_TEST.length).toBe(162);
-    expect(MEDICAMENTS_TEST.length).toBe(50);
+    expect(MEDICAMENTS_TEST.length).toBe(40);
     expect(new Set(PHARMACIES_TEST.map((p) => p.id)).size).toBe(162);
-    expect(new Set(MEDICAMENTS_TEST.map((m) => m.id)).size).toBe(50);
+    expect(new Set(MEDICAMENTS_TEST.map((m) => m.id)).size).toBe(40);
   });
 
   it('place toutes les pharmacies en Tunisie et les marque comme données de test', () => {
@@ -71,19 +71,19 @@ describe('PharmacieApiMock', () => {
 
   it("refuse la déclaration sur la pharmacie d'un autre (R9)", async () => {
     await expect(
-      firstValueFrom(api.declarerStock('u-03', 'T002', 'med-01', 'disponible')),
+      firstValueFrom(api.declarerStock('u-03', 'T002', 'M001', 'disponible')),
     ).rejects.toThrow();
   });
 
   it('refuse la déclaration à un compte non vérifié (R3)', async () => {
     await expect(
-      firstValueFrom(api.declarerStock('u-04', 'T004', 'med-01', 'disponible')),
+      firstValueFrom(api.declarerStock('u-04', 'T004', 'M001', 'disponible')),
     ).rejects.toThrow();
   });
 
   it("ne crée pas de doublon d'alerte", async () => {
     const avant = await firstValueFrom(api.listerAlertes('u-01'));
-    const alerte = await firstValueFrom(api.creerAlerte('u-01', 'med-19', 'Tunis'));
+    const alerte = await firstValueFrom(api.creerAlerte('u-01', 'M019', 'Tunis'));
     expect(alerte.id).toBe('al-01');
     expect(await firstValueFrom(api.listerAlertes('u-01'))).toHaveLength(avant.length);
   });
@@ -93,7 +93,7 @@ describe('PharmacieApiMock', () => {
     await firstValueFrom(api.validerDemande('dem-01'));
     expect((await firstValueFrom(api.obtenirPharmacie('T004')))?.etat).toBe('inscrite');
     await expect(
-      firstValueFrom(api.declarerStock('u-04', 'T004', 'med-01', 'disponible')),
+      firstValueFrom(api.declarerStock('u-04', 'T004', 'M001', 'disponible')),
     ).resolves.toBeTruthy();
   });
 });

@@ -60,6 +60,17 @@ h2 {
   color: var(--texte-secondaire);
 }
 
+.ligne-medicament {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-2);
+  padding: var(--e-2) var(--e-3);
+  background: var(--fond);
+  border-radius: var(--rayon);
+}
+
 .avec-icone {
   display: flex;
   align-items: center;

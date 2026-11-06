@@ -145,10 +145,6 @@
     }
   },
   "carte": {
-    "recherche": {
-      "libelle": "Chercher un médicament",
-      "placeholder": "Chercher un médicament"
-    },
     "commandes": {
       "zoomer": "Zoomer",
       "dezoomer": "Dézoomer",
@@ -228,7 +224,8 @@
       "titre": "Pharmacie introuvable",
       "texte": "Cette fiche n'existe pas ou n'est plus disponible."
     },
-    "carte": "Emplacement de {{nom}}"
+    "carte": "Emplacement de {{nom}}",
+    "nonDeclare": "Non déclaré pour ce médicament, appelez."
   },
   "temps": {
     "instant": "à l'instant",
@@ -248,5 +245,84 @@
     "4": "Jeu",
     "5": "Ven",
     "6": "Sam"
+  },
+  "recherche": {
+    "libelle": "Chercher un médicament",
+    "placeholder": "Chercher un médicament",
+    "effacer": "Effacer la recherche",
+    "suggestions": "Médicaments proposés",
+    "aide": "Saisissez au moins 2 lettres du nom du médicament.",
+    "aucuneSuggestion": "Aucune suggestion. Appuyez sur Entrée pour vérifier ce nom.",
+    "lettresLatines": "Les noms de médicaments ne sont pas encore disponibles en arabe. Écrivez le nom en lettres latines.",
+    "titre": "Résultats pour {{nom}}",
+    "zone": "Zone de recherche",
+    "toutePays": "Toute la Tunisie",
+    "triDistance": "Triées par distance",
+    "triLieu": "Triées par gouvernorat",
+    "voirCarte": "Voir la carte",
+    "voirListe": "Voir la liste",
+    "toutes": "Toutes les pharmacies",
+    "voirPlus": "Voir plus ({{n}} restantes)",
+    "misAJour": "Mis à jour {{age}}",
+    "chargement": "Recherche en cours…",
+    "horsConnexion": "Hors connexion. Ces stocks ont pu changer : appelez avant de vous déplacer.",
+    "carteImpossible": "La carte ne peut pas s'afficher. La liste reste utilisable.",
+    "note": "Données de test : ces stocks sont simulés et ne reflètent aucune pharmacie réelle. Stock déclaré par la pharmacie : appelez avant de vous déplacer.",
+    "rupture": "Ce médicament est déclaré en rupture partout dans cette zone. Appelez avant de vous déplacer ou créez une alerte.",
+    "sansDeclaration": "Aucune pharmacie inscrite n'a déclaré ce médicament dans cette zone ({{zone}}) pour le moment.",
+    "choix": "Précisez le médicament",
+    "groupes": {
+      "declares": "Inscrites : stock déclaré",
+      "nonDeclares": "Inscrites : médicament non déclaré",
+      "nonInscrites": "Non inscrites"
+    },
+    "vide": {
+      "titre": "Quel médicament cherchez-vous ?",
+      "texte": "Saisissez au moins 2 lettres du nom du médicament ou de sa substance."
+    },
+    "aucun": {
+      "titre": "Aucun résultat pour « {{texte}} »",
+      "texte": "Vérifiez l'orthographe du nom.",
+      "proches": "Vouliez-vous dire :"
+    },
+    "zoneVide": {
+      "titre": "Aucune pharmacie trouvée ({{zone}})",
+      "texte": "Élargissez la recherche à toute la Tunisie."
+    },
+    "erreur": {
+      "titre": "La recherche n'a pas abouti",
+      "texte": "Vérifiez votre connexion, puis réessayez."
+    },
+    "alerte": {
+      "texte": "Pas de stock ? Recevez un e-mail dès qu'il est déclaré.",
+      "action": "Créer une alerte",
+      "choisi": "Médicament choisi : {{nom}}"
+    }
+  },
+  "gouvernorats": {
+    "Ariana": "Ariana",
+    "Béja": "Béja",
+    "Ben Arous": "Ben Arous",
+    "Bizerte": "Bizerte",
+    "Gabès": "Gabès",
+    "Gafsa": "Gafsa",
+    "Jendouba": "Jendouba",
+    "Kairouan": "Kairouan",
+    "Kasserine": "Kasserine",
+    "Kébili": "Kébili",
+    "Kef": "Kef",
+    "Mahdia": "Mahdia",
+    "Manouba": "Manouba",
+    "Médenine": "Médenine",
+    "Monastir": "Monastir",
+    "Nabeul": "Nabeul",
+    "Sfax": "Sfax",
+    "Sidi Bouzid": "Sidi Bouzid",
+    "Siliana": "Siliana",
+    "Sousse": "Sousse",
+    "Tataouine": "Tataouine",
+    "Tozeur": "Tozeur",
+    "Tunis": "Tunis",
+    "Zaghouan": "Zaghouan"
   }
 }

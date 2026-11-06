@@ -21,7 +21,11 @@ export interface PharmacieApi {
   listerVilles(): Observable<string[]>;
 
   listerMedicaments(): Observable<Medicament[]>;
+  obtenirMedicament(id: string): Observable<Medicament | undefined>;
+  /** Ignore accents et majuscules, tolère les petites fautes, par nom ou par substance. */
   chercherMedicaments(texte: string): Observable<Medicament[]>;
+  /** Noms plus éloignés, à proposer quand la recherche ne trouve rien. */
+  medicamentsProches(texte: string): Observable<Medicament[]>;
 
   stocksDePharmacie(pharmacieId: string): Observable<Stock[]>;
   stocksDeMedicament(medicamentId: string, ville?: string): Observable<Stock[]>;

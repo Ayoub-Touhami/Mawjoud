@@ -1,0 +1,362 @@
+[
+ {
+  "id": "M001",
+  "nom": "Doliprane",
+  "dci": "paracétamol",
+  "forme": "comprimé",
+  "dosage": "500 mg",
+  "categorie": "antalgique",
+  "donneeTest": true
+ },
+ {
+  "id": "M002",
+  "nom": "Doliprane",
+  "dci": "paracétamol",
+  "forme": "comprimé",
+  "dosage": "1000 mg",
+  "categorie": "antalgique",
+  "donneeTest": true
+ },
+ {
+  "id": "M003",
+  "nom": "Doliprane 2,4 %",
+  "dci": "paracétamol",
+  "forme": "suspension buvable",
+  "dosage": "2,4 %",
+  "categorie": "antalgique",
+  "donneeTest": true
+ },
+ {
+  "id": "M004",
+  "nom": "Efferalgan",
+  "dci": "paracétamol",
+  "forme": "comprimé effervescent",
+  "dosage": "500 mg",
+  "categorie": "antalgique",
+  "donneeTest": true
+ },
+ {
+  "id": "M005",
+  "nom": "Advil",
+  "dci": "ibuprofène",
+  "forme": "comprimé",
+  "dosage": "400 mg",
+  "categorie": "anti-inflammatoire",
+  "donneeTest": true
+ },
+ {
+  "id": "M006",
+  "nom": "Voltarène",
+  "dci": "diclofénac",
+  "forme": "comprimé",
+  "dosage": "50 mg",
+  "categorie": "anti-inflammatoire",
+  "donneeTest": true
+ },
+ {
+  "id": "M007",
+  "nom": "Solupred",
+  "dci": "prednisolone",
+  "forme": "comprimé orodispersible",
+  "dosage": "20 mg",
+  "categorie": "anti-inflammatoire",
+  "donneeTest": true
+ },
+ {
+  "id": "M008",
+  "nom": "Kardégic",
+  "dci": "acide acétylsalicylique",
+  "forme": "sachet",
+  "dosage": "75 mg",
+  "categorie": "cardiologie",
+  "donneeTest": true
+ },
+ {
+  "id": "M009",
+  "nom": "Augmentin",
+  "dci": "amoxicilline et acide clavulanique",
+  "forme": "comprimé",
+  "dosage": "1 g / 125 mg",
+  "categorie": "antibiotique",
+  "donneeTest": true
+ },
+ {
+  "id": "M010",
+  "nom": "Clamoxyl",
+  "dci": "amoxicilline",
+  "forme": "gélule",
+  "dosage": "500 mg",
+  "categorie": "antibiotique",
+  "donneeTest": true
+ },
+ {
+  "id": "M011",
+  "nom": "Zithromax",
+  "dci": "azithromycine",
+  "forme": "comprimé",
+  "dosage": "500 mg",
+  "categorie": "antibiotique",
+  "donneeTest": true
+ },
+ {
+  "id": "M012",
+  "nom": "Ciflox",
+  "dci": "ciprofloxacine",
+  "forme": "comprimé",
+  "dosage": "500 mg",
+  "categorie": "antibiotique",
+  "donneeTest": true
+ },
+ {
+  "id": "M013",
+  "nom": "Flagyl",
+  "dci": "métronidazole",
+  "forme": "comprimé",
+  "dosage": "500 mg",
+  "categorie": "antibiotique",
+  "donneeTest": true
+ },
+ {
+  "id": "M014",
+  "nom": "Bactrim",
+  "dci": "sulfaméthoxazole et triméthoprime",
+  "forme": "comprimé",
+  "dosage": "400 mg / 80 mg",
+  "categorie": "antibiotique",
+  "donneeTest": true
+ },
+ {
+  "id": "M015",
+  "nom": "Levothyrox",
+  "dci": "lévothyroxine",
+  "forme": "comprimé",
+  "dosage": "50 µg",
+  "categorie": "thyroïde",
+  "donneeTest": true
+ },
+ {
+  "id": "M016",
+  "nom": "Levothyrox",
+  "dci": "lévothyroxine",
+  "forme": "comprimé",
+  "dosage": "100 µg",
+  "categorie": "thyroïde",
+  "donneeTest": true
+ },
+ {
+  "id": "M017",
+  "nom": "Glucophage",
+  "dci": "metformine",
+  "forme": "comprimé",
+  "dosage": "850 mg",
+  "categorie": "diabète",
+  "donneeTest": true
+ },
+ {
+  "id": "M018",
+  "nom": "Diamicron",
+  "dci": "gliclazide",
+  "forme": "comprimé",
+  "dosage": "60 mg",
+  "categorie": "diabète",
+  "donneeTest": true
+ },
+ {
+  "id": "M019",
+  "nom": "Lantus",
+  "dci": "insuline glargine",
+  "forme": "stylo injectable",
+  "dosage": "100 UI/mL",
+  "categorie": "diabète",
+  "donneeTest": true
+ },
+ {
+  "id": "M020",
+  "nom": "NovoRapid",
+  "dci": "insuline asparte",
+  "forme": "stylo injectable",
+  "dosage": "100 UI/mL",
+  "categorie": "diabète",
+  "donneeTest": true
+ },
+ {
+  "id": "M021",
+  "nom": "Amlor",
+  "dci": "amlodipine",
+  "forme": "gélule",
+  "dosage": "5 mg",
+  "categorie": "cardiologie",
+  "donneeTest": true
+ },
+ {
+  "id": "M022",
+  "nom": "Coversyl",
+  "dci": "périndopril",
+  "forme": "comprimé",
+  "dosage": "5 mg",
+  "categorie": "cardiologie",
+  "donneeTest": true
+ },
+ {
+  "id": "M023",
+  "nom": "Cardensiel",
+  "dci": "bisoprolol",
+  "forme": "comprimé",
+  "dosage": "5 mg",
+  "categorie": "cardiologie",
+  "donneeTest": true
+ },
+ {
+  "id": "M024",
+  "nom": "Tahor",
+  "dci": "atorvastatine",
+  "forme": "comprimé",
+  "dosage": "20 mg",
+  "categorie": "cardiologie",
+  "donneeTest": true
+ },
+ {
+  "id": "M025",
+  "nom": "Plavix",
+  "dci": "clopidogrel",
+  "forme": "comprimé",
+  "dosage": "75 mg",
+  "categorie": "cardiologie",
+  "donneeTest": true
+ },
+ {
+  "id": "M026",
+  "nom": "Lasilix",
+  "dci": "furosémide",
+  "forme": "comprimé",
+  "dosage": "40 mg",
+  "categorie": "cardiologie",
+  "donneeTest": true
+ },
+ {
+  "id": "M027",
+  "nom": "Depakine",
+  "dci": "valproate de sodium",
+  "forme": "comprimé gastro-résistant",
+  "dosage": "500 mg",
+  "categorie": "épilepsie",
+  "donneeTest": true
+ },
+ {
+  "id": "M028",
+  "nom": "Tégrétol",
+  "dci": "carbamazépine",
+  "forme": "comprimé",
+  "dosage": "200 mg",
+  "categorie": "épilepsie",
+  "donneeTest": true
+ },
+ {
+  "id": "M029",
+  "nom": "Lamictal",
+  "dci": "lamotrigine",
+  "forme": "comprimé",
+  "dosage": "100 mg",
+  "categorie": "épilepsie",
+  "donneeTest": true
+ },
+ {
+  "id": "M030",
+  "nom": "Keppra",
+  "dci": "lévétiracétam",
+  "forme": "comprimé",
+  "dosage": "500 mg",
+  "categorie": "épilepsie",
+  "donneeTest": true
+ },
+ {
+  "id": "M031",
+  "nom": "Ventoline",
+  "dci": "salbutamol",
+  "forme": "aérosol doseur",
+  "dosage": "100 µg/dose",
+  "categorie": "asthme",
+  "donneeTest": true
+ },
+ {
+  "id": "M032",
+  "nom": "Seretide",
+  "dci": "salmétérol et fluticasone",
+  "forme": "inhalateur",
+  "dosage": "25 µg / 125 µg",
+  "categorie": "asthme",
+  "donneeTest": true
+ },
+ {
+  "id": "M033",
+  "nom": "Mopral",
+  "dci": "oméprazole",
+  "forme": "gélule",
+  "dosage": "20 mg",
+  "categorie": "digestif",
+  "donneeTest": true
+ },
+ {
+  "id": "M034",
+  "nom": "Inexium",
+  "dci": "ésoméprazole",
+  "forme": "comprimé",
+  "dosage": "20 mg",
+  "categorie": "digestif",
+  "donneeTest": true
+ },
+ {
+  "id": "M035",
+  "nom": "Spasfon",
+  "dci": "phloroglucinol",
+  "forme": "comprimé",
+  "dosage": "80 mg",
+  "categorie": "digestif",
+  "donneeTest": true
+ },
+ {
+  "id": "M036",
+  "nom": "Smecta",
+  "dci": "diosmectite",
+  "forme": "sachet",
+  "dosage": "3 g",
+  "categorie": "digestif",
+  "donneeTest": true
+ },
+ {
+  "id": "M037",
+  "nom": "Imodium",
+  "dci": "lopéramide",
+  "forme": "gélule",
+  "dosage": "2 mg",
+  "categorie": "digestif",
+  "donneeTest": true
+ },
+ {
+  "id": "M038",
+  "nom": "Gaviscon",
+  "dci": "alginate de sodium et bicarbonate",
+  "forme": "suspension buvable",
+  "dosage": "sachet",
+  "categorie": "digestif",
+  "donneeTest": true
+ },
+ {
+  "id": "M039",
+  "nom": "Zyrtec",
+  "dci": "cétirizine",
+  "forme": "comprimé",
+  "dosage": "10 mg",
+  "categorie": "allergie",
+  "donneeTest": true
+ },
+ {
+  "id": "M040",
+  "nom": "Aspégic",
+  "dci": "acétylsalicylate de lysine",
+  "forme": "sachet",
+  "dosage": "500 mg",
+  "categorie": "antalgique",
+  "donneeTest": true
+ }
+]

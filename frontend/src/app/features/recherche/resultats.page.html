@@ -1,0 +1,249 @@
+<h1 class="visuellement-masque">{{ titre() }}</h1>
+
+<div
+  class="scene"
+  [class.reduite]="reduite()"
+  [class.avec-selection]="selection()"
+  [class.sans-liste]="!groupes()"
+>
+  <header class="tete">
+    <div class="ligne-recherche">
+      <a class="retour" routerLink="/" [attr.aria-label]="'fiche.retour' | transloco">
+        <app-icone nom="retour" />
+      </a>
+      <app-recherche-medicament [valeur]="texteChamp()" />
+    </div>
+    @if (groupes(); as g) {
+      <div class="filtres">
+        <label class="zone">
+          <app-icone nom="marqueur" [taille]="20" />
+          <span class="visuellement-masque">{{ 'recherche.zone' | transloco }}</span>
+          <select [value]="zone() ?? ''" (change)="changerZone($any($event.target).value)">
+            <option value="" [selected]="!zone()">{{ 'recherche.toutePays' | transloco }}</option>
+            @for (nom of gouvernorats; track nom) {
+              <option [value]="nom" [selected]="zone() === nom">
+                {{ 'gouvernorats.' + nom | transloco }}
+              </option>
+            }
+          </select>
+        </label>
+        <span class="tri">
+          {{ (g.triParDistance ? 'recherche.triDistance' : 'recherche.triLieu') | transloco }}
+        </span>
+      </div>
+    }
+  </header>
+
+  <section class="corps" [attr.aria-label]="titre()">
+    @if (groupes()) {
+      <button
+        type="button"
+        class="poignee"
+        [attr.aria-expanded]="!reduite()"
+        (pointerdown)="commencerGlissement($event)"
+        (pointerup)="finirGlissement($event)"
+        (keydown.enter)="reduite.set(!reduite())"
+        (keydown.space)="reduite.set(!reduite())"
+      >
+        <span class="barre" aria-hidden="true"></span>
+        {{ (reduite() ? 'recherche.voirListe' : 'recherche.voirCarte') | transloco }}
+      </button>
+    }
+
+    @if (!enLigne()) {
+      <div class="hors-ligne" role="status">
+        <p>
+          <app-icone nom="hors-connexion" />
+          {{ 'recherche.horsConnexion' | transloco }}
+        </p>
+        <button type="button" appBouton variante="secondaire" (click)="reessayer()">
+          {{ 'carte.horsConnexion.reessayer' | transloco }}
+        </button>
+      </div>
+    }
+
+    @switch (vue().type) {
+      @case ('chargement') {
+        <app-message-etat type="chargement" [titre]="'recherche.chargement' | transloco" />
+      }
+      @case ('erreur') {
+        <app-message-etat
+          type="erreur"
+          [titre]="'recherche.erreur.titre' | transloco"
+          [texte]="'recherche.erreur.texte' | transloco"
+        >
+          <button type="button" appBouton icone="reessayer" (click)="reessayer()">
+            {{ 'carte.horsConnexion.reessayer' | transloco }}
+          </button>
+        </app-message-etat>
+      }
+      @case ('aide') {
+        <app-message-etat
+          type="vide"
+          [titre]="'recherche.vide.titre' | transloco"
+          [texte]="'recherche.vide.texte' | transloco"
+        />
+      }
+    }
+
+    @let vueActuelle = vue();
+    @if (vueActuelle.type === 'choix' && vueActuelle.medicaments.length > 1) {
+      <h2 class="etiquette">{{ 'recherche.choix' | transloco }}</h2>
+      <ul class="choix">
+        @for (medicament of vueActuelle.medicaments; track medicament.id) {
+          <li>
+            <button type="button" (click)="ouvrir(medicament)">
+              <strong>{{ libelle(medicament) }}</strong>
+              <span>{{ medicament.dci }} · {{ medicament.forme }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (vueActuelle.type === 'aucun') {
+      <app-ecran-carte
+        illustration="recherche"
+        [titre]="'recherche.aucun.titre' | transloco: { texte: vueActuelle.texte }"
+        [texte]="
+          (lettresArabes() ? 'recherche.lettresLatines' : 'recherche.aucun.texte') | transloco
+        "
+      >
+        @if (vueActuelle.proches.length) {
+          <p class="proches-titre">{{ 'recherche.aucun.proches' | transloco }}</p>
+          <ul class="proches">
+            @for (medicament of vueActuelle.proches.slice(0, 4); track medicament.id) {
+              <li>
+                <button type="button" class="proche" (click)="ouvrir(medicament)">
+                  {{ libelle(medicament) }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+        <app-bandeau-alerte [parametres]="parametresAlerte()" />
+      </app-ecran-carte>
+    }
+
+    @if (groupes(); as g) {
+      @if (rupturePartout()) {
+        <p class="annonce" role="status">{{ 'recherche.rupture' | transloco }}</p>
+      }
+      @if (sansDeclaration()) {
+        <p class="annonce" role="status">
+          {{ 'recherche.sansDeclaration' | transloco: { zone: nomZone() } }}
+        </p>
+      }
+
+      @if (!g.declares.length && !g.nonDeclares.length && !g.nonInscrites.length) {
+        <app-message-etat
+          type="vide"
+          [titre]="'recherche.zoneVide.titre' | transloco: { zone: nomZone() }"
+          [texte]="'recherche.zoneVide.texte' | transloco"
+        >
+          <button type="button" appBouton variante="secondaire" (click)="changerZone('')">
+            {{ 'recherche.toutePays' | transloco }}
+          </button>
+        </app-message-etat>
+      }
+
+      @if (rupturePartout() || sansDeclaration()) {
+        <app-bandeau-alerte [parametres]="parametresAlerte()" />
+      }
+
+      @if (g.declares.length) {
+        <h2 class="etiquette">{{ 'recherche.groupes.declares' | transloco }}</h2>
+        <ul class="liste">
+          @for (ligne of g.declares; track ligne.pharmacie.id) {
+            <li>
+              <app-carte-resultat
+                type="declaree"
+                [ligne]="ligne"
+                [active]="selection()?.id === ligne.pharmacie.id"
+                (choisir)="choisir(ligne)"
+              />
+            </li>
+          }
+        </ul>
+      }
+
+      @if (g.nonDeclares.length) {
+        <h2 class="etiquette">{{ 'recherche.groupes.nonDeclares' | transloco }}</h2>
+        <ul class="liste">
+          @for (ligne of g.nonDeclares; track ligne.pharmacie.id) {
+            <li>
+              <app-carte-resultat
+                type="non-declaree"
+                [ligne]="ligne"
+                [active]="selection()?.id === ligne.pharmacie.id"
+                (choisir)="choisir(ligne)"
+              />
+            </li>
+          }
+        </ul>
+      }
+
+      @if (g.nonInscrites.length) {
+        <h2 class="etiquette separee">{{ 'recherche.groupes.nonInscrites' | transloco }}</h2>
+        <ul class="liste">
+          @for (ligne of nonInscritesVisibles(); track ligne.pharmacie.id) {
+            <li>
+              <app-carte-resultat
+                type="non-inscrite"
+                [ligne]="ligne"
+                [active]="selection()?.id === ligne.pharmacie.id"
+                (choisir)="choisir(ligne)"
+              />
+            </li>
+          }
+        </ul>
+        @if (resteNonInscrites() > 0) {
+          <button type="button" appBouton variante="lien" (click)="voirPlus()">
+            {{ 'recherche.voirPlus' | transloco: { n: resteNonInscrites() } }}
+          </button>
+        }
+      }
+
+      <p class="note">{{ 'recherche.note' | transloco }}</p>
+
+      @if (g.declares.length && !rupturePartout()) {
+        <app-bandeau-alerte class="bas" [parametres]="parametresAlerte()" />
+      }
+    }
+  </section>
+
+  <div class="droite">
+    <div class="zone-carte">
+      <app-carte-tunisie
+        [pharmacies]="pharmaciesCarte()"
+        [position]="position()"
+        [(selection)]="selection"
+        (etat)="etatCarte.set($event)"
+      />
+      <div class="haut">
+        <a class="toutes" routerLink="/">{{ 'recherche.toutes' | transloco }}</a>
+        <app-message-position />
+        @if (etatCarte() === 'erreur-fond' && enLigne()) {
+          <p class="annonce" role="alert">{{ 'carte.erreurFond.titre' | transloco }}</p>
+        }
+        @if (etatCarte() === 'impossible') {
+          <p class="annonce" role="alert">{{ 'recherche.carteImpossible' | transloco }}</p>
+        }
+      </div>
+      <app-legende-carte class="legende" />
+      <app-commandes-carte
+        class="commandes"
+        [recherche]="demande.enCours()"
+        (position)="demande.demander()"
+        (zoom)="carte()?.zoomer($event)"
+      />
+    </div>
+    @if (selection(); as pharmacie) {
+      <app-feuille-pharmacie
+        [pharmacie]="pharmacie"
+        [medicament]="infoMedicament()"
+        (fermer)="selection.set(null)"
+      />
+    }
+  </div>
+</div>

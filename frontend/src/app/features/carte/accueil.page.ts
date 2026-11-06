@@ -16,19 +16,18 @@ import { Pharmacie } from '../../core/models';
 import { estInscrite } from '../../core/outils/pharmacie.outils';
 import { ConnexionService } from '../../core/services/connexion.service';
 import { PHARMACIE_API } from '../../core/services/pharmacie-api';
-import { ErreurPosition, PositionService } from '../../core/services/position.service';
+import { PositionService } from '../../core/services/position.service';
 import { Bouton } from '../../shared/bouton/bouton';
 import { Icone } from '../../shared/icone/icone';
 import { MessageEtat } from '../../shared/message-etat/message-etat';
 import { BarreCarte } from './barre-carte';
-import { dansTunisie } from './cadrage';
 import { CarteTunisie, EtatCarte } from './carte-tunisie';
 import { CommandesCarte } from './commandes-carte';
+import { DemandePosition } from './demande-position';
 import { EcranCarte } from './ecran-carte';
 import { FeuillePharmacie } from './feuille-pharmacie';
 import { LegendeCarte } from './legende-carte';
-
-type MessagePosition = 'pourquoi' | ErreurPosition | 'horsTunisie';
+import { MessagePositionCarte } from './message-position';
 
 @Component({
   selector: 'app-accueil-page',
@@ -42,9 +41,11 @@ type MessagePosition = 'pourquoi' | ErreurPosition | 'horsTunisie';
     Icone,
     LegendeCarte,
     MessageEtat,
+    MessagePositionCarte,
     RouterLink,
     TranslocoPipe,
   ],
+  providers: [DemandePosition],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './accueil.page.html',
   styleUrl: './accueil.page.scss',
@@ -52,7 +53,6 @@ type MessagePosition = 'pourquoi' | ErreurPosition | 'horsTunisie';
 export class AccueilPage {
   private readonly api = inject(PHARMACIE_API);
   private readonly format = inject(FormatService);
-  private readonly positions = inject(PositionService);
   private readonly connexion = inject(ConnexionService);
   private readonly carte = viewChild(CarteTunisie);
 
@@ -68,17 +68,15 @@ export class AccueilPage {
     ),
   );
   private readonly chargeeLe = signal<number | null>(null);
-  private accordPosition = false;
   private villeCadree = false;
 
   protected readonly etatCarte = signal<EtatCarte>('chargement');
   protected readonly selection = signal<Pharmacie | null>(null);
-  protected readonly message = signal<MessagePosition | null>(null);
-  protected readonly rechercheEnCours = signal(false);
+  protected readonly demande = inject(DemandePosition);
   protected readonly dernierecarteVue = signal(false);
   protected readonly ecranVilleFerme = signal(false);
 
-  protected readonly position = this.positions.position;
+  protected readonly position = inject(PositionService).position;
   protected readonly enLigne = this.connexion.enLigne;
   protected readonly pharmacies = computed(() => this.resultat()?.liste ?? []);
   protected readonly echec = computed(() => this.resultat()?.echec ?? false);
@@ -106,6 +104,7 @@ export class AccueilPage {
   });
 
   constructor() {
+    this.demande.auSucces = (position) => this.carte()?.allerA(position);
     effect(() => {
       if (this.enLigne()) {
         this.dernierecarteVue.set(false);
@@ -129,19 +128,6 @@ export class AccueilPage {
     this.carte()?.zoomer(ecart);
   }
 
-  protected demanderPosition(): void {
-    if (this.accordPosition) {
-      void this.localiser();
-    } else {
-      this.message.set('pourquoi');
-    }
-  }
-
-  protected accepterPosition(): void {
-    this.accordPosition = true;
-    void this.localiser();
-  }
-
   protected reessayerConnexion(): void {
     this.connexion.verifier();
     if (this.enLigne()) {
@@ -155,25 +141,6 @@ export class AccueilPage {
 
   protected rechargerFond(): void {
     this.carte()?.recharger();
-  }
-
-  private async localiser(): Promise<void> {
-    this.message.set(null);
-    this.rechercheEnCours.set(true);
-    try {
-      const position = await this.positions.obtenir();
-      if (dansTunisie(position)) {
-        this.positions.fixer(position);
-        this.carte()?.allerA(position);
-      } else {
-        this.positions.fixer(null);
-        this.message.set('horsTunisie');
-      }
-    } catch (erreur) {
-      this.message.set(erreur as ErreurPosition);
-    } finally {
-      this.rechercheEnCours.set(false);
-    }
   }
 
   private cadrerVille(): void {

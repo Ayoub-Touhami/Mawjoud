@@ -15,6 +15,7 @@ import { PiedDePage } from './layout/pied-de-page/pied-de-page';
   styleUrl: './app.scss',
   host: {
     '[class.sur-carte]': 'surCarte()',
+    '[class.sur-resultats]': 'surResultats()',
     '[class.menu-ouvert]': 'menuOuvert()',
   },
 })
@@ -28,6 +29,10 @@ export class App {
   );
 
   protected readonly menuOuvert = inject(NavigationService).menuOuvert;
-  /** L'accueil est une carte plein écran : elle occupe toute la hauteur disponible. */
-  protected readonly surCarte = computed(() => ['', '/'].includes(this.adresse().split('?')[0]));
+  private readonly chemin = computed(() => this.adresse().split('?')[0]);
+  protected readonly surResultats = computed(() => this.chemin() === '/resultats');
+  /** L'accueil et les résultats sont des cartes plein écran : toute la hauteur est occupée. */
+  protected readonly surCarte = computed(
+    () => ['', '/'].includes(this.chemin()) || this.surResultats(),
+  );
 }

@@ -34,9 +34,9 @@ export const COMPTES_TEST: Utilisateur[] = [
 ];
 
 export const ALERTES_TEST: Alerte[] = [
-  { id: 'al-01', utilisateurId: 'u-01', medicamentId: 'med-19', ville: 'Tunis', etat: 'active' },
-  { id: 'al-02', utilisateurId: 'u-01', medicamentId: 'med-41', ville: null, etat: 'active' },
-  { id: 'al-03', utilisateurId: 'u-01', medicamentId: 'med-31', ville: 'Sfax', etat: 'terminee' },
+  { id: 'al-01', utilisateurId: 'u-01', medicamentId: 'M019', ville: 'Tunis', etat: 'active' },
+  { id: 'al-02', utilisateurId: 'u-01', medicamentId: 'M027', ville: null, etat: 'active' },
+  { id: 'al-03', utilisateurId: 'u-01', medicamentId: 'M031', ville: 'Sfax', etat: 'terminee' },
 ];
 
 export const DEMANDES_TEST: DemandeReclamation[] = [

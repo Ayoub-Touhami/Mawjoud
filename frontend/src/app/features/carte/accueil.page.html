@@ -19,31 +19,7 @@
       <app-barre-carte />
       <app-legende-carte class="legende" />
 
-      @if (message(); as type) {
-        <div class="message" role="status">
-          @if (type === 'pourquoi') {
-            <p>{{ 'carte.position.pourquoi' | transloco }}</p>
-            <div class="choix">
-              <button type="button" appBouton (click)="accepterPosition()">
-                {{ 'carte.position.continuer' | transloco }}
-              </button>
-              <button type="button" appBouton variante="secondaire" (click)="message.set(null)">
-                {{ 'carte.position.annuler' | transloco }}
-              </button>
-            </div>
-          } @else {
-            <p>{{ 'carte.position.' + type | transloco }}</p>
-            <button
-              type="button"
-              class="fermer"
-              [attr.aria-label]="'carte.position.fermer' | transloco"
-              (click)="message.set(null)"
-            >
-              <app-icone nom="fermer" />
-            </button>
-          }
-        </div>
-      }
+      <app-message-position />
 
       @if (etatCarte() === 'erreur-fond' && enLigne()) {
         <div class="message" role="alert">
@@ -60,8 +36,8 @@
 
     <app-commandes-carte
       class="commandes"
-      [recherche]="rechercheEnCours()"
-      (position)="demanderPosition()"
+      [recherche]="demande.enCours()"
+      (position)="demande.demander()"
       (zoom)="zoomer($event)"
     />
 

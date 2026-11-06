@@ -12,6 +12,7 @@ import {
   etatOuverture,
   telephoneLisible,
 } from '../../core/outils/pharmacie.outils';
+import { libelleMedicament } from '../../core/outils/recherche.outils';
 import { PHARMACIE_API } from '../../core/services/pharmacie-api';
 import { PositionService } from '../../core/services/position.service';
 import { ActionsPharmacie } from '../../shared/actions-pharmacie/actions-pharmacie';
@@ -88,7 +89,7 @@ export class FichePharmaciePage {
     const age = this.format.age(stock.declareLe);
     return {
       id: stock.medicamentId,
-      nom: medicament ? `${medicament.nom} ${medicament.dosage}` : stock.medicamentId,
+      nom: medicament ? libelleMedicament(medicament) : stock.medicamentId,
       statut,
       // Après 24 h, le statut déclaré reste lisible à côté de « À confirmer ».
       detail:

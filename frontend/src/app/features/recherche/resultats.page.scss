@@ -1,0 +1,278 @@
+:host {
+  position: relative;
+  display: block;
+  flex: 1;
+  min-block-size: 0;
+}
+
+// Sur mobile, la liste et la carte partagent la même case : la liste passe au-dessus.
+.scene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--fond);
+}
+
+.tete {
+  position: relative;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--e-2);
+  padding: var(--e-3);
+  background: var(--fond);
+}
+
+.ligne-recherche {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+
+.ligne-recherche app-recherche-medicament {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.retour {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: var(--cible-tactile);
+  block-size: var(--cible-tactile);
+  color: var(--titre);
+  border-radius: var(--rayon-petit);
+}
+
+:host-context([dir='rtl']) .retour app-icone {
+  transform: scaleX(-1);
+}
+
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-2);
+}
+
+.zone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-1);
+  min-block-size: var(--cible-tactile);
+  padding-inline: var(--e-3);
+  color: var(--tonal-texte);
+  background: var(--tonal);
+  border-radius: var(--rayon-pastille);
+}
+
+.zone:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.zone select {
+  max-inline-size: 180px;
+  min-block-size: var(--cible-tactile);
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.zone option {
+  color: var(--texte);
+  background: var(--carte);
+}
+
+.tri {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+
+.corps {
+  z-index: 6;
+  grid-area: 2 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+  min-block-size: 0;
+  padding-block: 0 var(--e-5);
+  padding-inline: var(--e-3);
+  overflow-y: auto;
+  background: var(--fond);
+}
+
+.droite {
+  position: relative;
+  grid-area: 2 / 1;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+}
+
+.zone-carte {
+  position: relative;
+  flex: 1;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+.reduite .corps {
+  align-self: end;
+  block-size: 60px;
+  padding-block-end: 0;
+  overflow: hidden;
+  border-start-start-radius: var(--rayon-grand);
+  border-start-end-radius: var(--rayon-grand);
+  box-shadow: var(--ombre-haute);
+}
+
+.avec-selection .corps {
+  display: none;
+}
+
+.poignee {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  display: grid;
+  flex-shrink: 0;
+  gap: var(--e-1);
+  justify-items: center;
+  min-block-size: var(--cible-tactile);
+  padding-block: var(--e-1);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texte-secondaire);
+  touch-action: none;
+  cursor: pointer;
+  background: var(--fond);
+  border: 0;
+}
+
+.barre {
+  inline-size: 40px;
+  block-size: 4px;
+  background: var(--carte-bord);
+  border-radius: 2px;
+}
+
+.haut {
+  position: absolute;
+  inset-block-start: var(--e-3);
+  inset-inline: var(--e-3);
+  z-index: 5;
+  display: grid;
+  gap: var(--e-2);
+  justify-items: end;
+  pointer-events: none;
+}
+
+.haut > * {
+  pointer-events: auto;
+}
+
+.toutes {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--cible-tactile);
+  padding-inline: var(--e-4);
+  font-weight: 600;
+  color: var(--titre);
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon-pastille);
+  box-shadow: var(--ombre-carte);
+}
+
+.legende {
+  position: absolute;
+  inset-block-start: var(--e-3);
+  inset-inline-start: var(--e-3);
+  z-index: 4;
+}
+
+.commandes {
+  position: absolute;
+  inset-block-end: var(--e-6);
+  inset-inline-end: var(--e-3);
+  z-index: 5;
+}
+
+.reduite .commandes {
+  inset-block-end: 92px;
+}
+
+@media (max-width: 859.98px) {
+  .legende {
+    inset-block-start: 68px;
+  }
+
+  .sans-liste .droite {
+    display: none;
+  }
+}
+
+@media (min-width: 860px) {
+  .scene {
+    grid-template-columns: 480px minmax(0, 1fr);
+  }
+
+  .tete {
+    grid-area: 1 / 1;
+    padding: var(--e-5) var(--e-5) var(--e-2);
+  }
+
+  .corps {
+    grid-area: 2 / 1;
+    padding-block-end: 0;
+    padding-inline: var(--e-5);
+  }
+
+  .droite {
+    grid-area: 1 / 2 / 3 / 3;
+    border-inline-start: 1px solid var(--carte-bord);
+  }
+
+  .retour {
+    display: none;
+  }
+
+  .poignee {
+    display: none;
+  }
+
+  .avec-selection .corps {
+    display: flex;
+  }
+
+  .legende {
+    inset-block: auto var(--e-6);
+    inset-inline-start: var(--e-5);
+  }
+
+  .commandes {
+    inset-block: var(--e-5) auto;
+    inset-inline-end: var(--e-5);
+  }
+
+  .haut {
+    inset-inline: var(--e-5) 88px;
+    inset-block-start: var(--e-5);
+    justify-items: start;
+  }
+
+  .bas {
+    position: sticky;
+    inset-block-end: var(--e-3);
+    box-shadow: 0 0 0 var(--e-3) var(--fond);
+  }
+}

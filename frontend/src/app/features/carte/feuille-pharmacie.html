@@ -36,6 +36,19 @@
 
 @if (!inscrite()) {
   <p class="ligne">{{ 'fiche.stockInconnu' | transloco }}</p>
+} @else if (medicament(); as info) {
+  @if (info.statut; as statut) {
+    <div class="ligne-medicament">
+      <strong>{{ info.nom }}</strong>
+      <app-pastille-statut [statut]="statut" />
+    </div>
+    <p class="ligne avec-icone">
+      <app-icone nom="horloge" [taille]="20" />
+      {{ info.detail }}
+    </p>
+  } @else {
+    <p class="ligne">{{ 'fiche.nonDeclare' | transloco }}</p>
+  }
 } @else if (miseAJour(); as age) {
   <p class="ligne avec-icone">
     <app-icone nom="horloge" [taille]="20" />

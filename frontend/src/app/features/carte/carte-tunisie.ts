@@ -46,6 +46,8 @@ interface ElementVisible {
 const LARGEUR_ORDINATEUR = 860;
 const ZOOM_MAXIMAL = 18;
 const ZOOM_POSITION = 13;
+/** Assez près pour que la pharmacie choisie sorte de sa grappe. */
+const ZOOM_SELECTION = 14.5;
 /** Cible tactile de 44 px autour du point touché. */
 const RAYON_TACTILE = 22;
 /** Le corps du marqueur est au-dessus du point géographique. */
@@ -320,6 +322,7 @@ export class CarteTunisie {
     const sens = document.documentElement.dir === 'rtl' ? 1 : -1;
     this.carte?.easeTo({
       center: [pharmacie.longitude, pharmacie.latitude],
+      zoom: Math.max(this.carte.getZoom(), ZOOM_SELECTION),
       offset: [large ? sens * DECALAGE_PANNEAU : 0, 0],
       duration: 400,
     });

@@ -75,33 +75,9 @@
   margin-block: 0;
 }
 
-.message:has(.fermer) p {
-  padding-inline-end: var(--cible-tactile);
-}
-
 .titre-message {
   font-weight: 600;
   color: var(--titre);
-}
-
-.choix {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--e-2);
-}
-
-.fermer {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-end: 0;
-  display: grid;
-  place-items: center;
-  inline-size: var(--cible-tactile);
-  block-size: var(--cible-tactile);
-  color: var(--texte-secondaire);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
 }
 
 .etat {

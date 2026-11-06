@@ -1,0 +1,66 @@
+<form role="search" novalidate (submit)="valider($event)">
+  <app-icone nom="loupe" [taille]="24" />
+  <label class="visuellement-masque" for="recherche-medicament">
+    {{ 'recherche.libelle' | transloco }}
+  </label>
+  <input
+    #champ
+    id="recherche-medicament"
+    type="text"
+    role="combobox"
+    autocomplete="off"
+    aria-autocomplete="list"
+    aria-controls="suggestions-medicament"
+    [attr.aria-expanded]="panneau()"
+    [attr.aria-activedescendant]="idActive()"
+    [attr.aria-describedby]="aide() ? 'aide-recherche' : null"
+    [placeholder]="'recherche.placeholder' | transloco"
+    [value]="texte()"
+    (input)="saisir(champ.value)"
+    (focus)="ouvert.set(true)"
+    (blur)="ouvert.set(false)"
+    (keydown)="touche($event)"
+  />
+  @if (texte()) {
+    <button
+      type="button"
+      class="effacer"
+      [attr.aria-label]="'recherche.effacer' | transloco"
+      (mousedown)="$event.preventDefault()"
+      (click)="effacer(champ)"
+    >
+      <app-icone nom="fermer" [taille]="20" />
+    </button>
+  }
+  <ng-content />
+</form>
+
+<ul
+  id="suggestions-medicament"
+  role="listbox"
+  [hidden]="!panneau()"
+  [attr.aria-label]="'recherche.suggestions' | transloco"
+>
+  @for (medicament of visibles(); track medicament.id; let i = $index) {
+    <li
+      role="option"
+      [id]="'suggestion-' + i"
+      [class.active]="i === active()"
+      [attr.aria-selected]="i === active()"
+      (mousedown)="$event.preventDefault()"
+      (click)="choisir(medicament)"
+    >
+      <span class="nom">{{ libelle(medicament) }}</span>
+      <span class="detail">{{ medicament.dci }} · {{ medicament.forme }}</span>
+    </li>
+  }
+</ul>
+
+@if (sansSuggestion()) {
+  <p class="vide" role="status">
+    {{ (lettresArabes() ? 'recherche.lettresLatines' : 'recherche.aucuneSuggestion') | transloco }}
+  </p>
+}
+@if (aide()) {
+  <p id="aide-recherche" class="vide" role="status">{{ 'recherche.aide' | transloco }}</p>
+}

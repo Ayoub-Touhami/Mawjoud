@@ -1,0 +1,114 @@
+:host {
+  position: relative;
+  z-index: 9;
+  display: block;
+  min-inline-size: 0;
+}
+
+form {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-block-size: 52px;
+  padding-block: var(--e-1);
+  padding-inline: var(--e-4) var(--e-1);
+  color: var(--titre);
+  background: var(--carte);
+  border: 1px solid var(--champ-bord);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre-carte);
+}
+
+form:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+input {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: var(--cible-tactile);
+  padding: 0;
+  font: inherit;
+  font-size: 16px;
+  color: var(--texte);
+  text-overflow: ellipsis;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+input::placeholder {
+  color: var(--texte-secondaire);
+  opacity: 1;
+}
+
+.effacer {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: var(--cible-tactile);
+  block-size: var(--cible-tactile);
+  color: var(--texte-secondaire);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--rayon-petit);
+}
+
+ul,
+.vide {
+  position: absolute;
+  inset-block-start: calc(100% + var(--e-1));
+  inset-inline: 0;
+  margin: 0;
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre-haute);
+}
+
+ul {
+  padding: var(--e-1);
+  overflow: auto;
+  list-style: none;
+}
+
+ul[hidden] {
+  display: none;
+}
+
+.vide {
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+}
+
+li {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-block-size: 52px;
+  padding: var(--e-1) var(--e-3);
+  cursor: pointer;
+  border-radius: var(--rayon-petit);
+}
+
+li:hover,
+li.active {
+  background: var(--contour-survol);
+}
+
+li.active {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.nom {
+  font-weight: 600;
+  color: var(--texte);
+}
+
+.detail {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}

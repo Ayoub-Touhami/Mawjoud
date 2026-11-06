@@ -14,13 +14,21 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { switchMap } from 'rxjs';
 import { FormatService } from '../../core/i18n/format.service';
-import { Pharmacie } from '../../core/models';
+import { Pharmacie, StatutStock } from '../../core/models';
 import { distanceMetres, estInscrite, etatOuverture } from '../../core/outils/pharmacie.outils';
 import { PHARMACIE_API } from '../../core/services/pharmacie-api';
 import { PositionService } from '../../core/services/position.service';
 import { ActionsPharmacie } from '../../shared/actions-pharmacie/actions-pharmacie';
 import { Icone } from '../../shared/icone/icone';
 import { PastilleStatut } from '../../shared/pastille-statut/pastille-statut';
+
+/** Ligne du médicament recherché, quand la feuille s'ouvre depuis des résultats. */
+export interface InfoMedicament {
+  nom: string;
+  /** Vide si la pharmacie n'a pas déclaré ce médicament. */
+  statut: StatutStock | null;
+  detail: string;
+}
 
 /** Distance vers le bas à partir de laquelle un glissement ferme la feuille. */
 const GLISSEMENT_FERMETURE = 48;
@@ -40,6 +48,7 @@ const GLISSEMENT_FERMETURE = 48;
 })
 export class FeuillePharmacie {
   readonly pharmacie = input.required<Pharmacie>();
+  readonly medicament = input<InfoMedicament | null>(null);
   readonly fermer = output<void>();
 
   private readonly api = inject(PHARMACIE_API);

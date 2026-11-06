@@ -14,6 +14,10 @@ import { Motif } from '../../shared/motif/motif';
       <div class="illustration signal" aria-hidden="true">
         <span class="cercle"><app-icone nom="hors-connexion" [taille]="88" /></span>
       </div>
+    } @else if (illustration() === 'recherche') {
+      <div class="illustration signal" aria-hidden="true">
+        <span class="cercle"><app-icone nom="gelule" [taille]="88" /></span>
+      </div>
     } @else {
       <app-motif class="illustration" aria-hidden="true">
         <span class="enseigne">
@@ -93,7 +97,7 @@ import { Motif } from '../../shared/motif/motif';
   `,
 })
 export class EcranCarte {
-  readonly illustration = input.required<'signal' | 'ville'>();
+  readonly illustration = input.required<'signal' | 'ville' | 'recherche'>();
   readonly titre = input.required<string>();
   readonly texte = input.required<string>();
 }

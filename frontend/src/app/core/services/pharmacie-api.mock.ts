@@ -13,16 +13,8 @@ import {
   Stock,
   Utilisateur,
 } from '../models';
+import { chercherDans, normaliser } from '../outils/recherche.outils';
 import { PharmacieApi } from './pharmacie-api';
-
-/** Ignore les accents et la casse : « levothyroxine » retrouve « Lévothyroxine ». */
-function normaliser(texte: string): string {
-  return texte
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .trim();
-}
 
 /**
  * Simulation en mémoire, à partir de données de test. Tout est perdu au rechargement
@@ -53,11 +45,16 @@ export class PharmacieApiMock implements PharmacieApi {
     return of(MEDICAMENTS_TEST);
   }
 
+  obtenirMedicament(id: string): Observable<Medicament | undefined> {
+    return of(MEDICAMENTS_TEST.find((m) => m.id === id));
+  }
+
   chercherMedicaments(texte: string): Observable<Medicament[]> {
-    const recherche = normaliser(texte);
-    return of(
-      recherche ? MEDICAMENTS_TEST.filter((m) => normaliser(m.nom).includes(recherche)) : [],
-    );
+    return of(chercherDans(MEDICAMENTS_TEST, texte));
+  }
+
+  medicamentsProches(texte: string): Observable<Medicament[]> {
+    return of(chercherDans(MEDICAMENTS_TEST, texte, true));
   }
 
   stocksDePharmacie(pharmacieId: string): Observable<Stock[]> {
