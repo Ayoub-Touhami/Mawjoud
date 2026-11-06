@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { ALERTES_TEST, COMPTES_TEST, DEMANDES_TEST } from '../donnees-test/comptes';
+import { COMPTES_TEST, DEMANDES_TEST } from '../donnees-test/comptes';
 import { MEDICAMENTS_TEST } from '../donnees-test/medicaments';
 import { PHARMACIES_TEST } from '../donnees-test/pharmacies';
 import { fabriquerStocks } from '../donnees-test/stocks';
 import {
-  Alerte,
   DemandeReclamation,
   Medicament,
   Pharmacie,
@@ -13,19 +12,18 @@ import {
   Stock,
   Utilisateur,
 } from '../models';
-import { chercherDans, normaliser } from '../outils/recherche.outils';
+import { chercherDans } from '../outils/recherche.outils';
 import { PharmacieApi } from './pharmacie-api';
 
 /**
  * Simulation en mémoire, à partir de données de test. Tout est perdu au rechargement
- * de la page. Le mot de passe n'est pas vérifié : ce rôle reviendra au back-end.
+ * de la page. Les comptes patients et les alertes sont dans core/simulation.
  */
 @Injectable()
 export class PharmacieApiMock implements PharmacieApi {
   private pharmacies: Pharmacie[] = PHARMACIES_TEST.map((p) => ({ ...p }));
   private stocks: Stock[] = fabriquerStocks();
   private comptes: Utilisateur[] = COMPTES_TEST.map((c) => ({ ...c }));
-  private alertes: Alerte[] = ALERTES_TEST.map((a) => ({ ...a }));
   private demandes: DemandeReclamation[] = DEMANDES_TEST.map((d) => ({ ...d }));
   private prochainId = 1;
 
@@ -95,55 +93,6 @@ export class PharmacieApiMock implements PharmacieApi {
       stock,
     ];
     return of(stock);
-  }
-
-  seConnecter(email: string, _motDePasse: string): Observable<Utilisateur | null> {
-    const recherche = normaliser(email);
-    return of(this.comptes.find((c) => normaliser(c.email) === recherche) ?? null);
-  }
-
-  listerAlertes(utilisateurId: string): Observable<Alerte[]> {
-    return of(this.alertes.filter((a) => a.utilisateurId === utilisateurId));
-  }
-
-  creerAlerte(
-    utilisateurId: string,
-    medicamentId: string,
-    ville: string | null,
-  ): Observable<Alerte> {
-    const existante = this.alertes.find(
-      (a) =>
-        a.utilisateurId === utilisateurId &&
-        a.medicamentId === medicamentId &&
-        a.ville === ville &&
-        a.etat === 'active',
-    );
-    if (existante) {
-      return of(existante);
-    }
-    const alerte: Alerte = {
-      id: this.nouvelId('al'),
-      utilisateurId,
-      medicamentId,
-      ville,
-      etat: 'active',
-    };
-    this.alertes = [...this.alertes, alerte];
-    return of(alerte);
-  }
-
-  modifierAlerte(id: string, ville: string | null): Observable<Alerte> {
-    const alerte = this.alertes.find((a) => a.id === id);
-    if (!alerte) {
-      return throwError(() => new Error('Alerte introuvable.'));
-    }
-    alerte.ville = ville;
-    return of(alerte);
-  }
-
-  supprimerAlerte(id: string): Observable<void> {
-    this.alertes = this.alertes.filter((a) => a.id !== id);
-    return of(undefined);
   }
 
   listerDemandes(): Observable<DemandeReclamation[]> {

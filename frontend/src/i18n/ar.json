@@ -20,7 +20,11 @@
     "annuaire": "دليل الصيدليات",
     "signalements": "بلاغات إساءة الاستخدام",
     "introuvable": "الصفحة غير موجودة",
-    "design": "مكوّنات موجود"
+    "design": "مكوّنات موجود",
+    "apercuEmail": "معاينة رسالة التنبيه",
+    "motDePasseOublie": "نسيت كلمة المرور",
+    "desabonnement": "إلغاء الاشتراك",
+    "suppressionCompte": "حذف حسابي"
   },
   "navigation": {
     "principale": "التنقل الرئيسي",

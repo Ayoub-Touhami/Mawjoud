@@ -81,13 +81,6 @@ describe('PharmacieApiMock', () => {
     ).rejects.toThrow();
   });
 
-  it("ne crée pas de doublon d'alerte", async () => {
-    const avant = await firstValueFrom(api.listerAlertes('u-01'));
-    const alerte = await firstValueFrom(api.creerAlerte('u-01', 'M019', 'Tunis'));
-    expect(alerte.id).toBe('al-01');
-    expect(await firstValueFrom(api.listerAlertes('u-01'))).toHaveLength(avant.length);
-  });
-
   it('inscrit la pharmacie seulement après validation', async () => {
     expect((await firstValueFrom(api.obtenirPharmacie('T004')))?.etat).toBe('reclamee');
     await firstValueFrom(api.validerDemande('dem-01'));

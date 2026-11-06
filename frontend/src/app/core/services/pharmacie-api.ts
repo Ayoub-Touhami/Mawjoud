@@ -1,13 +1,11 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  Alerte,
   DemandeReclamation,
   Medicament,
   Pharmacie,
   StatutDeclare,
   Stock,
-  Utilisateur,
 } from '../models';
 
 /**
@@ -36,18 +34,6 @@ export interface PharmacieApi {
     medicamentId: string,
     statut: StatutDeclare,
   ): Observable<Stock>;
-
-  seConnecter(email: string, motDePasse: string): Observable<Utilisateur | null>;
-
-  listerAlertes(utilisateurId: string): Observable<Alerte[]>;
-  /** Renvoie l'alerte existante plutôt qu'un doublon (F10). */
-  creerAlerte(
-    utilisateurId: string,
-    medicamentId: string,
-    ville: string | null,
-  ): Observable<Alerte>;
-  modifierAlerte(id: string, ville: string | null): Observable<Alerte>;
-  supprimerAlerte(id: string): Observable<void>;
 
   listerDemandes(): Observable<DemandeReclamation[]>;
   creerDemande(pharmacienId: string, pharmacieId: string): Observable<DemandeReclamation>;

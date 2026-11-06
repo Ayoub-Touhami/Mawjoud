@@ -20,7 +20,11 @@
     "annuaire": "Annuaire des pharmacies",
     "signalements": "Signalements d'abus",
     "introuvable": "Page introuvable",
-    "design": "Composants de Mawjoud"
+    "design": "Composants de Mawjoud",
+    "apercuEmail": "Aperçu de l'e-mail d'alerte",
+    "motDePasseOublie": "Mot de passe oublié",
+    "desabonnement": "Désabonnement",
+    "suppressionCompte": "Supprimer mon compte"
   },
   "navigation": {
     "principale": "Navigation principale",

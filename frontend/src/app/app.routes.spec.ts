@@ -4,8 +4,12 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
 import { GARDES_ACTIVES } from './core/guards/role.guard';
 import { fournirTraductionTest } from './core/i18n/traduction.test-outils';
+import { ALERT_SERVICE } from './core/services/alert.service';
+import { AUTH_SERVICE } from './core/services/auth.service';
 import { PHARMACIE_API } from './core/services/pharmacie-api';
 import { PharmacieApiMock } from './core/services/pharmacie-api.mock';
+import { AlertServiceSimule } from './core/simulation/alert.service.simule';
+import { AuthServiceSimule } from './core/simulation/auth.service.simule';
 
 const PAGES: [string, string][] = [
   ['/', 'Carte des pharmacies'],
@@ -15,7 +19,6 @@ const PAGES: [string, string][] = [
   ['/compte/verification-email', "Vérification de l'e-mail"],
   ['/a-propos', 'À propos et contact'],
   ['/alertes/creer', 'Créer une alerte'],
-  ['/alertes', 'Mes alertes'],
   ['/pharmacien/inscription', 'Inscription pharmacien'],
   ['/pharmacien', 'Espace pharmacien'],
   ['/pharmacien/reclamer', 'Réclamer ma pharmacie'],
@@ -26,18 +29,26 @@ const PAGES: [string, string][] = [
 
 describe('routes du plan du site', () => {
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
         fournirTraductionTest(),
         { provide: GARDES_ACTIVES, useValue: false },
         { provide: PHARMACIE_API, useClass: PharmacieApiMock },
+        { provide: AUTH_SERVICE, useExisting: AuthServiceSimule },
+        { provide: ALERT_SERVICE, useExisting: AlertServiceSimule },
       ],
     });
   });
 
-  it('couvre les 14 pages', () => {
-    expect(PAGES.length).toBe(14);
+  it('couvre les 13 pages sans connexion', () => {
+    expect(PAGES.length).toBe(13);
+  });
+
+  it('demande la connexion pour Mes alertes, même en développement', async () => {
+    await RouterTestingHarness.create('/alertes');
+    expect(TestBed.inject(Router).url).toBe('/compte/connexion?retour=%2Falertes');
   });
 
   it.each(PAGES)('%s affiche « %s »', async (adresse, titre) => {

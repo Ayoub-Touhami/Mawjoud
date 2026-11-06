@@ -1,8 +1,8 @@
 /*
- * COMPTES DE TEST INVENTÉS. Aucun secret n'est stocké ici : la simulation ne regarde que
- * l'adresse e-mail. Le domaine .example est réservé et n'envoie aucun courrier.
+ * COMPTES DE TEST INVENTÉS, pour les règles de stock. Ils n'ont aucun mot de passe. Le domaine
+ * .example est réservé et n'envoie aucun courrier.
  */
-import { Alerte, DemandeReclamation, Utilisateur } from '../models';
+import { DemandeReclamation, Utilisateur } from '../models';
 
 export const COMPTES_TEST: Utilisateur[] = [
   { id: 'u-01', email: 'patient.verifie@mawjoud.example', role: 'patient', emailVerifie: true },
@@ -31,12 +31,6 @@ export const COMPTES_TEST: Utilisateur[] = [
     compteVerifie: false,
   },
   { id: 'u-06', email: 'admin@mawjoud.example', role: 'administrateur', emailVerifie: true },
-];
-
-export const ALERTES_TEST: Alerte[] = [
-  { id: 'al-01', utilisateurId: 'u-01', medicamentId: 'M019', ville: 'Tunis', etat: 'active' },
-  { id: 'al-02', utilisateurId: 'u-01', medicamentId: 'M027', ville: null, etat: 'active' },
-  { id: 'al-03', utilisateurId: 'u-01', medicamentId: 'M031', ville: 'Sfax', etat: 'terminee' },
 ];
 
 export const DEMANDES_TEST: DemandeReclamation[] = [
