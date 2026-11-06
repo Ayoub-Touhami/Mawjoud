@@ -6,11 +6,18 @@
     @case ('succes') {
       <span class="signe succes"><app-icone nom="coche" [taille]="36" /></span>
       <h1>{{ 'compte.verification.succesTitre' | transloco }}</h1>
-      <p>{{ 'compte.verification.succesTexte' | transloco }}</p>
-      <div class="actions">
-        <a appBouton routerLink="/alertes">{{ 'navigation.mesAlertes' | transloco }}</a>
-        <a appBouton variante="secondaire" routerLink="/">{{ 'fiche.retour' | transloco }}</a>
-      </div>
+      @if (pharmacien()) {
+        <p>{{ 'pharmacien.verification' | transloco }}</p>
+        <div class="actions">
+          <a appBouton routerLink="/pharmacien">{{ 'navigation.continuer' | transloco }}</a>
+        </div>
+      } @else {
+        <p>{{ 'compte.verification.succesTexte' | transloco }}</p>
+        <div class="actions">
+          <a appBouton routerLink="/alertes">{{ 'navigation.mesAlertes' | transloco }}</a>
+          <a appBouton variante="secondaire" routerLink="/">{{ 'fiche.retour' | transloco }}</a>
+        </div>
+      }
     }
     @case ('expire') {
       <span class="signe alerte"><app-icone nom="horloge" [taille]="36" /></span>
@@ -31,13 +38,17 @@
         <span class="signe succes"><app-icone nom="coche" [taille]="36" /></span>
         <h1>{{ 'compte.verification.dejaTitre' | transloco }}</h1>
         <div class="actions">
-          <a appBouton routerLink="/alertes">{{ 'navigation.mesAlertes' | transloco }}</a>
+          <a appBouton [routerLink]="pharmacien() ? '/pharmacien' : '/alertes'">
+            {{ 'navigation.continuer' | transloco }}
+          </a>
         </div>
       } @else if (utilisateur(); as compte) {
         <span class="signe"><app-icone nom="email" [taille]="36" /></span>
         <h1>{{ 'compte.verification.attenteTitre' | transloco }}</h1>
         <p>{{ 'compte.verification.attenteTexte' | transloco: { email: compte.email } }}</p>
-        <p class="important">{{ 'compte.verification.attenteAlerte' | transloco }}</p>
+        @if (!pharmacien()) {
+          <p class="important">{{ 'compte.verification.attenteAlerte' | transloco }}</p>
+        }
         <ng-container [ngTemplateOutlet]="renvoi" />
       } @else {
         <span class="signe"><app-icone nom="email" [taille]="36" /></span>

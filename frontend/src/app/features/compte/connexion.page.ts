@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { Utilisateur } from '../../core/models';
 import { AUTH_SERVICE, ErreurAuth } from '../../core/services/auth.service';
 import { Bouton } from '../../shared/bouton/bouton';
 import { Motif } from '../../shared/motif/motif';
@@ -9,6 +10,14 @@ import { Segment, Segments } from '../../shared/segments/segments';
 import { ChampsCompte, ErreursChamps, verifierChamps } from './champs-compte';
 
 type Mode = 'connexion' | 'creation';
+
+/** La page de connexion est commune : le rôle du compte décide de la suite. */
+function destinationParDefaut({ role, emailVerifie }: Utilisateur): string {
+  if (role === 'pharmacien') {
+    return '/pharmacien';
+  }
+  return emailVerifie ? '/alertes' : '/compte/verification-email';
+}
 
 @Component({
   selector: 'app-connexion-page',
@@ -56,7 +65,7 @@ export class ConnexionPage {
         : this.auth.seConnecter(this.email(), this.motDePasse());
       const utilisateur = await firstValueFrom(appel);
       await this.router.navigateByUrl(
-        this.destination() ?? (utilisateur.emailVerifie ? '/alertes' : '/compte/verification-email'),
+        this.destination() ?? destinationParDefaut(utilisateur),
       );
     } catch (erreur) {
       this.erreur.set(erreur as ErreurAuth);

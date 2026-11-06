@@ -28,6 +28,7 @@ export class VerificationEmailPage {
   protected readonly erreurRenvoi = signal(false);
   protected readonly version = signal(0);
   protected readonly dejaVerifie = computed(() => !!this.utilisateur()?.emailVerifie);
+  protected readonly pharmacien = computed(() => this.utilisateur()?.role === 'pharmacien');
   private jeton: string | null = null;
 
   constructor() {

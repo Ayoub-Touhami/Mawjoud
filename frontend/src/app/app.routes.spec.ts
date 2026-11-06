@@ -14,7 +14,7 @@ const PAGES: [string, string][] = [
   ['/compte/verification-email', 'Vérifiez votre boîte mail'],
   ['/a-propos', 'À propos et contact'],
   ['/alertes/creer', "Être prévenu dès qu'il est disponible"],
-  ['/pharmacien/inscription', 'Inscription pharmacien'],
+  ['/pharmacien/inscription', 'Créez votre compte'],
   ['/admin/reclamations', 'Réclamations à valider'],
   ['/admin/annuaire', 'Annuaire des pharmacies'],
   ['/admin/signalements', "Signalements d'abus"],

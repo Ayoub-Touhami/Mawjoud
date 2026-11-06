@@ -39,7 +39,8 @@
     "creerAlerte": "Créer une alerte",
     "espacePharmacien": "Espace pharmacien",
     "administration": "Administration",
-    "seDeconnecter": "Se déconnecter"
+    "seDeconnecter": "Se déconnecter",
+    "continuer": "Continuer"
   },
   "langue": {
     "autre": "عربية",
@@ -442,5 +443,84 @@
     "supprimer": "Supprimer mon compte",
     "donnees": "Mawjoud ne conserve que le médicament, la ville et votre e-mail.",
     "apercu": "Aperçu réservé au développement. Aucun e-mail n'est envoyé : les données sont des exemples."
+  },
+  "pharmacien": {
+    "verification": "Votre adresse est vérifiée. Retrouvez maintenant votre pharmacie dans l'annuaire.",
+    "etapes": {
+      "compte": "Compte",
+      "pharmacie": "Ma pharmacie",
+      "verification": "Vérification"
+    },
+    "inscription": {
+      "titre": "Créez votre compte",
+      "intro": "Il vous servira à déclarer le stock de votre pharmacie.",
+      "note": "Votre compte sera vérifié avant toute déclaration de stock.",
+      "dejaCompte": "Déjà un compte ? Se connecter"
+    },
+    "reclamer": {
+      "titre": "Retrouvez votre pharmacie",
+      "intro": "Elle figure peut-être déjà dans l'annuaire. Réclamez-la pour déclarer son stock.",
+      "recherche": "Nom de la pharmacie ou ville",
+      "exemple": "Pharmacie du Marché",
+      "aucune": "Aucune pharmacie ne correspond à cette recherche.",
+      "action": "Réclamer cette pharmacie",
+      "absente": "Ma pharmacie n'est pas dans l'annuaire",
+      "dejaReclamee": "Cette pharmacie est déjà réclamée par un autre compte. Votre demande sera envoyée à l'administrateur.",
+      "refusee": "Votre réclamation a été refusée.",
+      "refuseeSuite": "Vous pouvez déposer une nouvelle réclamation.",
+      "ensuiteTitre": "Ensuite : vérification en attente",
+      "ensuiteTexte": "Nous contrôlons votre pharmacie, puis vous recevez un e-mail. Le stock se déclare après validation."
+    },
+    "justificatif": {
+      "texte": "Informations pour la vérification (facultatif)",
+      "texteAide": "Par exemple votre numéro d'inscription à l'Ordre.",
+      "fichier": "Document justificatif (facultatif)",
+      "fichierAide": "PDF, JPG ou PNG, 5 Mo au maximum.",
+      "type": "Ce format n'est pas accepté. Choisissez un fichier PDF, JPG ou PNG.",
+      "taille": "Ce fichier dépasse 5 Mo."
+    },
+    "ajout": {
+      "titre": "Demander l'ajout de votre pharmacie",
+      "intro": "Votre demande sera envoyée à l'administrateur.",
+      "nom": "Nom de la pharmacie",
+      "adresse": "Adresse",
+      "ville": "Ville",
+      "telephone": "Téléphone (facultatif)",
+      "manquants": "Indiquez le nom, l'adresse et la ville de la pharmacie.",
+      "envoyer": "Envoyer la demande",
+      "retour": "Revenir à l'annuaire"
+    },
+    "attente": {
+      "texte": "Votre demande pour {{nom}} a bien été reçue. Nous la contrôlons.",
+      "conflit": "Cette pharmacie était déjà réclamée par un autre compte : l'administrateur décidera.",
+      "ajout": "Votre demande d'ajout à l'annuaire a été envoyée à l'administrateur.",
+      "bloque": "Aucune déclaration de stock n'est possible tant que votre compte n'est pas vérifié.",
+      "note": "Votre pharmacie reste « non inscrite » sur la carte jusqu'à la validation. Vous recevrez un e-mail avec la décision."
+    },
+    "outils": {
+      "texte": "Développement uniquement : remplace la décision de l'administrateur.",
+      "valider": "Valider la demande",
+      "refuser": "Refuser la demande",
+      "vieillir": "Vieillir les déclarations de 25 h",
+      "panne": "Simuler une coupure réseau",
+      "stock": "Développement uniquement : le temps et la connexion à la demande."
+    },
+    "espace": {
+      "verifiee": "Vérifiée",
+      "titre": "Quel est votre stock ?",
+      "vide": "Ajoutez les médicaments que vous suivez pour déclarer leur stock.",
+      "nonDeclare": "Pas encore déclaré",
+      "declarer": "{{statut}} pour {{nom}}",
+      "nonEnregistree": "Mise à jour non enregistrée. Vérifiez votre connexion.",
+      "retirer": "Retirer",
+      "retirerNom": "Retirer {{nom}} de la liste",
+      "retirerConfirmer": "Retirer ce médicament ? Il ne sera plus affiché au public pour votre pharmacie.",
+      "retirerOui": "Oui, retirer",
+      "ajouter": "Ajouter un médicament",
+      "toutAJour": "Tout est à jour",
+      "toutConfirmer": "Confirmez-vous les {{n}} statuts déclarés ? Leur heure de mise à jour sera renouvelée.",
+      "toutOui": "Oui, tout confirmer",
+      "note": "Sans mise à jour, le statut passe à « à confirmer » après 24 h."
+    }
   }
 }

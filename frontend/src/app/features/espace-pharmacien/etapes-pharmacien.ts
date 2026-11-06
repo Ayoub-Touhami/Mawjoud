@@ -53,6 +53,7 @@ const ETAPES = ['compte', 'pharmacie', 'verification'];
       position: absolute;
       inset-block-start: 15px;
       inset-inline: -50% 50%;
+      z-index: 0;
       content: '';
       border-block-start: 2px solid var(--carte-bord);
     }
@@ -72,6 +73,7 @@ const ETAPES = ['compte', 'pharmacie', 'verification'];
 
     .rond {
       position: relative;
+      z-index: 1;
       display: grid;
       place-items: center;
       inline-size: 32px;

@@ -15,5 +15,8 @@ export const compteVerifieGuard: CanActivateFn = (_route, state) => {
   if (!utilisateur) {
     return router.createUrlTree(['/compte/connexion'], { queryParams: { retour: state.url } });
   }
+  if (utilisateur.role !== 'patient') {
+    return router.createUrlTree(['/']);
+  }
   return utilisateur.emailVerifie ? true : router.createUrlTree(['/compte/verification-email']);
 };
