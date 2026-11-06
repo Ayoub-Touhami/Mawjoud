@@ -118,7 +118,7 @@ const MOTIFS: MotifRefus[] = [
 })
 export class ChampMotif {
   readonly erreur = input(false);
-  readonly change = output<MotifDecision | null>();
+  readonly motifChoisi = output<MotifDecision | null>();
 
   protected readonly motifs = MOTIFS;
   private readonly code = signal<MotifRefus | ''>('');
@@ -137,6 +137,6 @@ export class ChampMotif {
   private annoncer(): void {
     const code = this.code();
     const precision = this.precision().trim();
-    this.change.emit(code ? { code, ...(precision ? { precision } : {}) } : null);
+    this.motifChoisi.emit(code ? { code, ...(precision ? { precision } : {}) } : null);
   }
 }

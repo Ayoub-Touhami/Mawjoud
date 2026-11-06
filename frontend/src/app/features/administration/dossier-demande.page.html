@@ -113,7 +113,7 @@
     (annuler)="decision.set(null)"
   >
     @if (motifDemande()) {
-      <app-champ-motif [erreur]="motifManquant()" (change)="motif.set($event)" />
+      <app-champ-motif [erreur]="motifManquant()" (motifChoisi)="motif.set($event)" />
     }
   </app-confirmation-admin>
 }

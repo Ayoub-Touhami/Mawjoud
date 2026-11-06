@@ -61,7 +61,7 @@ const HEURES_VIEILLISSEMENT = 25;
 })
 export class OutilsStock {
   readonly pharmacieId = input.required<string>();
-  readonly change = output<void>();
+  readonly actualiser = output<void>();
 
   private readonly stocks = inject(StockServiceSimule);
   protected readonly actif = environment.outilsSimulation;
@@ -69,7 +69,7 @@ export class OutilsStock {
 
   protected vieillir(): void {
     this.stocks.vieillir(this.pharmacieId(), HEURES_VIEILLISSEMENT);
-    this.change.emit();
+    this.actualiser.emit();
   }
 
   protected basculerPanne(): void {
