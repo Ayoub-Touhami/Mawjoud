@@ -36,7 +36,7 @@
 | Tests unitaires | 120 réussis |
 | Tests de bout en bout | 65 réussis (`npm run e2e`) |
 | Contraste minimal du texte, 72 captures | 4,95:1 |
-| Fluidité, 3 000 marqueurs, processeur ralenti 4 fois | 39 à 40 images par seconde (95 % des images sous 50 ms) |
+| Fluidité, 3 000 marqueurs, processeur ralenti 4 fois | 39 à 57 images par seconde selon les essais (95 % des images sous 50 ms) |
 | Saut de mise en page | 0,05 (seuil courant : 0,1) |
 | Chargement initial | 403 ko, soit 102 ko transférés |
 | MapLibre, à la demande | 1,11 Mo, soit 246 ko transférés, plus 508 ko pour son fichier de travail |
