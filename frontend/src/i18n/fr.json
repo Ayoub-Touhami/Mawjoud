@@ -426,5 +426,20 @@
         "terminee": "Terminée"
       }
     }
+  },
+  "email": {
+    "objet": "{{nom}} est signalé disponible à {{lieu}}",
+    "de": "De : Mawjoud",
+    "partout": "toute la Tunisie",
+    "statut": "Disponible",
+    "declare": "Déclaré par la pharmacie · {{age}}",
+    "voir": "Voir sur la carte",
+    "avertissement": "Le stock peut changer vite. Appelez la pharmacie avant de vous déplacer.",
+    "termine": "Cette alerte est maintenant terminée : un seul e-mail est envoyé par disponibilité. Créez une nouvelle alerte pour être prévenu à nouveau.",
+    "raison": "Vous recevez ce message car vous avez créé une alerte pour {{nom}} ({{lieu}}).",
+    "desabonner": "Se désabonner",
+    "supprimer": "Supprimer mon compte",
+    "donnees": "Mawjoud ne conserve que le médicament, la ville et votre e-mail.",
+    "apercu": "Aperçu réservé au développement. Aucun e-mail n'est envoyé : les données sont des exemples."
   }
 }

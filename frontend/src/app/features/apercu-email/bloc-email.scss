@@ -1,0 +1,89 @@
+:host {
+  display: grid;
+  gap: var(--e-3);
+  justify-items: start;
+}
+
+h2 {
+  margin-block: 0;
+  font-size: 26px;
+  color: #0b3d2e;
+  overflow-wrap: anywhere;
+}
+
+p {
+  margin-block: 0;
+}
+
+.pharmacie {
+  display: grid;
+  gap: var(--e-2);
+  inline-size: 100%;
+  padding: var(--e-4);
+  background: #e9f4ee;
+  border-radius: var(--rayon);
+}
+
+// Jamais en majuscules : « µg » deviendrait « MG », un autre dosage.
+.medicament {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5b53;
+}
+
+.nom {
+  font-family: var(--police-titre);
+  font-size: 20px;
+  color: #10231b;
+}
+
+.pharmacie p {
+  display: flex;
+  gap: var(--e-2);
+  align-items: flex-start;
+}
+
+.pharmacie app-icone {
+  flex-shrink: 0;
+  color: #0b3d2e;
+}
+
+.fort {
+  font-weight: 600;
+}
+
+.voir {
+  inline-size: 100%;
+}
+
+.fin {
+  padding: var(--e-3) var(--e-4);
+  background: #f6f1e7;
+  border-radius: var(--rayon);
+}
+
+hr {
+  inline-size: 100%;
+  margin: 0;
+  border: 0;
+  border-block-start: 2px solid #ded8c9;
+}
+
+.petit {
+  font-size: 14px;
+  color: #4a5b53;
+}
+
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--e-5);
+}
+
+.liens a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--cible-tactile);
+  font-weight: 600;
+  color: #1a5c83;
+}
