@@ -1,15 +1,24 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { filter, map } from 'rxjs';
 import { NavigationService } from './core/services/navigation.service';
+import { BandeauDonneesTest } from './layout/bandeau-donnees-test';
 import { EnTete } from './layout/en-tete/en-tete';
 import { PiedDePage } from './layout/pied-de-page/pied-de-page';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, EnTete, PiedDePage],
+  imports: [BandeauDonneesTest, EnTete, PiedDePage, RouterOutlet, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -28,6 +37,8 @@ export class App {
     { initialValue: inject(Location).path() },
   );
 
+  private readonly contenu = viewChild.required<ElementRef<HTMLElement>>('contenu');
+
   protected readonly menuOuvert = inject(NavigationService).menuOuvert;
   private readonly chemin = computed(() => this.adresse().split('?')[0]);
   protected readonly surResultats = computed(() => this.chemin() === '/resultats');
@@ -35,4 +46,10 @@ export class App {
   protected readonly surCarte = computed(
     () => ['', '/'].includes(this.chemin()) || this.surResultats(),
   );
+
+  /** Le lien d'évitement reste sur l'adresse courante : seul le focus se déplace. */
+  protected allerAuContenu(evenement: Event): void {
+    evenement.preventDefault();
+    this.contenu().nativeElement.focus();
+  }
 }

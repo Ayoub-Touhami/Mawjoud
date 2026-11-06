@@ -14,7 +14,7 @@
   <app-icone nom="fermer" />
 </button>
 
-<h2 #titre id="titre-feuille" tabindex="-1">{{ pharmacie().nom }}</h2>
+<h2 #titre id="titre-feuille" tabindex="-1"><bdi>{{ pharmacie().nom }}</bdi></h2>
 
 <div class="statut">
   <app-pastille-statut [statut]="inscrite() ? 'inscrite-verifiee' : 'non-inscrite'" />
@@ -32,14 +32,14 @@
   }
 </div>
 
-<p class="ligne">{{ pharmacie().adresse }}, {{ pharmacie().ville }}</p>
+<p class="ligne"><bdi>{{ pharmacie().adresse }}, {{ pharmacie().ville }}</bdi></p>
 
 @if (!inscrite()) {
   <p class="ligne">{{ 'fiche.stockInconnu' | transloco }}</p>
 } @else if (medicament(); as info) {
   @if (info.statut; as statut) {
     <div class="ligne-medicament">
-      <strong>{{ info.nom }}</strong>
+      <strong><bdi>{{ info.nom }}</bdi></strong>
       <app-pastille-statut [statut]="statut" />
     </div>
     <p class="ligne avec-icone">

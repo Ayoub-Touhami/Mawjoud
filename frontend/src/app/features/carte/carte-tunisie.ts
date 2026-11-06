@@ -115,9 +115,12 @@ export class CarteTunisie {
     });
     effect(() => {
       this.theme();
-      this.langue();
+      const langue = this.langue();
       if (this.prete()) {
         void this.redessiner();
+        this.carte
+          ?.getCanvas()
+          .setAttribute('aria-label', this.transloco.translate('carte.regionCarte', {}, langue));
       }
     });
   }

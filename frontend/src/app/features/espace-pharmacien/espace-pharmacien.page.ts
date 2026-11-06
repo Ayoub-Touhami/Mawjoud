@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom, map, of } from 'rxjs';
 import { Medicament, StatutDeclare, Stock } from '../../core/models';
 import { libelleMedicament } from '../../core/outils/recherche.outils';
@@ -26,6 +26,7 @@ export class EspacePharmacienPage {
   private readonly stocksService = inject(STOCK_SERVICE);
   private readonly api = inject(PHARMACIE_API);
   private readonly fraicheur = inject(FraicheurService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly pharmacieId = this.pharmaciens.pharmacien()?.pharmacieId ?? '';
   protected readonly peutDeclarer = this.pharmaciens.peutDeclarer;
@@ -45,6 +46,9 @@ export class EspacePharmacienPage {
   protected readonly ajout = signal(false);
   protected readonly confirmation = signal(false);
   protected readonly echecGlobal = signal(false);
+  protected readonly echecChargement = signal(false);
+  /** Lue par les lecteurs d'écran : le statut change sans changer de page. */
+  protected readonly annonce = signal('');
 
   protected readonly lignes = computed(() => {
     const stocks = new Map(this.stocks().map((s) => [s.medicamentId, s]));
@@ -74,7 +78,9 @@ export class EspacePharmacienPage {
       await firstValueFrom(this.stocksService.declarer(this.pharmacieId, medicamentId, statut));
       this.oublierEchec(medicamentId);
       await this.charger();
+      this.annonce.set(this.transloco.translate('pharmacien.espace.enregistree'));
     } catch {
+      this.annonce.set(this.transloco.translate('pharmacien.espace.nonEnregistree'));
       this.echecs.update((echecs) => new Map(echecs).set(medicamentId, statut));
     } finally {
       this.enCours.set(null);
@@ -118,8 +124,13 @@ export class EspacePharmacienPage {
   }
 
   protected async charger(): Promise<void> {
-    this.suivis.set(await firstValueFrom(this.stocksService.medicamentsSuivis(this.pharmacieId)));
-    this.stocks.set(await firstValueFrom(this.stocksService.stocksDePharmacie(this.pharmacieId)));
+    try {
+      this.suivis.set(await firstValueFrom(this.stocksService.medicamentsSuivis(this.pharmacieId)));
+      this.stocks.set(await firstValueFrom(this.stocksService.stocksDePharmacie(this.pharmacieId)));
+      this.echecChargement.set(false);
+    } catch {
+      this.echecChargement.set(true);
+    }
   }
 
   private oublierEchec(medicamentId: string): void {

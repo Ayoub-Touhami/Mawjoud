@@ -1,6 +1,6 @@
 /** Tracés du marqueur, partagés par le composant et par les images dessinées sur la carte. */
 export const CONTOUR_MARQUEUR =
-  'M32 78c-2 0-4-1.600-6-3.800C15 62 8 48 8 32a24 24 0 0 1 48 0c0 16-7 30-18 42.200-2 2.200-4 3.800-6 3.800z';
+  'M32 78c-1.3 0-2.4-.6-3.4-1.8C15.6 60.4 8 48 8 32a24 24 0 0 1 48 0c0 16-7.6 28.4-20.6 44.2-1 1.2-2.1 1.8-3.4 1.8z';
 export const COCHE_MARQUEUR = 'M20 33l9 9 16-18';
 export const QUESTION_MARQUEUR = 'M24 26a8 8 0 1 1 12 7c-2.500 1.400-4 3.200-4 6';
 

@@ -1,7 +1,16 @@
 <section class="page">
   <h1>{{ 'pages.mesAlertes' | transloco }}</h1>
 
-  @if (chargee() && !lignes().length) {
+  @if (echecChargement()) {
+    <div class="erreur" role="alert">
+      <p>{{ 'compte.erreurs.indisponible' | transloco }}</p>
+      <button type="button" appBouton variante="secondaire" (click)="charger()">
+        {{ 'carte.horsConnexion.reessayer' | transloco }}
+      </button>
+    </div>
+  } @else if (!chargee()) {
+    <p class="vide" role="status">{{ 'etat.chargement.titre' | transloco }}</p>
+  } @else if (!lignes().length) {
     <p class="vide">{{ 'alertes.mes.vide' | transloco }}</p>
   }
 

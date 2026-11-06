@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   inject,
   input,
@@ -81,6 +82,9 @@ export class FeuillePharmacie {
   });
 
   constructor() {
+    // À la fermeture, le focus revient là où il était : sur le résultat, au clavier.
+    const precedent = document.activeElement as HTMLElement | null;
+    inject(DestroyRef).onDestroy(() => setTimeout(() => precedent?.focus?.()));
     // Le focus suit l'ouverture : le clavier et les lecteurs d'écran arrivent sur la fiche.
     afterRenderEffect(() => {
       this.pharmacie();

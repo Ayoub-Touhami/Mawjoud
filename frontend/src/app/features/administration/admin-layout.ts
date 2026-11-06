@@ -31,9 +31,14 @@ import { provideTranslocoLang, TranslocoPipe } from '@jsverse/transloco';
     </div>
   `,
   styles: `
+    /* Le site peut être en arabe : l'administration garde les polices du français. */
     .admin {
+      --police-titre: 'Bricolage Grotesque', system-ui, sans-serif;
+      --police-texte: 'IBM Plex Sans', system-ui, sans-serif;
+
       display: grid;
       gap: var(--e-4);
+      font-family: var(--police-texte);
       max-inline-size: 1240px;
       margin-inline: auto;
     }

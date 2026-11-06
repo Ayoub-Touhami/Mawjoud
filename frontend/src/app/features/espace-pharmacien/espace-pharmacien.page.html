@@ -1,6 +1,6 @@
 <header class="bandeau">
   <p class="surtitre">{{ 'pages.espacePharmacien' | transloco }}</p>
-  <h1>{{ pharmacie()?.nom }}</h1>
+  <h1><bdi>{{ pharmacie()?.nom }}</bdi></h1>
   <span class="badge">
     <app-icone nom="verifiee" [taille]="20" />
     {{ 'pharmacien.espace.verifiee' | transloco }}
@@ -8,6 +8,7 @@
 </header>
 
 <section class="contenu">
+  <p class="visuellement-masque" role="status">{{ annonce() }}</p>
   <h2>{{ 'pharmacien.espace.titre' | transloco }}</h2>
 
   @if (suspendu()) {
@@ -15,7 +16,14 @@
   } @else if (!peutDeclarer()) {
     <p class="annonce" role="alert">{{ 'pharmacien.attente.bloque' | transloco }}</p>
   }
-  @if (!lignes().length) {
+  @if (echecChargement()) {
+    <div class="annonce" role="alert">
+      <p>{{ 'pharmacien.espace.erreurChargement' | transloco }}</p>
+      <button type="button" appBouton variante="secondaire" (click)="charger()">
+        {{ 'carte.horsConnexion.reessayer' | transloco }}
+      </button>
+    </div>
+  } @else if (!lignes().length) {
     <p class="annonce">{{ 'pharmacien.espace.vide' | transloco }}</p>
   }
 

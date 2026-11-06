@@ -1,5 +1,9 @@
+<a class="evitement" href="#contenu" (click)="allerAuContenu($event)">
+  {{ 'navigation.evitement' | transloco }}
+</a>
+<app-bandeau-donnees-test />
 <app-en-tete />
-<main>
+<main id="contenu" tabindex="-1" #contenu>
   <router-outlet />
 </main>
 <app-pied-de-page />

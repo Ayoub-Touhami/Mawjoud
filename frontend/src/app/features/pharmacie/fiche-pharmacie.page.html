@@ -7,7 +7,7 @@
   </div>
 
   <article class="contenu">
-    <h1>{{ p.nom }}</h1>
+    <h1><bdi>{{ p.nom }}</bdi></h1>
     <div class="statut">
       <app-pastille-statut [statut]="inscrite() ? 'inscrite-verifiee' : 'non-inscrite'" />
       @if (distance(); as valeur) {
@@ -18,7 +18,7 @@
     <ul class="infos">
       <li>
         <app-icone nom="marqueur" />
-        <span>{{ p.adresse }}, {{ p.ville }}</span>
+        <span><bdi>{{ p.adresse }}, {{ p.ville }}</bdi></span>
       </li>
       @if (ouverture(); as etat) {
         <li>
@@ -52,7 +52,7 @@
           @for (ligne of lignesStock(); track ligne.id) {
             <li>
               <span>
-                <strong>{{ ligne.nom }}</strong>
+                <strong><bdi>{{ ligne.nom }}</bdi></strong>
                 <small>{{ ligne.detail }}</small>
               </span>
               <app-pastille-statut [statut]="ligne.statut" />

@@ -1,6 +1,7 @@
 import { isDevMode } from '@angular/core';
-import { provideTransloco } from '@jsverse/transloco';
+import { provideTransloco, provideTranslocoTranspiler } from '@jsverse/transloco';
 import { ChargeurTraductions } from './transloco-loader';
+import { TranspileurBidi } from './transpileur-bidi';
 
 export const LANGUES = ['fr', 'ar'] as const;
 export type Langue = (typeof LANGUES)[number];
@@ -17,4 +18,8 @@ export function fournirTraduction() {
     },
     loader: ChargeurTraductions,
   });
+}
+
+export function fournirTraductionComplete() {
+  return [fournirTraduction(), provideTranslocoTranspiler(TranspileurBidi)];
 }

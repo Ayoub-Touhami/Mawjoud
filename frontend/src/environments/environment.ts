@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 
 export const environment = {
   production: true,
+  /** Bande « données de test » : à passer à false avec les vraies données. */
+  donneesSimulees: true,
   /** Montre les liens de test des e-mails simulés. */
   outilsSimulation: false,
   /** Fonds de carte : changer de fournisseur ne demande que ces deux adresses, sans clé. */

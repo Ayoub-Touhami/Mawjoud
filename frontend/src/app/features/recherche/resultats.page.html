@@ -1,4 +1,12 @@
 <h1 class="visuellement-masque">{{ titre() }}</h1>
+<p class="visuellement-masque" role="status">
+  @if (groupes(); as g) {
+    {{
+      'recherche.nombre'
+        | transloco: { n: g.declares.length, total: pharmaciesCarte().length, zone: nomZone() }
+    }}
+  }
+</p>
 
 <div
   class="scene"

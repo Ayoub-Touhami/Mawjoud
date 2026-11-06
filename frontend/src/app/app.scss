@@ -8,6 +8,23 @@
 main {
   flex: 1;
   padding: 16px;
+  outline: none;
+}
+
+.evitement {
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-start: 4px;
+  z-index: 30;
+  padding: var(--e-2) var(--e-3);
+  color: var(--action-texte);
+  background: var(--action);
+  border-radius: var(--rayon-petit);
+  transform: translateY(-200%);
+}
+
+.evitement:focus {
+  transform: none;
 }
 
 :host(.sur-carte) {

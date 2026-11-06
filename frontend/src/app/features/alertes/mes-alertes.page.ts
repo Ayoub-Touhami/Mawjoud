@@ -34,6 +34,7 @@ export class MesAlertesPage {
   protected readonly toutes = TOUTES;
   protected readonly alertes = signal<Alerte[]>([]);
   protected readonly chargee = signal(false);
+  protected readonly echecChargement = signal(false);
   protected readonly enEdition = signal<string | null>(null);
   protected readonly zoneEditee = signal(TOUTES);
   protected readonly aSupprimer = signal<string | null>(null);
@@ -78,8 +79,13 @@ export class MesAlertesPage {
     await this.charger();
   }
 
-  private async charger(): Promise<void> {
-    this.alertes.set(await firstValueFrom(this.service.listerAlertes()));
-    this.chargee.set(true);
+  protected async charger(): Promise<void> {
+    try {
+      this.alertes.set(await firstValueFrom(this.service.listerAlertes()));
+      this.echecChargement.set(false);
+      this.chargee.set(true);
+    } catch {
+      this.echecChargement.set(true);
+    }
   }
 }

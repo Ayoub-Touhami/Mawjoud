@@ -56,8 +56,8 @@
       (mousedown)="$event.preventDefault()"
       (click)="choisir(medicament)"
     >
-      <span class="nom">{{ libelle(medicament) }}</span>
-      <span class="detail">{{ medicament.dci }} · {{ medicament.forme }}</span>
+      <span class="nom"><bdi>{{ libelle(medicament) }}</bdi></span>
+      <span class="detail"><bdi>{{ medicament.dci }} · {{ medicament.forme }}</bdi></span>
     </li>
   }
 </ul>

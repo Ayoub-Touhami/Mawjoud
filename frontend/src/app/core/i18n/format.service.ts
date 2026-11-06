@@ -24,12 +24,16 @@ export class FormatService {
       return this.texte('temps.instant');
     }
     if (minutes < 60) {
-      return this.texte('temps.minutes', { n: minutes });
+      return this.duree('minutes', minutes);
     }
     const heures = Math.floor(minutes / 60);
-    return heures < 48
-      ? this.texte('temps.heures', { n: heures })
-      : this.texte('temps.jours', { n: Math.floor(heures / 24) });
+    return heures < 48 ? this.duree('heures', heures) : this.duree('jours', Math.floor(heures / 24));
+  }
+
+  /** L'arabe a un singulier, un duel et deux pluriels : « منذ ساعتين », « منذ 3 ساعات ». */
+  private duree(unite: 'minutes' | 'heures' | 'jours', n: number): string {
+    const forme = new Intl.PluralRules(this.langues.langue()).select(n);
+    return this.texte(`temps.${unite}.${forme}`, { n });
   }
 
   distance(metres: number): string {

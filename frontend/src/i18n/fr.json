@@ -2,7 +2,8 @@
   "app": {
     "nom": "Mawjoud",
     "slogan": "Moins de tours, plus de secours.",
-    "accueilLien": "Mawjoud, retour à la carte"
+    "accueilLien": "Mawjoud, retour à la carte",
+    "donneesTest": "Données de test : pharmacies, stocks et comptes simulés."
   },
   "pages": {
     "accueil": "Carte des pharmacies",
@@ -43,7 +44,8 @@
     "espacePharmacien": "Espace pharmacien",
     "administration": "Administration",
     "seDeconnecter": "Se déconnecter",
-    "continuer": "Continuer"
+    "continuer": "Continuer",
+    "evitement": "Aller au contenu"
   },
   "langue": {
     "autre": "عربية",
@@ -239,9 +241,30 @@
   },
   "temps": {
     "instant": "à l'instant",
-    "minutes": "il y a {{n}} min",
-    "heures": "il y a {{n}} h",
-    "jours": "il y a {{n}} j"
+    "minutes": {
+      "zero": "il y a {{n}} min",
+      "one": "il y a {{n}} min",
+      "two": "il y a {{n}} min",
+      "few": "il y a {{n}} min",
+      "many": "il y a {{n}} min",
+      "other": "il y a {{n}} min"
+    },
+    "heures": {
+      "zero": "il y a {{n}} h",
+      "one": "il y a {{n}} h",
+      "two": "il y a {{n}} h",
+      "few": "il y a {{n}} h",
+      "many": "il y a {{n}} h",
+      "other": "il y a {{n}} h"
+    },
+    "jours": {
+      "zero": "il y a {{n}} j",
+      "one": "il y a {{n}} j",
+      "two": "il y a {{n}} j",
+      "few": "il y a {{n}} j",
+      "many": "il y a {{n}} j",
+      "other": "il y a {{n}} j"
+    }
   },
   "distance": {
     "m": "{{n}} m",
@@ -306,7 +329,8 @@
     "alerte": {
       "texte": "Pas de stock ? Recevez un e-mail dès qu'il est déclaré.",
       "action": "Créer une alerte"
-    }
+    },
+    "nombre": "{{n}} pharmacies avec un stock déclaré sur {{total}}, {{zone}}."
   },
   "gouvernorats": {
     "Ariana": "Ariana",
@@ -527,7 +551,9 @@
       "toutConfirmer": "Confirmez-vous les {{n}} statuts déclarés ? Leur heure de mise à jour sera renouvelée.",
       "toutOui": "Oui, tout confirmer",
       "note": "Sans mise à jour, le statut passe à « à confirmer » après 24 h.",
-      "suspendu": "Votre compte est suspendu : vous ne pouvez plus déclarer de stock. Votre pharmacie apparaît comme non inscrite."
+      "suspendu": "Votre compte est suspendu : vous ne pouvez plus déclarer de stock. Votre pharmacie apparaît comme non inscrite.",
+      "enregistree": "Mise à jour enregistrée.",
+      "erreurChargement": "Votre liste n'a pas pu être chargée."
     },
     "motifs": {
       "justificatif-illisible": "Le justificatif est illisible.",

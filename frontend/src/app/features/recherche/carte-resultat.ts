@@ -26,7 +26,7 @@ import { LigneResultat } from './resultats.outils';
       }
       <span class="contenu">
         <span class="ligne">
-          <strong>{{ ligne().pharmacie.nom }}</strong>
+          <strong><bdi>{{ ligne().pharmacie.nom }}</bdi></strong>
           @if (distance(); as valeur) {
             <span class="distance">{{ valeur }}</span>
           }

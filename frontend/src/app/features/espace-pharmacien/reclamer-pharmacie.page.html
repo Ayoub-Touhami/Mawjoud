@@ -88,8 +88,8 @@
             (click)="choisie.set(pharmacie)"
           >
             <span class="texte">
-              <strong>{{ pharmacie.nom }}</strong>
-              <span>{{ pharmacie.adresse }}, {{ pharmacie.ville }}</span>
+              <strong><bdi>{{ pharmacie.nom }}</bdi></strong>
+              <span><bdi>{{ pharmacie.adresse }}, {{ pharmacie.ville }}</bdi></span>
             </span>
             @if (choisie()?.id === pharmacie.id) {
               <span class="coche"><app-icone nom="coche" [taille]="18" /></span>
