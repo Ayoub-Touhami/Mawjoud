@@ -37,7 +37,8 @@
     "aPropos": "À propos et contact",
     "creerAlerte": "Créer une alerte",
     "espacePharmacien": "Espace pharmacien",
-    "administration": "Administration"
+    "administration": "Administration",
+    "seDeconnecter": "Se déconnecter"
   },
   "langue": {
     "autre": "عربية",
@@ -299,8 +300,7 @@
     },
     "alerte": {
       "texte": "Pas de stock ? Recevez un e-mail dès qu'il est déclaré.",
-      "action": "Créer une alerte",
-      "choisi": "Médicament choisi : {{nom}}"
+      "action": "Créer une alerte"
     }
   },
   "gouvernorats": {
@@ -328,5 +328,103 @@
     "Tozeur": "Tozeur",
     "Tunis": "Tunis",
     "Zaghouan": "Zaghouan"
+  },
+  "compte": {
+    "email": "E-mail",
+    "motDePasse": "Mot de passe",
+    "aideMotDePasse": "8 caractères au moins. Un lien vérifie votre e-mail.",
+    "oublie": "Mot de passe oublié ?",
+    "creer": "Créer mon compte",
+    "ou": "ou",
+    "sansCompte": "Pas besoin de compte pour consulter la carte, chercher un médicament et voir les stocks.",
+    "continuer": "Continuer sans compte",
+    "notePatient": "Compte patient : seulement pour recevoir une alerte e-mail.",
+    "oublieTexte": "Cette fonction n'est pas encore disponible. Si vous ne retrouvez plus votre mot de passe, vous ne pouvez pas encore le changer depuis le site.",
+    "onglets": {
+      "connexion": "Connexion",
+      "creation": "Créer un compte"
+    },
+    "erreurs": {
+      "email": "Saisissez une adresse e-mail valide, par exemple nom@exemple.tn.",
+      "motDePasseVide": "Saisissez votre mot de passe.",
+      "motDePasseCourt": "Le mot de passe doit compter 8 caractères au moins.",
+      "email-utilise": "Cette adresse e-mail a déjà un compte. Connectez-vous avec votre mot de passe.",
+      "identifiants": "E-mail ou mot de passe incorrect.",
+      "indisponible": "L'opération n'a pas abouti. Réessayez dans un instant.",
+      "non-connecte": "Connectez-vous pour continuer.",
+      "lien-expire": "Ce lien a expiré.",
+      "lien-invalide": "Ce lien n'est pas valable."
+    },
+    "verification": {
+      "encours": "Vérification en cours…",
+      "attenteTitre": "Vérifiez votre boîte mail",
+      "attenteTexte": "Nous avons envoyé un lien de vérification à {{email}}. Il est valable 24 h.",
+      "attenteAlerte": "Aucune alerte ne partira tant que votre adresse n'est pas vérifiée. Vos alertes déjà créées sont conservées.",
+      "sansCompte": "Connectez-vous pour renvoyer le lien de vérification.",
+      "renvoyer": "Renvoyer le lien",
+      "renvoye": "Un nouveau lien vient d'être envoyé. L'ancien ne fonctionne plus.",
+      "succesTitre": "Votre adresse est vérifiée",
+      "succesTexte": "Vos alertes sont actives. Vous recevrez un e-mail dès qu'une pharmacie inscrite déclare votre médicament disponible.",
+      "expireTitre": "Ce lien a expiré",
+      "expireTexte": "Les liens de vérification sont valables 24 h. Demandez-en un nouveau.",
+      "invalideTitre": "Ce lien n'est pas valable",
+      "invalideTexte": "Il a déjà servi ou il est incomplet. Connectez-vous pour vérifier l'état de votre compte.",
+      "dejaTitre": "Votre adresse est déjà vérifiée"
+    },
+    "test": {
+      "texte": "Développement uniquement : aucun e-mail n'est envoyé, ce lien le remplace.",
+      "ouvrir": "Ouvrir le lien de vérification",
+      "expirer": "Tester un lien expiré"
+    },
+    "desabonnement": {
+      "encours": "Désabonnement en cours…",
+      "succesTitre": "Vous êtes désabonné",
+      "succesTexte": "Toutes vos alertes sont arrêtées : vous ne recevrez plus d'e-mail de disponibilité. Votre compte reste actif.",
+      "invalideTexte": "Ce lien de désabonnement est incomplet ou ne correspond à aucun compte."
+    },
+    "suppression": {
+      "texte": "Le compte {{email}} et toutes ses alertes seront supprimés.",
+      "definitif": "Cette action est définitive : ni le compte ni les alertes ne pourront être récupérés.",
+      "confirmer": "Supprimer définitivement",
+      "succesTitre": "Votre compte est supprimé",
+      "succesTexte": "Votre adresse e-mail et vos alertes ont été effacées. Vous pouvez continuer à consulter la carte sans compte."
+    }
+  },
+  "alertes": {
+    "etape": "Étape 2 sur 2",
+    "titre": "Être prévenu dès qu'il est disponible",
+    "intro": "Un e-mail quand une pharmacie inscrite déclare le médicament disponible.",
+    "medicament": "Médicament",
+    "erreurMedicament": "Choisissez le médicament dans la liste proposée.",
+    "ou": "Où ?",
+    "uneVille": "Une ville",
+    "toutes": "Toutes les villes",
+    "zone": "Une ville ou un gouvernorat",
+    "emailCompte": "Votre e-mail, pour créer le compte",
+    "creer": "Créer mon alerte",
+    "donnees": "Nous gardons seulement le médicament, la ville et l'e-mail.",
+    "sante": "Aucune donnée de santé n'est demandée",
+    "dejaCompte": "Déjà un compte ? Se connecter",
+    "nouveauCompte": "Pas de compte ? En créer un",
+    "connecte": "Alerte pour le compte {{email}}.",
+    "resultat": {
+      "creee": "Votre alerte est créée. Elle prendra fin après le premier e-mail envoyé.",
+      "existante": "Vous avez déjà cette alerte pour ce médicament et ce lieu : rien n'a été ajouté."
+    },
+    "mes": {
+      "vide": "Vous n'avez aucune alerte pour le moment.",
+      "doublon": "Vous avez déjà cette alerte pour ce médicament et ce lieu.",
+      "confirmer": "Supprimer cette alerte ? Vous ne recevrez plus d'e-mail pour ce médicament.",
+      "oui": "Oui, supprimer",
+      "enregistrer": "Enregistrer",
+      "modifier": "Modifier",
+      "modifierNom": "Modifier l'alerte {{nom}}",
+      "supprimer": "Supprimer",
+      "supprimerNom": "Supprimer l'alerte {{nom}}",
+      "etat": {
+        "active": "Active",
+        "terminee": "Terminée"
+      }
+    }
   }
 }

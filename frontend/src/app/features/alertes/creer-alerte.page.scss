@@ -1,0 +1,114 @@
+.page {
+  display: grid;
+  gap: var(--e-3);
+  max-inline-size: 480px;
+  margin-inline: auto;
+}
+
+p {
+  margin-block: 0;
+}
+
+.haut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.retour {
+  display: grid;
+  place-items: center;
+  inline-size: var(--cible-tactile);
+  block-size: var(--cible-tactile);
+  color: var(--titre);
+}
+
+:host-context([dir='rtl']) .retour app-icone {
+  transform: scaleX(-1);
+}
+
+.etape {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+
+.titre {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+}
+
+h1 {
+  margin-block: 0;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.cloche {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: 52px;
+  block-size: 52px;
+  color: var(--alerte-texte);
+  background: var(--alerte);
+  border-radius: var(--rayon);
+}
+
+form {
+  display: grid;
+  gap: var(--e-4);
+}
+
+.medicament,
+.ou {
+  display: grid;
+  gap: var(--e-2);
+}
+
+.libelle {
+  font-weight: 600;
+}
+
+hr {
+  inline-size: 100%;
+  margin: 0;
+  border: 0;
+  border-block-start: 2px solid var(--carte-bord);
+}
+
+.erreur,
+.confirmation {
+  display: grid;
+  gap: var(--e-3);
+  padding: var(--e-3) var(--e-4);
+  color: var(--texte);
+  border-radius: var(--rayon);
+}
+
+.erreur {
+  background: var(--statut-rupture-fond);
+}
+
+.confirmation {
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+}
+
+.erreur-champ {
+  display: flex;
+  gap: var(--e-1);
+  align-items: center;
+  font-size: 14px;
+  color: var(--erreur);
+}
+
+.note {
+  font-size: 14px;
+  color: var(--texte-secondaire);
+  text-align: center;
+}
+
+.fort {
+  font-weight: 600;
+}

@@ -1,10 +1,12 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   inject,
   input,
+  output,
   signal,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -38,6 +40,12 @@ const SUGGESTIONS_MAX = 7;
 export class RechercheMedicament {
   /** Texte affiché à l'arrivée sur la page, par exemple le médicament déjà choisi. */
   readonly valeur = input('');
+  /** Le choix reste dans la page, sans ouvrir les résultats : formulaire d'alerte. */
+  readonly choix = input(false, { transform: booleanAttribute });
+  /** Étiquette visible au-dessus du champ, à la place de l'étiquette masquée. */
+  readonly libelleVisible = input('');
+  /** Mode choix : le médicament retenu, ou null si le texte a changé depuis. */
+  readonly choisi = output<Medicament | null>();
 
   private readonly api = inject(PHARMACIE_API);
   private readonly router = inject(Router);
@@ -83,6 +91,9 @@ export class RechercheMedicament {
 
   protected saisir(valeur: string): void {
     this.texte.set(valeur);
+    if (this.choix()) {
+      this.choisi.emit(null);
+    }
     this.ouvert.set(true);
     this.active.set(-1);
     this.aide.set(false);
@@ -114,7 +125,7 @@ export class RechercheMedicament {
     const choisi = this.visibles()[this.active()];
     if (this.panneau() && choisi) {
       this.choisir(choisi);
-    } else if (!this.assezLong()) {
+    } else if (!this.assezLong() || this.choix()) {
       this.aide.set(true);
     } else {
       this.ouvert.set(false);
@@ -129,6 +140,10 @@ export class RechercheMedicament {
     this.texte.set(libelleMedicament(medicament));
     this.ouvert.set(false);
     this.active.set(-1);
+    if (this.choix()) {
+      this.choisi.emit(medicament);
+      return;
+    }
     void this.router.navigate(['/resultats'], {
       queryParams: { m: medicament.id, q: null },
       queryParamsHandling: 'merge',

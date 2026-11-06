@@ -159,7 +159,11 @@ export class ResultatsPage {
   });
   protected readonly parametresAlerte = computed((): Record<string, string> => {
     const medicament = this.medicament();
-    return medicament ? { m: medicament.id } : { q: this.texteChamp() };
+    const zone = this.zone();
+    return {
+      ...(medicament ? { m: medicament.id } : { q: this.texteChamp() }),
+      ...(zone ? { zone } : {}),
+    };
   });
   protected readonly lettresArabes = computed(() => contientArabe(this.texteChamp()));
   protected readonly titre = computed(() => {

@@ -1,0 +1,69 @@
+<section class="page">
+  @switch (etat()) {
+    @case ('verification') {
+      <h1>{{ 'compte.verification.encours' | transloco }}</h1>
+    }
+    @case ('succes') {
+      <span class="signe succes"><app-icone nom="coche" [taille]="36" /></span>
+      <h1>{{ 'compte.verification.succesTitre' | transloco }}</h1>
+      <p>{{ 'compte.verification.succesTexte' | transloco }}</p>
+      <div class="actions">
+        <a appBouton routerLink="/alertes">{{ 'navigation.mesAlertes' | transloco }}</a>
+        <a appBouton variante="secondaire" routerLink="/">{{ 'fiche.retour' | transloco }}</a>
+      </div>
+    }
+    @case ('expire') {
+      <span class="signe alerte"><app-icone nom="horloge" [taille]="36" /></span>
+      <h1>{{ 'compte.verification.expireTitre' | transloco }}</h1>
+      <p>{{ 'compte.verification.expireTexte' | transloco }}</p>
+      <ng-container [ngTemplateOutlet]="renvoi" />
+    }
+    @case ('invalide') {
+      <span class="signe alerte"><app-icone nom="fermer" [taille]="36" /></span>
+      <h1>{{ 'compte.verification.invalideTitre' | transloco }}</h1>
+      <p>{{ 'compte.verification.invalideTexte' | transloco }}</p>
+      <div class="actions">
+        <a appBouton routerLink="/compte/connexion">{{ 'navigation.seConnecter' | transloco }}</a>
+      </div>
+    }
+    @default {
+      @if (dejaVerifie()) {
+        <span class="signe succes"><app-icone nom="coche" [taille]="36" /></span>
+        <h1>{{ 'compte.verification.dejaTitre' | transloco }}</h1>
+        <div class="actions">
+          <a appBouton routerLink="/alertes">{{ 'navigation.mesAlertes' | transloco }}</a>
+        </div>
+      } @else if (utilisateur(); as compte) {
+        <span class="signe"><app-icone nom="email" [taille]="36" /></span>
+        <h1>{{ 'compte.verification.attenteTitre' | transloco }}</h1>
+        <p>{{ 'compte.verification.attenteTexte' | transloco: { email: compte.email } }}</p>
+        <p class="important">{{ 'compte.verification.attenteAlerte' | transloco }}</p>
+        <ng-container [ngTemplateOutlet]="renvoi" />
+      } @else {
+        <span class="signe"><app-icone nom="email" [taille]="36" /></span>
+        <h1>{{ 'compte.verification.attenteTitre' | transloco }}</h1>
+        <p>{{ 'compte.verification.sansCompte' | transloco }}</p>
+        <div class="actions">
+          <a appBouton routerLink="/compte/connexion">
+            {{ 'navigation.seConnecter' | transloco }}
+          </a>
+        </div>
+      }
+    }
+  }
+
+  <ng-template #renvoi>
+    @if (renvoye()) {
+      <p class="important" role="status">{{ 'compte.verification.renvoye' | transloco }}</p>
+    }
+    @if (erreurRenvoi()) {
+      <p class="important" role="alert">{{ 'compte.erreurs.indisponible' | transloco }}</p>
+    }
+    <div class="actions">
+      <button type="button" appBouton [chargement]="envoi()" (click)="renvoyer()">
+        {{ 'compte.verification.renvoyer' | transloco }}
+      </button>
+    </div>
+    <app-lien-test-email [version]="version()" />
+  </ng-template>
+</section>

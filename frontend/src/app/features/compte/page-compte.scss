@@ -1,0 +1,57 @@
+// Mise en page commune aux écrans de compte qui ne sont pas maquettés.
+.page {
+  display: grid;
+  gap: var(--e-4);
+  justify-items: start;
+  max-inline-size: 480px;
+  padding-block: var(--e-5);
+  margin-inline: auto;
+}
+
+h1,
+p {
+  margin-block: 0;
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+.signe {
+  display: grid;
+  place-items: center;
+  inline-size: 72px;
+  block-size: 72px;
+  color: var(--alerte-texte);
+  background: var(--alerte);
+  border-radius: var(--rayon);
+}
+
+.signe.succes {
+  color: var(--tonal-texte);
+  background: var(--tonal);
+}
+
+.signe.alerte {
+  color: var(--statut-rupture);
+  background: var(--statut-rupture-fond);
+}
+
+.important {
+  inline-size: 100%;
+  padding: var(--e-3) var(--e-4);
+  background: var(--carte);
+  border: 1px solid var(--carte-bord);
+  border-radius: var(--rayon);
+}
+
+.actions {
+  display: grid;
+  gap: var(--e-3);
+  inline-size: 100%;
+}
+
+app-lien-test-email {
+  inline-size: 100%;
+}

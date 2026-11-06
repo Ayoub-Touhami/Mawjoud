@@ -39,6 +39,7 @@ export class AuthServiceSimule implements AuthService {
   private readonly session = inject(SessionService);
 
   readonly utilisateur = this.session.utilisateur;
+  private dernierJeton: string | null = null;
 
   constructor() {
     const compte = this.stockage.comptes.find((c) => c.id === this.stockage.sessionId);
@@ -90,13 +91,13 @@ export class AuthServiceSimule implements AuthService {
     });
   }
 
-  /** Jeton du lien en attente pour le compte connecté, ou d'un compte donné. */
-  jetonEnAttente(jetonConnu?: string | null): string | null {
+  /** Jeton du dernier lien envoyé, ou de celui du compte connecté. */
+  jetonEnAttente(): string | null {
     const id = this.utilisateur()?.id;
     return (
-      this.stockage.comptes.find((c) =>
-        jetonConnu ? c.jetonVerification === jetonConnu : c.id === id,
-      )?.jetonVerification ?? null
+      this.dernierJeton ??
+      this.stockage.comptes.find((c) => c.id === id)?.jetonVerification ??
+      null
     );
   }
 
@@ -149,6 +150,7 @@ export class AuthServiceSimule implements AuthService {
       throw 'lien-expire' satisfies ErreurAuth;
     }
     this.modifier(jeton, { emailVerifie: true, jetonVerification: null, expirationJeton: 0 });
+    this.dernierJeton = null;
     if (this.utilisateur()?.id === compte.id) {
       this.session.ouvrir(versUtilisateur({ ...compte, emailVerifie: true }));
     }
@@ -156,14 +158,12 @@ export class AuthServiceSimule implements AuthService {
 
   /** Un nouveau lien annule le précédent. */
   private preparerLien(compte: CompteSimule): void {
+    const jeton = crypto.randomUUID();
+    this.dernierJeton = jeton;
     this.stockage.enregistrer({
       comptes: this.stockage.comptes.map((c) =>
         c.id === compte.id
-          ? {
-              ...c,
-              jetonVerification: crypto.randomUUID(),
-              expirationJeton: Date.now() + DUREE_LIEN_MS,
-            }
+          ? { ...c, jetonVerification: jeton, expirationJeton: Date.now() + DUREE_LIEN_MS }
           : c,
       ),
     });

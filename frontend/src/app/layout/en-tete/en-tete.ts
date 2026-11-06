@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { filter } from 'rxjs';
+import { AUTH_SERVICE } from '../../core/services/auth.service';
 import { NavigationService } from '../../core/services/navigation.service';
 import { Bouton } from '../../shared/bouton/bouton';
 import { Icone } from '../../shared/icone/icone';
@@ -35,12 +36,15 @@ import { SelecteurTheme } from '../selecteur-theme/selecteur-theme';
   host: { '(document:keydown.escape)': 'fermer()' },
 })
 export class EnTete {
+  private readonly auth = inject(AUTH_SERVICE);
+  private readonly router = inject(Router);
+  protected readonly utilisateur = this.auth.utilisateur;
   protected readonly ouvert = inject(NavigationService).menuOuvert;
   private readonly boutonMenu = viewChild.required<ElementRef<HTMLElement>>('boutonMenu');
 
   constructor() {
-    inject(Router)
-      .events.pipe(
+    this.router.events
+      .pipe(
         filter((evenement) => evenement instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
@@ -51,6 +55,11 @@ export class EnTete {
         this.boutonMenu().nativeElement.focus();
       }
     });
+  }
+
+  protected sortir(): void {
+    this.auth.seDeconnecter();
+    void this.router.navigate(['/']);
   }
 
   protected basculer(): void {

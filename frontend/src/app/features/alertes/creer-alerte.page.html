@@ -1,0 +1,103 @@
+<section class="page">
+  <div class="haut">
+    <a class="retour" routerLink="/" [attr.aria-label]="'fiche.retour' | transloco">
+      <app-icone nom="retour" />
+    </a>
+    <span class="etape">{{ 'alertes.etape' | transloco }}</span>
+  </div>
+
+  <div class="titre">
+    <span class="cloche"><app-icone nom="alerte" [taille]="30" /></span>
+    <h1>{{ 'alertes.titre' | transloco }}</h1>
+  </div>
+  <p>{{ 'alertes.intro' | transloco }}</p>
+
+  @if (resultat(); as etat) {
+    <div class="confirmation" role="status">
+      <p>{{ 'alertes.resultat.' + etat | transloco }}</p>
+      @if (utilisateur()?.emailVerifie) {
+        <a appBouton routerLink="/alertes">{{ 'navigation.mesAlertes' | transloco }}</a>
+      } @else {
+        <p>{{ 'compte.verification.attenteAlerte' | transloco }}</p>
+        <a appBouton routerLink="/compte/verification-email">
+          {{ 'compte.verification.attenteTitre' | transloco }}
+        </a>
+      }
+    </div>
+  } @else {
+    <form novalidate (submit)="creer($event)">
+      <div class="medicament">
+        <app-recherche-medicament
+          choix
+          [valeur]="nomMedicament()"
+          [libelleVisible]="'alertes.medicament' | transloco"
+          (choisi)="choisirMedicament($event)"
+        />
+        @if (erreurMedicament()) {
+          <p class="erreur-champ" role="alert">
+            <app-icone nom="fermer" [taille]="18" />
+            {{ 'alertes.erreurMedicament' | transloco }}
+          </p>
+        }
+      </div>
+
+      <div class="ou">
+        <p class="libelle">{{ 'alertes.ou' | transloco }}</p>
+        <app-segments
+          [libelle]="'alertes.ou' | transloco"
+          [options]="portees()"
+          [(valeur)]="portee"
+        />
+        @if (portee() === 'ville') {
+          <app-champ [liste]="true" [libelle]="'alertes.zone' | transloco">
+            <select appControle (change)="zone.set($any($event.target).value)">
+              @for (nom of gouvernorats; track nom) {
+                <option [value]="nom" [selected]="nom === zone()">
+                  {{ 'gouvernorats.' + nom | transloco }}
+                </option>
+              }
+            </select>
+          </app-champ>
+        }
+      </div>
+
+      <hr />
+
+      @if (utilisateur(); as compte) {
+        <p>{{ 'alertes.connecte' | transloco: { email: compte.email } }}</p>
+      } @else {
+        <app-champs-compte
+          [(email)]="email"
+          [(motDePasse)]="motDePasse"
+          [nouveau]="!connexion()"
+          [libelleEmail]="connexion() ? 'compte.email' : 'alertes.emailCompte'"
+          [erreurs]="erreurs()"
+        />
+      }
+
+      @if (erreur(); as code) {
+        <div class="erreur" role="alert">
+          <p>{{ 'compte.erreurs.' + code | transloco }}</p>
+          @if (code === 'email-utilise') {
+            <button type="button" appBouton variante="lien" (click)="basculerConnexion()">
+              {{ 'navigation.seConnecter' | transloco }}
+            </button>
+          }
+        </div>
+      }
+
+      <button type="submit" appBouton icone="alerte" [chargement]="envoi()">
+        {{ 'alertes.creer' | transloco }}
+      </button>
+
+      <p class="note">{{ 'alertes.donnees' | transloco }}</p>
+      <p class="note fort">{{ 'alertes.sante' | transloco }}</p>
+
+      @if (!utilisateur()) {
+        <button type="button" appBouton variante="lien" (click)="basculerConnexion()">
+          {{ (connexion() ? 'alertes.nouveauCompte' : 'alertes.dejaCompte') | transloco }}
+        </button>
+      }
+    </form>
+  }
+</section>

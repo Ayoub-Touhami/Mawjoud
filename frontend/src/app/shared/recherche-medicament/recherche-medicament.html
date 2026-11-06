@@ -1,8 +1,13 @@
-<form role="search" novalidate (submit)="valider($event)">
+@if (libelleVisible()) {
+  <label class="libelle-visible" for="recherche-medicament">{{ libelleVisible() }}</label>
+}
+<div class="champ" [attr.role]="choix() ? null : 'search'">
   <app-icone nom="loupe" [taille]="24" />
-  <label class="visuellement-masque" for="recherche-medicament">
-    {{ 'recherche.libelle' | transloco }}
-  </label>
+  @if (!libelleVisible()) {
+    <label class="visuellement-masque" for="recherche-medicament">
+      {{ 'recherche.libelle' | transloco }}
+    </label>
+  }
   <input
     #champ
     id="recherche-medicament"
@@ -20,6 +25,7 @@
     (focus)="ouvert.set(true)"
     (blur)="ouvert.set(false)"
     (keydown)="touche($event)"
+    (keydown.enter)="valider($event)"
   />
   @if (texte()) {
     <button
@@ -33,7 +39,7 @@
     </button>
   }
   <ng-content />
-</form>
+</div>
 
 <ul
   id="suggestions-medicament"
@@ -62,5 +68,7 @@
   </p>
 }
 @if (aide()) {
-  <p id="aide-recherche" class="vide" role="status">{{ 'recherche.aide' | transloco }}</p>
+  <p id="aide-recherche" class="vide" role="status">
+    {{ (choix() && assezLong() ? 'alertes.erreurMedicament' : 'recherche.aide') | transloco }}
+  </p>
 }

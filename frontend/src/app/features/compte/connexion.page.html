@@ -1,0 +1,55 @@
+<app-motif class="bandeau" ton="sombre">
+  <p class="slogan">{{ 'app.slogan' | transloco }}</p>
+</app-motif>
+
+<div class="feuille">
+  <h1 class="visuellement-masque">{{ 'pages.connexion' | transloco }}</h1>
+
+  <app-segments
+    [libelle]="'pages.connexion' | transloco"
+    [options]="modes()"
+    [valeur]="mode()"
+    (valeurChange)="changerMode($event)"
+  />
+
+  <form novalidate (submit)="soumettre($event)">
+    <app-champs-compte
+      [(email)]="email"
+      [(motDePasse)]="motDePasse"
+      [nouveau]="creation()"
+      [erreurs]="erreurs()"
+    />
+
+    @if (!creation()) {
+      <a class="oublie" routerLink="/compte/mot-de-passe-oublie">
+        {{ 'compte.oublie' | transloco }}
+      </a>
+    }
+
+    @if (erreur(); as code) {
+      <div class="erreur" role="alert">
+        <p>{{ 'compte.erreurs.' + code | transloco }}</p>
+        @if (code === 'email-utilise') {
+          <button type="button" appBouton variante="lien" (click)="changerMode('connexion')">
+            {{ 'navigation.seConnecter' | transloco }}
+          </button>
+        }
+      </div>
+    }
+
+    <button type="submit" appBouton [chargement]="envoi()">
+      {{ (creation() ? 'compte.creer' : 'navigation.seConnecter') | transloco }}
+    </button>
+  </form>
+
+  <p class="ou"><span>{{ 'compte.ou' | transloco }}</span></p>
+
+  <div class="sans-compte">
+    <p>{{ 'compte.sansCompte' | transloco }}</p>
+    <a appBouton variante="menthe" icone="loupe" routerLink="/">
+      {{ 'compte.continuer' | transloco }}
+    </a>
+  </div>
+
+  <p class="note">{{ 'compte.notePatient' | transloco }}</p>
+</div>

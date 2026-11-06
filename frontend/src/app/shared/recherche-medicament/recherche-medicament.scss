@@ -5,7 +5,13 @@
   min-inline-size: 0;
 }
 
-form {
+.libelle-visible {
+  display: block;
+  margin-block-end: var(--e-2);
+  font-weight: 600;
+}
+
+.champ {
   display: flex;
   align-items: center;
   gap: var(--e-2);
@@ -19,7 +25,7 @@ form {
   box-shadow: var(--ombre-carte);
 }
 
-form:focus-within {
+.champ:focus-within {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
