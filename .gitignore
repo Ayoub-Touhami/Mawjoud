@@ -1,0 +1,4 @@
+# Secrets locaux : jamais dans Git.
+.env
+.env.*
+!.env.example
