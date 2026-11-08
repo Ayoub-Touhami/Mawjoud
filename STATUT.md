@@ -89,7 +89,7 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 | 6 | Ordre de tri | Tranché par vous (partie 4) : distance, sinon gouvernorat |
 | 7 | Position de l'utilisateur | Appliqué : en mémoire seulement. Conservation à confirmer côté serveur |
 | 8 | Mot de passe oublié | À décider. Page d'attente |
-| 9 | Conservation après suppression de compte | Appliqué : suppression définitive. À confirmer. Le journal garde un identifiant de compte |
+| 9 | Conservation après suppression de compte | Appliqué : suppression définitive. À confirmer. Confidentialité : `journal_audit`, `historique_position` et `historique_stock` gardent l'identifiant numérique du compte qui a agi, sans clé étrangère ; il reste après la suppression du compte, sans e-mail ni autre donnée |
 | 10 | Historique des déclarations | À décider. Rien n'est gardé |
 | 11 | Plusieurs pharmacies par compte | À décider. Une seule |
 | 12 | Ville pilote | À décider |

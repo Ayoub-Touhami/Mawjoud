@@ -29,6 +29,12 @@ Sur les 72 captures : aucun débordement, contraste minimal de 4,95:1, aucune ci
 | Textes de l'administration en français dans `ar.json` | — | Volontaire (partie 7) |
 | Jeu de données : noms et adresses de pharmacies en lettres latines | — | Volontaire : donnée source |
 
+## 1 bis. Écarts avec la spécification (modèle de données)
+
+| Écart | Suite |
+|---|---|
+| F10 et R10 parlent d'une alerte par « ville » ; le front-end et la base utilisent le gouvernorat (`prive.alerte.gouvernorat_code`, vide = toutes les villes) | Volontaire, décidé le 8 novembre 2026 : on suit le front-end |
+
 ## 2. Fidélité visuelle
 
 | Écart avec le PDF | Écran | Suite |
