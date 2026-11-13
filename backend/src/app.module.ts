@@ -10,6 +10,13 @@ import { EmailService } from './email/email.service.js';
 import { EmailBrevo, EmailConsole, EmailMemoire, type FournisseurEmail } from './email/fournisseurs.js';
 import { RattachementAdminController, RattachementPharmacienController } from './rattachements/rattachements.controller.js';
 import { RattachementsService } from './rattachements/rattachements.service.js';
+import {
+  LimitePubliqueGuard,
+  MedicamentsPublicsController,
+  PharmaciesPubliquesController,
+  ReferentielsPublicsController,
+} from './publique/publique.controller.js';
+import { PubliqueService } from './publique/publique.service.js';
 import { FiltreErreurs } from './securite/filtre-erreurs.js';
 import { AdministrateurGuard, ConnecteGuard, PatientGuard, PharmacienGuard, SecuriteGuard } from './securite/gardes.js';
 import { LimiteursService } from './securite/limiteurs.service.js';
@@ -25,7 +32,8 @@ function fournisseurEmail(config: Configuration): FournisseurEmail {
 }
 
 /**
- * Comptes et authentification (Partie 5). Recherche, stock et alertes viendront aux Parties 6 à 9.
+ * Comptes et authentification (Partie 5) ; recherche et carte, API publique en lecture (Partie 6).
+ * Stock, administration et alertes viendront aux Parties 7 à 9.
  * `controleursEnPlus` sert aux tests (route sans déclaration d'accès, pour vérifier le refus par défaut).
  */
 @Module({})
@@ -33,7 +41,15 @@ export class AppModule {
   static avec(config: Configuration, controleursEnPlus: Type[] = []): DynamicModule {
     return {
       module: AppModule,
-      controllers: [ComptesController, RattachementPharmacienController, RattachementAdminController, ...controleursEnPlus],
+      controllers: [
+        ComptesController,
+        RattachementPharmacienController,
+        RattachementAdminController,
+        PharmaciesPubliquesController,
+        MedicamentsPublicsController,
+        ReferentielsPublicsController,
+        ...controleursEnPlus,
+      ],
       providers: [
         { provide: CONFIGURATION, useValue: config },
         { provide: FOURNISSEUR_EMAIL, useValue: fournisseurEmail(config) },
@@ -45,6 +61,8 @@ export class AppModule {
         AuditService,
         ComptesService,
         RattachementsService,
+        PubliqueService,
+        LimitePubliqueGuard,
         ConnecteGuard,
         PatientGuard,
         PharmacienGuard,

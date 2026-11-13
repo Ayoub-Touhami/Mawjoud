@@ -46,6 +46,31 @@ export class BaseService implements Executeur, OnModuleInit, OnModuleDestroy {
     return r.rows;
   }
 
+  /**
+   * Lecture publique : transaction en lecture seule, sous le rôle mawjoud_lecture_publique
+   * (migration 029). La base garantit que seules les vues publique.* sont lues et que rien
+   * n'est écrit, même si une requête du back-end était erronée.
+   */
+  async lecturePublique<R>(fn: (lecture: Executeur) => Promise<R>): Promise<R> {
+    const client = await this.pool.connect();
+    const lecture: Executeur = {
+      requete: async <T extends pg.QueryResultRow>(texte: string, valeurs: Valeur[] = []) =>
+        (await client.query<T>(texte, valeurs as unknown[])).rows,
+    };
+    try {
+      await client.query('BEGIN TRANSACTION READ ONLY');
+      await client.query('SET LOCAL ROLE mawjoud_lecture_publique');
+      const resultat = await fn(lecture);
+      await client.query('COMMIT');
+      return resultat;
+    } catch (e) {
+      await client.query('ROLLBACK').catch(() => undefined);
+      throw e;
+    } finally {
+      client.release();
+    }
+  }
+
   /** Exécute fn dans une transaction ; tout est annulé à la moindre erreur. */
   async transaction<R>(fn: (tx: Executeur) => Promise<R>): Promise<R> {
     const client = await this.pool.connect();

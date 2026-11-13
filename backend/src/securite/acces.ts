@@ -1,6 +1,6 @@
 import { applyDecorators, createParamDecorator, ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
 import { AdministrateurGuard, ConnecteGuard, PatientGuard, PharmacienGuard } from './gardes.js';
-import { CLE_ACCES, CLE_EMAIL_VERIFIE, CLE_SUSPENDU_AUTORISE, type RequeteMawjoud } from './acces-cles.js';
+import { CLE_ACCES, CLE_EMAIL_VERIFIE, CLE_SANS_SESSION, CLE_SUSPENDU_AUTORISE, type RequeteMawjoud } from './acces-cles.js';
 import type { CompteConnecte, SessionOuverte } from './sessions.service.js';
 
 export { CLE_ACCES, CLE_EMAIL_VERIFIE, CLE_SUSPENDU_AUTORISE, type Acces, type RequeteMawjoud } from './acces-cles.js';
@@ -23,8 +23,13 @@ const options = (o: OptionsAcces) => [
   SetMetadata(CLE_SUSPENDU_AUTORISE, !!o.suspenduAutorise),
 ];
 
-/** Ouvert à tous, sans compte (inscription, connexion, liens reçus par e-mail). */
-export const Public = () => SetMetadata(CLE_ACCES, 'public');
+/**
+ * Ouvert à tous, sans compte (inscription, connexion, liens reçus par e-mail).
+ * `sansSession` : la route ne lit jamais la session et ne pose jamais de cookie (API publique en
+ * lecture : ses réponses peuvent être mises en cache sans risque de partager un cookie).
+ */
+export const Public = (o: { sansSession?: boolean } = {}) =>
+  applyDecorators(SetMetadata(CLE_ACCES, 'public'), SetMetadata(CLE_SANS_SESSION, !!o.sansSession));
 
 /**
  * Tout compte connecté, quel que soit son rôle, même suspendu : sert à voir son état (/moi),

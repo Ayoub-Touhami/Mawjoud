@@ -29,6 +29,8 @@ export interface Configuration {
     connexionParIp: Limite;
     envoisParIp: Limite;
     envoisParEmail: Limite;
+    /** Routes publiques en lecture (recherche, carte), par IP. */
+    publicParIp: Limite;
   };
 }
 
@@ -144,6 +146,7 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
       connexionParIp: { max: 20, fenetreMs: 15 * MINUTE },
       envoisParIp: { max: 10, fenetreMs: HEURE },
       envoisParEmail: { max: 3, fenetreMs: HEURE },
+      publicParIp: { max: 120, fenetreMs: MINUTE },
     },
   };
   return { ...config, ...surcharges };

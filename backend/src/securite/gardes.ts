@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import type { Response } from 'express';
 import { CONFIGURATION } from '../config/jetons-injection.js';
 import type { Configuration } from '../config/configuration.js';
-import { CLE_ACCES, CLE_EMAIL_VERIFIE, CLE_SUSPENDU_AUTORISE, type Acces, type RequeteMawjoud } from './acces-cles.js';
+import { CLE_ACCES, CLE_EMAIL_VERIFIE, CLE_SANS_SESSION, CLE_SUSPENDU_AUTORISE, type Acces, type RequeteMawjoud } from './acces-cles.js';
 import { prolongerCookie } from './cookies.js';
 import { ErreurApi } from './erreurs.js';
 import { SessionsService, type Role } from './sessions.service.js';
@@ -37,7 +37,8 @@ export class SecuriteGuard implements CanActivate {
       throw new ErreurApi(403, 'acces-refuse');
     }
 
-    const jeton = req.cookies?.[this.config.cookies.session] as string | undefined;
+    const sansSession = this.reflecteur.getAllAndOverride<boolean>(CLE_SANS_SESSION, [ctx.getHandler(), ctx.getClass()]);
+    const jeton = sansSession ? undefined : (req.cookies?.[this.config.cookies.session] as string | undefined);
     if (typeof jeton === 'string' && /^[A-Za-z0-9_-]{43}$/.test(jeton)) {
       const session = await this.sessions.lire(jeton);
       if (session) {

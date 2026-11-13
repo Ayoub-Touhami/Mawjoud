@@ -5,6 +5,7 @@ import type { SessionOuverte } from './sessions.service.js';
 export const CLE_ACCES = 'mawjoud:acces';
 export const CLE_EMAIL_VERIFIE = 'mawjoud:email-verifie';
 export const CLE_SUSPENDU_AUTORISE = 'mawjoud:suspendu-autorise';
+export const CLE_SANS_SESSION = 'mawjoud:sans-session';
 
 export type Acces = 'public' | 'connecte' | 'patient' | 'pharmacien' | 'administrateur';
 

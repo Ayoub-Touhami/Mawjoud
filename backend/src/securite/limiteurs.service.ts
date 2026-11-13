@@ -13,6 +13,7 @@ export function cleEmail(email: string): string {
  * Limitation des tentatives (en mémoire du processus).
  * - Connexion : 5 échecs par adresse et 20 échecs par IP en 15 minutes.
  * - Envois d'e-mails (inscription, renvoi de lien, mot de passe oublié) : 10 par IP et 3 par adresse par heure.
+ * - Routes publiques en lecture (recherche, carte) : 120 requêtes par IP et par minute.
  * Les limites s'appliquent de la même façon qu'un compte existe ou non : elles ne révèlent rien.
  */
 @Injectable()
@@ -21,6 +22,7 @@ export class LimiteursService {
   readonly connexionIp: Limiteur;
   readonly envoisIp: Limiteur;
   readonly envoisEmail: Limiteur;
+  readonly publicIp: Limiteur;
 
   constructor(@Inject(CONFIGURATION) config: Configuration) {
     const l = config.limites;
@@ -28,6 +30,7 @@ export class LimiteursService {
     this.connexionIp = new Limiteur(l.connexionParIp);
     this.envoisIp = new Limiteur(l.envoisParIp);
     this.envoisEmail = new Limiteur(l.envoisParEmail);
+    this.publicIp = new Limiteur(l.publicParIp);
   }
 
   /** Lève 429 (avec Retry-After) si l'une des clés est bloquée. */
