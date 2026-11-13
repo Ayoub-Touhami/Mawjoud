@@ -155,7 +155,8 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 
 ## Partie 9d : sécurité et robustesse
 
-- Branche `partie-9d-securite`, partie de `main`. **Pas encore commitée ni fusionnée** : en attente de l'accord de l'équipe. Détail : `docs/SECURITE.md`.
+- **Terminée et fusionnée dans `main`** le 14 novembre 2026 (commit de fusion `58987c8`, `--no-ff`), 247 tests passés ; branche supprimée. Détail : `docs/SECURITE.md`.
+- Correctif au passage : le filtre par jour du journal d'audit suit l'heure de Tunis (il suivait le fuseau du serveur).
 - **Tests indépendants** : remise à zéro de `mawjoud_test` au début de chaque fichier (`essai.reinitialiser()`, créée par `preparer-base-test.ps1`, jamais par une migration) ; plus aucune remise en état en fin de fichier. Vérifié dans l'ordre alphabétique, inversé, aléatoire (4 graines) et fichier par fichier.
 - **Limitation de débit** vérifiée route par route (24 tests). Corrigé : rattachements de l'administration et du pharmacien, liens de vérification et de réinitialisation, sans limite jusqu'ici.
 - **En-têtes, CORS, cookies, Swagger** vérifiés avec la configuration réellement lue pour la production.
