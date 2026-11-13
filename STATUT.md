@@ -143,7 +143,7 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 
 ## Partie 9c : administration générale
 
-- Branche `partie-9c-administration`, partie de `main` après la fusion de la 9b. **Pas encore commitée ni fusionnée** : en attente de l'accord de l'équipe. Détail : `docs/API_ADMIN.md`, section « Administration générale ».
+- **Terminée et fusionnée dans `main`** le 13 novembre 2026 (commit de fusion `a3fb994`, `git merge --no-ff`), après accord et contrôle final : 35 migrations appliquées depuis zéro identiques octet pour octet à `schema.sql` ; 190 tests passés sur la branche (avant et après les commits `3bbf410` et `e39c72f`) et sur `main` ; preuves (fiche fusionnée figée et impossible à faire sortir de « fusionnee » par `mawjoud_api`, un pharmacien ou un administrateur par l'API ; panne en fin de fusion sans trace ; dernier administrateur protégé ; comptes sans secret ; journal en lecture seule ; rattrapage manuel essayé). Branche `partie-9c-administration` supprimée. Détail : `docs/API_ADMIN.md`, section « Administration générale ».
 - **Correction du nom** (`POST /api/v1/admin/pharmacies/:id/nom`) : ancien et nouveau nom au journal ; nom « à relire » sauf confirmation ; une fiche prête à publier ou publiée exige la confirmation (contrainte de la base) et reste publiée.
 - **Création d'une fiche** pour une demande d'ajout (`POST /api/v1/admin/pharmacies`) : `en_attente_position`, sans position ; doublons probables (même ville, similarité de nom ≥ 0,5, réglable) signalés avant toute création.
 - **Fusion de deux fiches** (`POST /api/v1/admin/pharmacies/:id/fusionner`), en une transaction : historique sur la fiche fusionnée avec renvoi, vivant vers la fiche conservée (disponibilité la plus récente, horaires, signalements, messages, rattachements). Fiche fusionnée figée, y compris en SQL direct. Pas d'annulation automatique : procédure de rattrapage manuel documentée, **essayée sur `mawjoud_test`** (fiche rétablie, disponibilité remplacée rétablie, disponibilité redéclarée depuis gardée, second passage refusé).
@@ -152,6 +152,10 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 - Migration **035** (droits de colonnes, déclencheurs). Appliquée à `mawjoud` (aucune donnée changée : 3 940 fiches, 0 compte, 0 stock). Pendant le travail, une première version de la 035 y avait été appliquée ; elle a été retirée (déclencheur, fonctions, droits, ligne de `schema_migrations`) puis la version finale réappliquée par `appliquer-migrations.ps1`.
 - 190 tests Jest (dont 30 nouveaux), passés deux fois. 35 migrations appliquées à une base vide : identiques octet pour octet à `schema.sql`.
 - Réglage : `ADMIN_SEUIL_DOUBLON` (défaut 0,5).
+
+## Prochaine étape : Partie 9d (sécurité et robustesse)
+
+Pas encore commencée : elle partira de `main` sur sa propre branche quand son instruction aura été envoyée (voir « À faire plus tard », points 7, 11 et 12).
 
 ## Back-end : positions, validation et publication (Partie 8)
 
