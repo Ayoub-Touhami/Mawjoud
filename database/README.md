@@ -43,6 +43,8 @@ SQL pur sur PostgreSQL 16, indépendant du langage du back-end. Modèle et dicti
 | 019 | `019_journal_audit.sql` | Journal d'audit |
 | 020 | `020_vues_publiques.sql` | Vues publiques |
 | 021 | `021_roles.sql` | Rôles `mawjoud_lecture_publique` et `mawjoud_application` |
+| 022 | `022_statut_pret_a_publier.sql` | Statut `pret_a_publier` : fiche complète en attente de l'autorisation des sources |
+| 023 | `023_osm_id_area.sql` | `osm_id` de type `a` (surface), gardé tel que dans l'export OSM |
 
 L'ordre suit les dépendances : une table vient après celles qu'elle référence.
 
@@ -61,7 +63,25 @@ Script : `database/appliquer-migrations.ps1`, à lancer depuis la racine du dép
 - Applique dans l'ordre des numéros, s'arrête à la première erreur (la transaction du fichier fautif est annulée).
 - Régénère `schema.sql` après chaque application (`pg_dump --schema-only --no-owner`, clé `\restrict` fixe pour un fichier stable). `-SansSchema` l'évite.
 
-**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 021 appliquées, contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, historique des positions, déclarant du stock, droits des rôles). Aucune donnée importée.
+**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 023 appliquées, contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
+
+Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/connexion-pg.ps1`.
+
+## Import des données
+
+Script : `database/importer-donnees.ps1`, à lancer depuis la racine du dépôt, après les migrations.
+
+```powershell
+.\database\importer-donnees.ps1                     # import, puis vérifications chiffrées
+.\database\importer-donnees.ps1 -VerifierSeulement  # vérifications seules, sans écriture
+```
+
+- Lit les CSV hors du dépôt : `../data/final/pharmacies_final.csv`, `pharmacies_en_attente_position.csv`, `pharmacies_interne.csv` et `../data/medicaments_test.csv` (`-DossierDonnees` et `-Medicaments` pour d'autres chemins). Les CSV ne vont jamais dans Git.
+- `import/importer.sql` : `\copy` vers des tables temporaires, contrôles bloquants (identifiants en double, nom et code de gouvernorat, booléens, plages horaires lisibles), puis `INSERT … SELECT` avec les conversions de `docs/MODELE_DONNEES.md`. Une seule transaction : à la moindre erreur, rien n'est écrit. Refusé si la base contient déjà des pharmacies ou des médicaments.
+- `import/verifier_import.sql` : 54 contrôles chiffrés, comparés aux comptes faits directement dans les CSV ; échoue au moindre écart. À mettre à jour si les fichiers changent.
+- Aucune ligne de données n'est affichée, seulement des comptes.
+
+Résultat du 13 novembre 2026 : 3 940 pharmacies (755 `pret_a_publier`, 47 `a_relire`, 2 455 `en_attente_position`, 683 `non_publiable`, aucune `publiee`), 4 907 plages horaires, 876 positions historisées, 802 fiches internes, 40 médicaments de test. 54 contrôles sur 54 conformes.
 
 ## Pour le back-end, quand il sera choisi
 

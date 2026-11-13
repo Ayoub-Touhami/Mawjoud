@@ -1,6 +1,6 @@
 # Modèle de données de Mawjoud
 
-PostgreSQL 16, SQL pur. Fichiers : `database/migrations/001` à `021`, appliqués à la base `mawjoud` le 13 novembre 2026 (aucune donnée importée). Schéma généré : `database/schema.sql`.
+PostgreSQL 16, SQL pur. Fichiers : `database/migrations/001` à `023`, appliqués à la base `mawjoud` le 13 novembre 2026 ; CSV importés le même jour. Schéma généré : `database/schema.sql`.
 
 ## Choix de conception
 
@@ -205,14 +205,16 @@ Notation : **N** = peut être vide. `now()` = date de l'écriture. Toutes les da
 | precision_gps | text | | inconnu | exact, nom, inconnu |
 | garde | text | N | | jour, nuit |
 | horaires_texte | text | N | | Texte d'origine du CSV |
-| statut_publication | text | | en_attente_position | en_attente_position, a_relire, publiee, non_publiable, fermee, fusionnee |
+| statut_publication | text | | en_attente_position | en_attente_position, a_relire, pret_a_publier, publiee, non_publiable, fermee, fusionnee |
 | fusionnee_dans | bigint | N | | → `pharmacie.id` ; rempli si et seulement si fusionnée |
 | a_verifier | boolean | | false | |
 | nom_a_verifier | boolean | | false | Nom qui est un nom de personne ; interdit la publication tant qu'il est vrai |
 | sources | text[] | | `{}` | Dans la liste des sources connues |
 | created_at, updated_at | timestamptz | | now() | `updated_at` mis à jour par déclencheur |
 
-Contraintes de ligne : latitude et longitude ensemble ; source obligatoire si position ; **publiée ⇒ position confirmée, nom relu (`nom_a_verifier` faux), ville et gouvernorat**.
+Contraintes de ligne : latitude et longitude ensemble ; source obligatoire si position ; **prête à publier ou publiée ⇒ position confirmée, nom relu (`nom_a_verifier` faux), ville et gouvernorat**.
+
+`pret_a_publier` (migration 022) : fiche complète qui attend l'autorisation de publication des sources. Elle n'apparaît pas sur le site (les vues publiques ne lisent que `publiee`) ; la publication se fera d'un seul `UPDATE` quand les autorisations seront obtenues.
 
 | Index | Raison |
 |---|---|
@@ -232,7 +234,7 @@ Contraintes de ligne : latitude et longitude ensemble ; source obligatoire si po
 | nom_est_nom_de_personne | boolean | | false | |
 | pharmacien_nom | text | N | | Donnée personnelle |
 | ids_sources | text[] | | `{}` | |
-| osm_id | text | N | | `n`, `w` ou `r` + chiffres |
+| osm_id | text | N | | `n`, `w`, `r` ou `a` + chiffres ; `a` = surface, tel que dans l'export OSM (migration 023, 3 fiches) |
 | motifs_a_verifier | text[] | | `{}` | |
 | motif_non_publiable | text | N | | |
 | origine_nom, origine_adresse, origine_telephone, origine_gps, origine_garde, origine_horaires | text | N | | Source retenue pour chaque champ |
@@ -538,7 +540,7 @@ Les valeurs d'un seul mot (`disponible`, `validee`, `patient`…) sont identique
 | precision_gps | precision_gps | Tel quel |
 | garde_jour_nuit | garde | Vide → NULL |
 | horaires | horaires_texte + `annuaire.horaire` | Texte gardé ; découpé sur ` ; `, Monday…Sunday → 1…6, 0 |
-| publiable (en attente seulement) | statut_publication | Final → `publiee`, ou `a_relire` si le nom est un nom de personne ; en attente : `true` → `en_attente_position`, `false` → `non_publiable` |
+| publiable (en attente seulement) | statut_publication | Final → `pret_a_publier` (755), ou `a_relire` si le nom est un nom de personne (47) ; en attente : `true` → `en_attente_position`, `false` → `non_publiable` |
 | a_verifier | a_verifier | Tel quel |
 | nb_sources | (aucune) | Recalculable : nombre d'éléments de `sources` |
 | sources | sources | Découpé sur ` \| ` en tableau |
@@ -565,4 +567,4 @@ Les valeurs d'un seul mot (`disponible`, `validee`, `patient`…) sont identique
 | dci, forme, dosage, categorie | dci, forme, dosage, categorie | |
 | donnee_test | donnee_test | `oui` → vrai |
 
-L'import se fera à la partie suivante, en `\copy` vers des tables de chargement temporaires, puis par un `INSERT … SELECT` qui fait les conversions ci-dessus.
+Import réalisé le 13 novembre 2026 par `database/importer-donnees.ps1` : `\copy` vers des tables temporaires, puis `INSERT … SELECT` qui fait les conversions ci-dessus. Vérifications chiffrées : `database/import/verifier_import.sql` (voir `database/README.md`).
