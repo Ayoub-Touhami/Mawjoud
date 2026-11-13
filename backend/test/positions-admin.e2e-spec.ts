@@ -65,11 +65,6 @@ beforeAll(async () => {
   await ctx.base.requete(`UPDATE prive.utilisateur SET suspendu = true WHERE id = $1`, [U.E]);
 });
 afterAll(async () => {
-  // Base de test partagée par tous les fichiers : les fiches publiées ici repassent à « pret_a_publier »
-  // (transition autorisée), pour ne pas fausser les comptes des tests de l'API publique.
-  await commeActeur(ctx, idAdmin, (tx) => tx.requete(
-    `UPDATE annuaire.pharmacie SET statut_publication = 'pret_a_publier' WHERE id = ANY($1::bigint[]) AND statut_publication = 'publiee'`,
-    [Object.values(ID)]));
   await ctx.comptes.travauxTermines();
   await ctx.app.close();
 });
@@ -260,8 +255,9 @@ describe('Validation des positions', () => {
     expect(r.body).toMatchObject({ id: P.PA, statutPublication: 'pret-a-publier', motifsBlocage: [],
       position: { latitude: 36.812346, longitude: 10.198765, confirmee: true } });
     expect(await fiche('PA')).toMatchObject({ confirmee: true, source: 'saisie_pharmacien', statut: 'pret_a_publier' });
-    const [h] = await ctx.base.requete<{ demande_position_id: string; acteur_id: string; motif: string }>(
-      `SELECT demande_position_id, acteur_id, motif FROM annuaire.historique_position WHERE pharmacie_id = $1 ORDER BY id DESC LIMIT 1`, [ID.PA]);
+    // L'API n'a plus le droit de lire cet historique (036) : lecture par le rôle des données de test.
+    const [h] = await fixtures(ctx, (tx) => tx.requete<{ demande_position_id: string; acteur_id: string; motif: string }>(
+      `SELECT demande_position_id, acteur_id, motif FROM annuaire.historique_position WHERE pharmacie_id = $1 ORDER BY id DESC LIMIT 1`, [ID.PA]));
     expect(h).toMatchObject({ demande_position_id: d.id, acteur_id: idAdmin });
     const [j] = await journal(ctx, d.uuid);
     expect(j).toMatchObject({ action: 'valider_position', acteur_id: idAdmin, detail: {

@@ -138,6 +138,17 @@ export function verifierUrlBase(url: string | undefined, environnement: Environn
   return u.toString();
 }
 
+/** Mot de passe de mawjoud_api absent, trop court (le script en génère de 43 caractères) ou valeur d'exemple. */
+function motDePasseFaible(url: string | undefined): boolean {
+  let mdp = '';
+  try {
+    mdp = decodeURIComponent(new URL(url ?? '').password);
+  } catch {
+    return true;
+  }
+  return mdp.length < 24 || /mot.?de.?passe|password|changer|change.?me|exemple|example|secret/i.test(mdp);
+}
+
 export function lireConfiguration(surcharges: Partial<Configuration> = {}): Configuration {
   const brut = process.env.NODE_ENV ?? 'development';
   if (!['development', 'production', 'test'].includes(brut)) {
@@ -159,6 +170,16 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
     throw new Error('Configuration : EMAIL_FOURNISSEUR doit valoir console ou brevo.');
   }
   if (production) {
+    // Partie 9d : le serveur refuse de démarrer avec une configuration dangereuse (messages sans aucune valeur secrète).
+    if (process.env.DATABASE_URL !== undefined) {
+      throw new Error("Configuration : en production, DATABASE_URL (compte postgres) ne doit pas être dans l'environnement de l'API ; la fournir seulement le temps des migrations.");
+    }
+    if (originesCors.length === 0 || originesCors.some((o) => o.includes('*'))) {
+      throw new Error("Configuration : en production, CORS_ORIGINES est une liste explicite d'origines (jamais « * », jamais vide).");
+    }
+    if (motDePasseFaible(process.env.API_DATABASE_URL)) {
+      throw new Error("Configuration : en production, le mot de passe de mawjoud_api est une valeur d'exemple ou trop court (lancer database/definir-mot-de-passe-api.ps1).");
+    }
     if (fournisseurEmail !== 'brevo') throw new Error('Configuration : en production, les e-mails passent par Brevo.');
     if (!frontUrl.startsWith('https://')) throw new Error('Configuration : en production, FRONT_URL doit être en https.');
     if (originesCors.some((o) => !o.startsWith('https://'))) {

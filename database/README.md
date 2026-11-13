@@ -84,12 +84,13 @@ Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/
 .\database\definir-mot-de-passe-api.ps1             # mot de passe de mawjoud_api -> .env (API_DATABASE_URL)
 .\database\definir-mot-de-passe-api.ps1 -Remplacer  # le changer
 .\database\preparer-base-test.ps1                  # recrée mawjoud_test, vide, avec toutes les migrations
+.\database\sauvegarder.ps1                         # sauvegarde de mawjoud dans ..\sauvegardes (docs/SECURITE.md)
 .\database\appliquer-migrations.ps1 -BaseTest      # migrations sur mawjoud_test seulement
 ```
 
 - `definir-mot-de-passe-api.ps1` : mot de passe aléatoire de 256 bits, jamais affiché ; le serveur ne reçoit que son empreinte SCRAM-SHA-256, calculée par le script ; seule la ligne `API_DATABASE_URL` de `.env` est écrite. `DATABASE_URL` (compte `postgres`) reste réservée aux scripts.
-- `preparer-base-test.ps1` crée aussi le rôle `mawjoud_test_fixtures` (sans connexion), avec `INSERT` sur `annuaire.pharmacie`, `annuaire.horaire` et `annuaire.historique_position` **dans `mawjoud_test` seulement**, et permet à `mawjoud_api` de le prendre (`SET ROLE`, sans hériter) : depuis 032, `mawjoud_api` ne peut plus créer de fiche, et les tests créent les leurs avec ce rôle. Dans `mawjoud`, il n'a aucun droit.
-- `preparer-base-test.ps1` ne vise que la base nommée exactement `mawjoud_test` ; `npm test` (dans `backend`) le lance avant les tests. `schema.sql` n'est jamais régénéré depuis cette base.
+- `preparer-base-test.ps1` crée aussi le rôle `mawjoud_test_fixtures` (sans connexion), avec `INSERT` sur `annuaire.pharmacie`, `annuaire.horaire` et `annuaire.historique_position` **dans `mawjoud_test` seulement**, et permet à `mawjoud_api` de le prendre (`SET ROLE`, sans hériter) : depuis 032, `mawjoud_api` ne peut plus créer de fiche, et les tests créent les leurs avec ce rôle. Dans `mawjoud`, il n'a aucun droit. Depuis la Partie 9d, il a aussi, toujours dans `mawjoud_test` seulement, les écritures que l'API ne fait jamais (catalogue, signalements, vieillir une session ou un jeton, supprimer un compte), et la fonction `essai.reinitialiser()` (créée par ce script, jamais par une migration) qui remet la base à zéro au début de chaque fichier de tests. Le démarrage en production est refusé si ce rôle existe.
+- `preparer-base-test.ps1` ne vise que la base nommée exactement `mawjoud_test` ; `npm test` (dans `backend`) le lance avant les tests. `appliquer-migrations.ps1` régénère `schema.sql` depuis `mawjoud` ; tant que `mawjoud` porte l'écart CR connu (STATUT, point 10), `schema.sql` est réexporté depuis une base vide où toutes les migrations ont été appliquées (même commande `pg_dump`).
 - Les rôles sont communs au serveur : 025 crée `mawjoud_api` une fois et le retrouve dans `mawjoud_test`.
 - Une nouvelle table créée par une migration doit recevoir ses droits explicitement (`GRANT … TO mawjoud_application`) : 021 ne couvre que les tables existantes à son passage.
 

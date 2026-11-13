@@ -51,17 +51,12 @@ beforeAll(async () => {
   await pharmacie('C', 'pret_a_publier', 11, 'Tunis');
   emailPatient = await compteVerifie(ctx);
   patient = await connecter(ctx, emailPatient); idPatient = await idCompteParEmail(ctx, emailPatient);
-  M = (await ctx.base.requete<{ uuid: string }>(
-    `INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, donnee_test)
+  M = (await fixtures(ctx, (tx) => tx.requete<{ uuid: string }>(`INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, donnee_test)
      SELECT 'AL' || i, (ARRAY['Alertamol 10 mg', 'Alertine 5 mg', 'Alerfène 20 mg', 'Alertose 1 g'])[i], 'dci alerte ' || i, true
-       FROM generate_series(1, 4) i ORDER BY i RETURNING uuid`)).map((m) => m.uuid);
+       FROM generate_series(1, 4) i ORDER BY i RETURNING uuid`))).map((m) => m.uuid);
 });
 afterAll(async () => {
   await alertes.travauxTermines();
-  // Base partagée : les fiches publiées ici repassent à « pret_a_publier » pour les autres fichiers de tests.
-  await commeActeur(ctx, idAdmin, (tx) => tx.requete(
-    `UPDATE annuaire.pharmacie SET statut_publication = 'pret_a_publier' WHERE id = ANY($1::bigint[]) AND statut_publication = 'publiee'`,
-    [Object.values(ID)]));
   await ctx.comptes.travauxTermines();
   await ctx.app.close();
 });
@@ -286,7 +281,7 @@ describe('Suppression d\'un compte', () => {
       `SELECT column_name || ':' || data_type AS c FROM information_schema.columns WHERE table_schema = 'prive' AND table_name = 'jeton' ORDER BY ordinal_position`);
     expect(colonnes.map((x) => x.c)).toEqual(['id:bigint', 'utilisateur_id:bigint', 'type:text', 'jeton_hache:bytea',
       'expire_le:timestamp with time zone', 'utilise_le:timestamp with time zone', 'created_at:timestamp with time zone']);
-    await ctx.base.requete(`DELETE FROM prive.utilisateur WHERE id = $1`, [id]);
+    await fixtures(ctx, (tx) => tx.requete(`DELETE FROM prive.utilisateur WHERE id = $1`, [id]));
     expect(await compter()).toEqual({ alertes: 0, jetons: 0, emails: 0 });
   });
 });

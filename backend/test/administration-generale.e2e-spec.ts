@@ -70,16 +70,11 @@ beforeAll(async () => {
   emailAdmin = await administrateur(ctx);
   admin = await connecter(ctx, emailAdmin);
   idAdmin = await idCompteParEmail(ctx, emailAdmin);
-  const meds = await ctx.base.requete<{ uuid: string; id: string }>(
-    `INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, donnee_test)
-     SELECT 'AG' || i, 'Fusionol ' || i || ' mg', 'dci fusion ' || i, true FROM generate_series(1, 4) i ORDER BY i RETURNING uuid, id`);
+  const meds = await fixtures(ctx, (tx) => tx.requete<{ uuid: string; id: string }>(`INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, donnee_test)
+     SELECT 'AG' || i, 'Fusionol ' || i || ' mg', 'dci fusion ' || i, true FROM generate_series(1, 4) i ORDER BY i RETURNING uuid, id`));
   M = meds.map((m) => m.uuid); MI = meds.map((m) => m.id);
 });
 afterAll(async () => {
-  // Base partagée : les fiches publiées ici repassent à « pret_a_publier » pour les autres fichiers de tests.
-  await commeActeur(ctx, idAdmin, (tx) => tx.requete(
-    `UPDATE annuaire.pharmacie SET statut_publication = 'pret_a_publier' WHERE id = ANY($1::bigint[]) AND statut_publication = 'publiee'`,
-    [Object.values(ID)]));
   await ctx.comptes.travauxTermines();
   await ctx.app.close();
 });
@@ -225,9 +220,8 @@ describe('3. Fusion de deux fiches', () => {
     demandeF = (await ecrire(S.F, api().post(`${PH}/pharmacies/${P.F}/position`)).send({ latitude: 36.612, longitude: 10.101 }).expect(201)).body.demande.id;
     await pharmacien('FA', { pharmacieId: P.F });
     const patient = await idCompteParEmail(ctx, await compteVerifie(ctx));
-    [{ uuid: signalement }] = await ctx.base.requete<{ uuid: string }>(
-      `INSERT INTO prive.signalement (pharmacie_id, auteur_id, type, texte) VALUES ($1, $2, 'adresse', 'Même pharmacie que la fiche voisine.') RETURNING uuid`,
-      [ID.F, patient]);
+    [{ uuid: signalement }] = await fixtures(ctx, (tx) => tx.requete<{ uuid: string }>(`INSERT INTO prive.signalement (pharmacie_id, auteur_id, type, texte) VALUES ($1, $2, 'adresse', 'Même pharmacie que la fiche voisine.') RETURNING uuid`,
+      [ID.F, patient]));
     [{ n: histF }] = await ctx.base.requete<{ n: number }>(`SELECT count(*)::int AS n FROM annuaire.historique_stock WHERE pharmacie_id = $1`, [ID.F]);
   });
 
@@ -532,7 +526,7 @@ describe('5. Lecture : comptes et journal d\'audit', () => {
     expect(page1.body.total).toBeGreaterThan(4);
     expect(page1.body.elements).toHaveLength(2);
     expect(page2.body.elements[0].id).not.toBe(page1.body.elements[0].id);
-    const jour = new Date().toLocaleDateString('sv-SE'); // AAAA-MM-JJ, heure locale
+    const jour = new Date().toLocaleDateString('sv-SE', { timeZone: 'Africa/Tunis' }); // AAAA-MM-JJ, heure de Tunis
     expect((await api().get(`${ADMIN}/journal`).query({ depuis: jour, jusqua: jour, acteur: idA }).set('Cookie', admin.cookie).expect(200)).body.total)
       .toBe(page1.body.total);
     expect((await api().get(`${ADMIN}/journal`).query({ jusqua: '2020-01-01' }).set('Cookie', admin.cookie).expect(200)).body.total).toBe(0);

@@ -2,7 +2,7 @@ import { Controller, Get, Post } from '@nestjs/common';
 import request from 'supertest';
 import { lireConfiguration, verifierUrlBase } from '../src/config/configuration.js';
 import { Public } from '../src/securite/acces.js';
-import { administrateur, compteVerifie, connecter, cookies, demarrer, emailUnique, journal, MDP, uuidDe, type Contexte } from './aide.js';
+import { administrateur, compteVerifie, connecter, cookies, demarrer, emailUnique, fixtures, journal, MDP, uuidDe, type Contexte } from './aide.js';
 
 /** Routes de test : l'une sans déclaration d'accès (doit être refusée), l'autre publique. */
 @Controller('essai')
@@ -132,9 +132,10 @@ describe('Sessions', () => {
     const lire = async () => (await ctx.base.requete<{ jours: number }>(
       `SELECT round(extract(epoch FROM expire_le - now()) / 86400)::int AS jours FROM prive.session WHERE id_hache = sha256(convert_to($1, 'UTF8'))`, [id]))[0];
     // Session ouverte il y a 25 jours, dernière activité il y a 6 jours : il lui reste 1 jour.
-    await ctx.base.requete(
+    // (created_at ne change jamais par l'API : le test vieillit la session avec le rôle des données de test.)
+    await fixtures(ctx, (tx) => tx.requete(
       `UPDATE prive.session SET created_at = now() - interval '25 days', derniere_activite_le = now() - interval '6 days',
-              expire_le = now() + interval '1 day' WHERE id_hache = sha256(convert_to($1, 'UTF8'))`, [id]);
+              expire_le = now() + interval '1 day' WHERE id_hache = sha256(convert_to($1, 'UTF8'))`, [id]));
     const res = await api().get('/api/comptes/moi').set('Cookie', s.cookie).expect(200);
     expect(cookies(res).mawjoud_session).toBeDefined(); // cookie reposé avec la nouvelle échéance
     expect(await lire()).toEqual({ jours: 5 }); // plafond : 30 jours après l'ouverture

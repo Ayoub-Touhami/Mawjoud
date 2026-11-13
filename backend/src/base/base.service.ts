@@ -19,7 +19,7 @@ export class BaseService implements Executeur, OnModuleInit, OnModuleDestroy {
   private readonly journal = new Logger('Base');
   private readonly pool: pg.Pool;
 
-  constructor(@Inject(CONFIGURATION) config: Configuration) {
+  constructor(@Inject(CONFIGURATION) private readonly config: Configuration) {
     this.pool = new pg.Pool({ connectionString: config.urlBase, max: 10, idleTimeoutMillis: 30_000 });
     // Seul le message est gardé : jamais la chaîne de connexion.
     this.pool.on('error', (e) => this.journal.error(`Connexion PostgreSQL perdue : ${e.message}`));
@@ -33,6 +33,13 @@ export class BaseService implements Executeur, OnModuleInit, OnModuleDestroy {
     );
     if (!r || r.superutilisateur || r.compte === 'postgres') {
       throw new Error('Le back-end refuse de démarrer avec un superutilisateur : utiliser mawjoud_api.');
+    }
+    if (this.config.environnement === 'production') {
+      // Rôle des tests (preparer-base-test.ps1) : il ne doit jamais exister sur un serveur de production.
+      const [f] = await this.requete<{ existe: boolean }>(`SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'mawjoud_test_fixtures') AS existe`);
+      if (f.existe) {
+        throw new Error('Production : le rôle mawjoud_test_fixtures existe sur ce serveur PostgreSQL (DROP ROLE mawjoud_test_fixtures;).');
+      }
     }
     this.journal.log(`Connecté à la base « ${r.base} » avec le compte ${r.compte}.`);
   }

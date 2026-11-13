@@ -51,9 +51,52 @@ END `$`$;
 GRANT USAGE ON SCHEMA annuaire TO mawjoud_test_fixtures;
 GRANT SELECT, INSERT ON annuaire.pharmacie, annuaire.horaire, annuaire.historique_position TO mawjoud_test_fixtures;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA annuaire TO mawjoud_test_fixtures;
+-- Partie 9d (migration 036) : mawjoud_api n'écrit plus le catalogue, les signalements, ni ne supprime de compte ;
+-- les tests le font par ce rôle, dans mawjoud_test seulement.
+GRANT SELECT, INSERT ON annuaire.medicament TO mawjoud_test_fixtures;
+GRANT SELECT, UPDATE ON prive.session, prive.jeton TO mawjoud_test_fixtures;
+GRANT USAGE ON SCHEMA prive TO mawjoud_test_fixtures;
+GRANT SELECT, INSERT ON prive.signalement TO mawjoud_test_fixtures;
+GRANT SELECT, DELETE ON prive.utilisateur TO mawjoud_test_fixtures;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA prive TO mawjoud_test_fixtures;
 GRANT mawjoud_test_fixtures TO mawjoud_api WITH INHERIT FALSE, SET TRUE;
 "@ | Out-Null
   Write-Host "Rôle mawjoud_test_fixtures prêt (droits dans mawjoud_test seulement)."
+
+  # Remise à zéro au début de chaque fichier de tests (décision du 13 novembre 2026, Partie 9d).
+  # Fonction créée ici seulement (jamais par une migration) : elle n'existe que dans mawjoud_test.
+  # SECURITY DEFINER (propriétaire postgres) : elle vide toutes les tables de données, y compris celles en
+  # ajout seul (déclencheurs de vidage suspendus pour sa seule transaction) ; les référentiels remplis par
+  # les migrations (gouvernorats, schema_migrations) sont gardés. Exécutable par mawjoud_test_fixtures
+  # seulement, et refuse de tourner dans une autre base que mawjoud_test.
+  Requete @"
+CREATE SCHEMA IF NOT EXISTS essai;
+REVOKE ALL ON SCHEMA essai FROM PUBLIC;
+CREATE OR REPLACE FUNCTION essai.reinitialiser() RETURNS integer
+  LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, pg_temp AS `$`$
+DECLARE
+  tables text;
+  n integer;
+BEGIN
+  IF current_database() <> 'mawjoud_test' THEN
+    RAISE EXCEPTION 'Remise à zéro refusée hors de mawjoud_test.' USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  SELECT string_agg(format('%I.%I', n.nspname, c.relname), ', '), count(*)
+    INTO tables, n
+    FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+   WHERE c.relkind = 'r' AND n.nspname IN ('annuaire', 'prive')
+     AND (n.nspname, c.relname) <> ('annuaire', 'gouvernorat');
+  SET LOCAL session_replication_role = replica;
+  EXECUTE 'TRUNCATE ' || tables || ' RESTART IDENTITY CASCADE';
+  SET LOCAL session_replication_role = origin;
+  RETURN n;
+END;
+`$`$;
+REVOKE ALL ON FUNCTION essai.reinitialiser() FROM PUBLIC;
+GRANT USAGE ON SCHEMA essai TO mawjoud_test_fixtures;
+GRANT EXECUTE ON FUNCTION essai.reinitialiser() TO mawjoud_test_fixtures;
+"@ | Out-Null
+  Write-Host "Fonction essai.reinitialiser() prête (mawjoud_test seulement)."
 }
 catch {
   Write-Host "ERREUR : $($_.Exception.Message)" -ForegroundColor Red

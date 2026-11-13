@@ -54,8 +54,8 @@ export class ComptesController {
   @ApiOperation({ summary: 'Valide le lien reçu par e-mail (usage unique, 24 h).' })
   @ApiResponse({ status: 400, description: 'lien-invalide' })
   @ApiResponse({ status: 410, description: 'lien-expire' })
-  async verifierEmail(@Body() dto: JetonDto): Promise<void> {
-    await this.comptes.verifierEmail(dto.jeton);
+  async verifierEmail(@Body() dto: JetonDto, @Ip() ip: string): Promise<void> {
+    await this.comptes.verifierEmail(dto.jeton, ip);
   }
 
   @Post('verification-email/renvoi')
@@ -132,8 +132,8 @@ export class ComptesController {
   @Public()
   @HttpCode(204)
   @ApiOperation({ summary: 'Nouveau mot de passe à partir du lien ; ferme toutes les sessions du compte.' })
-  async reinitialiser(@Body() dto: ReinitialisationDto, @Res({ passthrough: true }) res: Response): Promise<void> {
-    await this.comptes.reinitialiser(dto);
+  async reinitialiser(@Body() dto: ReinitialisationDto, @Ip() ip: string, @Res({ passthrough: true }) res: Response): Promise<void> {
+    await this.comptes.reinitialiser(dto, ip);
     effacerCookies(res, this.config);
   }
 }

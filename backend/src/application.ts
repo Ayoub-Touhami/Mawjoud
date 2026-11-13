@@ -7,6 +7,7 @@ import type { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import { AppModule } from './app.module.js';
 import type { Configuration } from './config/configuration.js';
+import { refuserEntreesDangereuses } from './securite/entrees.js';
 import { creerValidation } from './securite/filtre-erreurs.js';
 
 /**
@@ -31,6 +32,8 @@ export async function creerApplication(config: Configuration, controleursEnPlus:
     const statut = typeof erreur.status === 'number' && erreur.status >= 400 && erreur.status < 500 ? erreur.status : 400;
     res.status(statut).json({ erreur: statut === 413 ? 'donnees-invalides' : 'json-invalide' });
   });
+  // Caractère nul et imbrication excessive refusés avant la validation (Partie 9d : erreurs 500 évitées).
+  app.use(refuserEntreesDangereuses);
 
   app.enableCors({
     origin: config.originesCors,

@@ -56,10 +56,9 @@ beforeAll(async () => {
   S = await pharmacienRattache(PS);
   idA = await idCompte(A);
   await ctx.base.requete(`UPDATE prive.utilisateur SET suspendu = true WHERE id = $1`, [await idCompte(S)]);
-  meds = (await ctx.base.requete<{ uuid: string }>(
-    `INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, dosage, donnee_test)
+  meds = (await fixtures(ctx, (tx) => tx.requete<{ uuid: string }>(`INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, dosage, donnee_test)
      SELECT 'EP' || lpad(i::text, 3, '0'), 'Espacemed ' || lpad(i::text, 3, '0'), CASE WHEN i % 2 = 0 THEN 'ibuprofène' ELSE 'métformine' END, '100 mg', true
-       FROM generate_series(1, 103) i ORDER BY i RETURNING uuid`)).map((m) => m.uuid);
+       FROM generate_series(1, 103) i ORDER BY i RETURNING uuid`))).map((m) => m.uuid);
 });
 afterAll(async () => { await ctx.comptes.travauxTermines(); await ctx.app.close(); });
 

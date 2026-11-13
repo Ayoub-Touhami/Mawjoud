@@ -318,7 +318,8 @@ export class AdministrationGeneraleService {
     const filtres = [f.action ?? null, f.cibleType ?? null, f.cibleId ?? null, f.acteur ?? null, f.depuis ?? null, f.jusqua ?? null];
     const condition = `($1::text IS NULL OR j.action = $1) AND ($2::text IS NULL OR j.cible_type = $2) AND ($3::text IS NULL OR j.cible_id = $3)
       AND ($4::uuid IS NULL OR j.acteur_id = (SELECT id FROM prive.utilisateur WHERE uuid = $4))
-      AND ($5::timestamptz IS NULL OR j.created_at >= $5) AND ($6::timestamptz IS NULL OR j.created_at < $6::timestamptz + interval '1 day')`;
+      AND ($5::date IS NULL OR j.created_at >= ($5::date)::timestamp AT TIME ZONE 'Africa/Tunis')
+      AND ($6::date IS NULL OR j.created_at < ($6::date + 1)::timestamp AT TIME ZONE 'Africa/Tunis')`; // jours à l'heure de Tunis
     const [{ total }] = await this.base.requete<{ total: number }>(`SELECT count(*)::int AS total FROM prive.journal_audit j WHERE ${condition}`, filtres);
     const lignes = await this.base.requete<{ id: string; action: string; cible_type: string; cible_id: string; detail: unknown;
       created_at: Date; acteur_uuid: string | null; acteur_email: string | null; acteur_id: string | null }>(

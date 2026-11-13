@@ -67,13 +67,12 @@ beforeAll(async () => {
     `INSERT INTO annuaire.horaire (pharmacie_id, jour, ouverture, fermeture)
      SELECT id, j, '08:00', '20:00' FROM annuaire.pharmacie, generate_series(1, 6) j WHERE uuid = $1`, [P.p1]));
 
-  const meds = await ctx.base.requete<{ uuid: string; nom_commercial: string }>(
-    `INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, forme, dosage, donnee_test) VALUES
+  const meds = await fixtures(ctx, (tx) => tx.requete<{ uuid: string; nom_commercial: string }>(`INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, forme, dosage, donnee_test) VALUES
        ('E001', 'Doliprane Essai', 'paracétamol', 'comprimé', '500 mg', true),
        ('E002', 'Efferalgan Essai', 'paracétamol', 'comprimé', '1 g', true),
        ('E003', 'Amoxicilline Essai', 'amoxicilline', 'gélule', '500 mg', true),
        ('E004', 'Sirop 100% naturel', 'plantes', 'sirop', NULL, true)
-     RETURNING uuid, nom_commercial`);
+     RETURNING uuid, nom_commercial`));
   for (const m of meds) M[m.nom_commercial] = m.uuid;
 
   const admin = await connecter(ctx, await administrateur(ctx));

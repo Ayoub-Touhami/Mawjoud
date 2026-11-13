@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Administrateur, CompteCourant, Pharmacien } from '../securite/acces.js';
 import { ErreurApi } from '../securite/erreurs.js';
 import type { CompteConnecte } from '../securite/sessions.service.js';
+import { LimiteAdminGuard } from '../administration/administration.controller.js';
+import { LimitePharmacienGuard } from '../pharmacien/pharmacien.controller.js';
 import { DemandeRattachementDto, FiltreDemandesDto, RefusDto } from './dto.js';
 import { RattachementsService } from './rattachements.service.js';
 
@@ -11,6 +13,8 @@ const uuidValide = new ParseUUIDPipe({ exceptionFactory: () => new ErreurApi(404
 @ApiTags('Pharmacien')
 @ApiCookieAuth()
 @Controller('pharmacien/rattachement')
+// Même limite que l'espace pharmacien (Partie 9d : la route n'en avait pas).
+@UseGuards(LimitePharmacienGuard)
 export class RattachementPharmacienController {
   constructor(private readonly rattachements: RattachementsService) {}
 
@@ -33,6 +37,8 @@ export class RattachementPharmacienController {
 @ApiTags('Administration')
 @ApiCookieAuth()
 @Controller('admin/rattachements')
+// Même limite que le reste de l'administration (Partie 9d : la route n'en avait pas).
+@UseGuards(LimiteAdminGuard)
 export class RattachementAdminController {
   constructor(private readonly rattachements: RattachementsService) {}
 

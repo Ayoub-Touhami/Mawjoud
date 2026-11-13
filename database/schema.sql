@@ -2694,7 +2694,7 @@ GRANT SELECT ON TABLE annuaire.gouvernorat TO mawjoud_application;
 -- Name: TABLE historique_position; Type: ACL; Schema: annuaire; Owner: -
 --
 
-GRANT SELECT,INSERT ON TABLE annuaire.historique_position TO mawjoud_application;
+GRANT INSERT ON TABLE annuaire.historique_position TO mawjoud_application;
 
 
 --
@@ -2722,7 +2722,7 @@ GRANT SELECT,USAGE ON SEQUENCE annuaire.historique_stock_id_seq TO mawjoud_appli
 -- Name: TABLE horaire; Type: ACL; Schema: annuaire; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE annuaire.horaire TO mawjoud_application;
+GRANT SELECT,INSERT,DELETE ON TABLE annuaire.horaire TO mawjoud_application;
 
 
 --
@@ -2736,7 +2736,7 @@ GRANT SELECT,USAGE ON SEQUENCE annuaire.horaire_id_seq TO mawjoud_application;
 -- Name: TABLE medicament; Type: ACL; Schema: annuaire; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE annuaire.medicament TO mawjoud_application;
+GRANT SELECT ON TABLE annuaire.medicament TO mawjoud_application;
 
 
 --
@@ -2890,14 +2890,63 @@ GRANT SELECT,USAGE ON SEQUENCE annuaire.pharmacie_id_seq TO mawjoud_application;
 -- Name: TABLE stock; Type: ACL; Schema: annuaire; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE annuaire.stock TO mawjoud_application;
+GRANT SELECT,INSERT,DELETE ON TABLE annuaire.stock TO mawjoud_application;
+
+
+--
+-- Name: COLUMN stock.statut; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(statut) ON TABLE annuaire.stock TO mawjoud_application;
+
+
+--
+-- Name: COLUMN stock.declare_le; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(declare_le) ON TABLE annuaire.stock TO mawjoud_application;
+
+
+--
+-- Name: COLUMN stock.declare_par; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(declare_par) ON TABLE annuaire.stock TO mawjoud_application;
 
 
 --
 -- Name: TABLE alerte; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.alerte TO mawjoud_application;
+GRANT SELECT,INSERT,DELETE ON TABLE prive.alerte TO mawjoud_application;
+
+
+--
+-- Name: COLUMN alerte.gouvernorat_code; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(gouvernorat_code) ON TABLE prive.alerte TO mawjoud_application;
+
+
+--
+-- Name: COLUMN alerte.statut; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(statut) ON TABLE prive.alerte TO mawjoud_application;
+
+
+--
+-- Name: COLUMN alerte.declenchee_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(declenchee_le) ON TABLE prive.alerte TO mawjoud_application;
+
+
+--
+-- Name: COLUMN alerte.declenchee_par_pharmacie; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(declenchee_par_pharmacie) ON TABLE prive.alerte TO mawjoud_application;
 
 
 --
@@ -2953,7 +3002,42 @@ GRANT SELECT,USAGE ON SEQUENCE prive.demande_position_id_seq TO mawjoud_applicat
 -- Name: TABLE envoi_email; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.envoi_email TO mawjoud_application;
+GRANT SELECT,INSERT ON TABLE prive.envoi_email TO mawjoud_application;
+
+
+--
+-- Name: COLUMN envoi_email.statut; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(statut) ON TABLE prive.envoi_email TO mawjoud_application;
+
+
+--
+-- Name: COLUMN envoi_email.tentatives; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(tentatives) ON TABLE prive.envoi_email TO mawjoud_application;
+
+
+--
+-- Name: COLUMN envoi_email.prochaine_tentative_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(prochaine_tentative_le) ON TABLE prive.envoi_email TO mawjoud_application;
+
+
+--
+-- Name: COLUMN envoi_email.derniere_erreur; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(derniere_erreur) ON TABLE prive.envoi_email TO mawjoud_application;
+
+
+--
+-- Name: COLUMN envoi_email.envoye_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(envoye_le) ON TABLE prive.envoi_email TO mawjoud_application;
 
 
 --
@@ -2967,7 +3051,21 @@ GRANT SELECT,USAGE ON SEQUENCE prive.envoi_email_id_seq TO mawjoud_application;
 -- Name: TABLE jeton; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.jeton TO mawjoud_application;
+GRANT SELECT,INSERT ON TABLE prive.jeton TO mawjoud_application;
+
+
+--
+-- Name: COLUMN jeton.expire_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(expire_le) ON TABLE prive.jeton TO mawjoud_application;
+
+
+--
+-- Name: COLUMN jeton.utilise_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(utilise_le) ON TABLE prive.jeton TO mawjoud_application;
 
 
 --
@@ -2992,10 +3090,17 @@ GRANT SELECT,USAGE ON SEQUENCE prive.journal_audit_id_seq TO mawjoud_application
 
 
 --
--- Name: TABLE message_contact; Type: ACL; Schema: prive; Owner: -
+-- Name: COLUMN message_contact.uuid; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.message_contact TO mawjoud_application;
+GRANT SELECT(uuid) ON TABLE prive.message_contact TO mawjoud_application;
+
+
+--
+-- Name: COLUMN message_contact.pharmacie_id; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT SELECT(pharmacie_id),UPDATE(pharmacie_id) ON TABLE prive.message_contact TO mawjoud_application;
 
 
 --
@@ -3006,17 +3111,59 @@ GRANT SELECT,USAGE ON SEQUENCE prive.message_contact_id_seq TO mawjoud_applicati
 
 
 --
--- Name: TABLE pharmacie_interne; Type: ACL; Schema: prive; Owner: -
---
-
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.pharmacie_interne TO mawjoud_application;
-
-
---
 -- Name: TABLE rattachement_pharmacien; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+GRANT SELECT,INSERT ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+
+
+--
+-- Name: COLUMN rattachement_pharmacien.pharmacie_id; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(pharmacie_id) ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+
+
+--
+-- Name: COLUMN rattachement_pharmacien.statut; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(statut) ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+
+
+--
+-- Name: COLUMN rattachement_pharmacien.conflit; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(conflit) ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+
+
+--
+-- Name: COLUMN rattachement_pharmacien.motif_code; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(motif_code) ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+
+
+--
+-- Name: COLUMN rattachement_pharmacien.motif_precision; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(motif_precision) ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+
+
+--
+-- Name: COLUMN rattachement_pharmacien.decide_par; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(decide_par) ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
+
+
+--
+-- Name: COLUMN rattachement_pharmacien.decide_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(decide_le) ON TABLE prive.rattachement_pharmacien TO mawjoud_application;
 
 
 --
@@ -3030,14 +3177,42 @@ GRANT SELECT,USAGE ON SEQUENCE prive.rattachement_pharmacien_id_seq TO mawjoud_a
 -- Name: TABLE session; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.session TO mawjoud_application;
+GRANT SELECT,INSERT,DELETE ON TABLE prive.session TO mawjoud_application;
 
 
 --
--- Name: TABLE signalement; Type: ACL; Schema: prive; Owner: -
+-- Name: COLUMN session.donnees; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.signalement TO mawjoud_application;
+GRANT UPDATE(donnees) ON TABLE prive.session TO mawjoud_application;
+
+
+--
+-- Name: COLUMN session.derniere_activite_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(derniere_activite_le) ON TABLE prive.session TO mawjoud_application;
+
+
+--
+-- Name: COLUMN session.expire_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(expire_le) ON TABLE prive.session TO mawjoud_application;
+
+
+--
+-- Name: COLUMN signalement.uuid; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT SELECT(uuid) ON TABLE prive.signalement TO mawjoud_application;
+
+
+--
+-- Name: COLUMN signalement.pharmacie_id; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT SELECT(pharmacie_id),UPDATE(pharmacie_id) ON TABLE prive.signalement TO mawjoud_application;
 
 
 --
@@ -3051,7 +3226,28 @@ GRANT SELECT,USAGE ON SEQUENCE prive.signalement_id_seq TO mawjoud_application;
 -- Name: TABLE utilisateur; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.utilisateur TO mawjoud_application;
+GRANT SELECT,INSERT ON TABLE prive.utilisateur TO mawjoud_application;
+
+
+--
+-- Name: COLUMN utilisateur.mot_de_passe_hache; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(mot_de_passe_hache) ON TABLE prive.utilisateur TO mawjoud_application;
+
+
+--
+-- Name: COLUMN utilisateur.email_verifie_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(email_verifie_le) ON TABLE prive.utilisateur TO mawjoud_application;
+
+
+--
+-- Name: COLUMN utilisateur.suspendu; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(suspendu) ON TABLE prive.utilisateur TO mawjoud_application;
 
 
 --
