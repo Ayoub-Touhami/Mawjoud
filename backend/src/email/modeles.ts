@@ -88,6 +88,8 @@ export function composerAlerte(a: string, d: DonneesAlerte): MessageEmail {
   const lieu = d.ville ? ` (${d.ville})` : '';
   return {
     a,
+    // Corps = donnée de santé (adresse + médicament) : jamais journalisé (fournisseur console, Partie 9d).
+    sante: { lienDesabonnement: d.lienDesabonnement },
     sujet: 'Mawjoud : un médicament que vous suivez est disponible / موجود: دواء تتابعه متوفر',
     texte:
       `Bonjour,\n\nLa pharmacie ${d.pharmacie}${lieu} déclare disponible : ${d.medicament}.\n` +

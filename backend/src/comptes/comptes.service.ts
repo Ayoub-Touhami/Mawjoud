@@ -78,6 +78,20 @@ export class ComptesService {
   }
 
   /** Jeton utilisable, sinon lien-invalide (inconnu ou déjà utilisé) ou lien-expire. */
+  /**
+   * Jeton reçu par e-mail, avec la limite d'échecs par IP de la connexion (20 en 15 minutes) : un jeton
+   * refusé (inconnu, déjà utilisé ou expiré) compte comme un échec. Partie 9d : ces routes n'avaient pas de limite.
+   */
+  private async jetonLimite(jeton: string, type: TypeJeton, ip: string): Promise<LigneJeton> {
+    this.limiteurs.exiger([this.limiteurs.connexionIp, ip]);
+    try {
+      return await this.exigerJetonValable(jeton, type);
+    } catch (e) {
+      this.limiteurs.connexionIp.enregistrer(ip);
+      throw e;
+    }
+  }
+
   private async exigerJetonValable(jeton: string, type: TypeJeton): Promise<LigneJeton> {
     const l = await this.lireJeton(jeton, type);
     if (!l || l.utilise) throw new ErreurApi(400, 'lien-invalide');
@@ -138,8 +152,8 @@ export class ComptesService {
 
   // ---------------------------------------------------------------- vérification de l'adresse
 
-  async verifierEmail(jeton: string): Promise<void> {
-    const l = await this.exigerJetonValable(jeton, 'verification_email');
+  async verifierEmail(jeton: string, ip: string): Promise<void> {
+    const l = await this.jetonLimite(jeton, 'verification_email', ip);
     await this.base.transaction(async (tx) => {
       await this.consommer(tx, l.id);
       await tx.requete(`UPDATE prive.utilisateur SET email_verifie_le = coalesce(email_verifie_le, now()) WHERE id = $1`, [
@@ -277,8 +291,8 @@ export class ComptesService {
   }
 
   /** Nouveau mot de passe par lien : usage unique ; toutes les sessions du compte sont fermées. */
-  async reinitialiser(dto: ReinitialisationDto): Promise<void> {
-    const l = await this.exigerJetonValable(dto.jeton, 'reinitialisation_mot_de_passe');
+  async reinitialiser(dto: ReinitialisationDto, ip: string): Promise<void> {
+    const l = await this.jetonLimite(dto.jeton, 'reinitialisation_mot_de_passe', ip);
     const motif = this.mdp.verifierPolitique(dto.nouveauMotDePasse, l.email);
     if (motif) throw new ErreurApi(400, 'mot-de-passe-faible', { motif });
     const hache = await this.mdp.hacher(dto.nouveauMotDePasse);

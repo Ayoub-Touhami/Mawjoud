@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { compteVerifie, connecter, cookies, demarrer, emailUnique, journal, jetonDuLien, MDP, uuidDe, type Contexte } from './aide.js';
+import { compteVerifie, connecter, cookies, demarrer, emailUnique, fixtures, journal, jetonDuLien, MDP, uuidDe, type Contexte } from './aide.js';
 
 let ctx: Contexte;
 beforeAll(async () => { ctx = await demarrer(); });
@@ -100,9 +100,10 @@ describe('Vérification de l\'adresse', () => {
     const email = emailUnique();
     await api().post('/api/comptes/patients').send({ email, motDePasse: MDP }).expect(202);
     const ancien = jetonDuLien(ctx.emails.dernierPour(email)?.texte);
-    await ctx.base.requete(
+    // created_at ne change jamais par l'API : le test vieillit le jeton avec le rôle des données de test.
+    await fixtures(ctx, (tx) => tx.requete(
       `UPDATE prive.jeton SET expire_le = now() - interval '1 minute', created_at = now() - interval '2 days'
-        WHERE utilisateur_id = (SELECT id FROM prive.utilisateur WHERE email = $1)`, [email]);
+        WHERE utilisateur_id = (SELECT id FROM prive.utilisateur WHERE email = $1)`, [email]));
     const r = await api().post('/api/comptes/verification-email').send({ jeton: ancien }).expect(410);
     expect(r.body).toEqual({ erreur: 'lien-expire' });
 

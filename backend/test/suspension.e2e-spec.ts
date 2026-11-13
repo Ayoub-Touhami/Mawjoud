@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { administrateur, compteVerifie, connecter, demarrer, emailUnique, pharmacie, type Contexte, type Session } from './aide.js';
+import { administrateur, compteVerifie, connecter, demarrer, emailUnique, fixtures, pharmacie, type Contexte, type Session } from './aide.js';
 
 /**
  * Un pharmacien suspendu ne peut ni modifier un stock, ni une position, ni demander un rattachement.
@@ -66,10 +66,10 @@ describe('Pharmacien suspendu', () => {
     await api().post(`/api/admin/rattachements/${d.body.id}/valider`).set('Cookie', admin.cookie).set('X-XSRF-TOKEN', admin.csrf).expect(200);
     pharmacieId = (await ctx.base.requete<{ id: string }>(`SELECT id FROM annuaire.pharmacie WHERE uuid = $1`, [pharmacieUuid]))[0].id;
     const suffixe = emailUnique('m').slice(0, 20);
-    medicaments = (await ctx.base.requete<{ id: string }>(
+    medicaments = (await fixtures(ctx, (tx) => tx.requete<{ id: string }>(
       `INSERT INTO annuaire.medicament (code_source, nom_commercial, dci) VALUES ($1, $2, 'dci de test'), ($3, $4, 'dci de test') RETURNING id`,
       [`T1-${suffixe}`, `Médicament A ${suffixe}`, `T2-${suffixe}`, `Médicament B ${suffixe}`],
-    )).map((m) => m.id);
+    ))).map((m) => m.id);
 
     // Témoins : avant la suspension, tout passe.
     await declarerStock(pharmacieId, medicaments[0], pharmacienId, 'disponible');

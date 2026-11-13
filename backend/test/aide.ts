@@ -25,6 +25,24 @@ export interface Contexte {
   config: Configuration;
 }
 
+/**
+ * Jest charge ce module à neuf pour chaque fichier de tests : ce drapeau vaut donc « déjà remise à zéro
+ * dans CE fichier ». Le premier demarrer() d'un fichier vide la base ; les applications secondaires
+ * (limites réglées autrement) lancées ensuite dans le même fichier ne la touchent pas.
+ */
+let baseRemiseAZero = false;
+
+/**
+ * Vide mawjoud_test (référentiels gardés) par essai.reinitialiser(), créée par preparer-base-test.ps1 dans
+ * mawjoud_test seulement et exécutable par le rôle mawjoud_test_fixtures seulement.
+ */
+export async function reinitialiserBase(base: BaseService): Promise<void> {
+  await base.transaction(async (tx) => {
+    await tx.requete(`SET LOCAL ROLE mawjoud_test_fixtures`);
+    await tx.requete(`SELECT essai.reinitialiser()`);
+  });
+}
+
 /** Démarre l'application complète sur mawjoud_test (la configuration refuse toute autre base). */
 export async function demarrer(surcharges: Partial<Configuration> = {}, controleurs: Type[] = []): Promise<Contexte> {
   process.env.NODE_ENV = 'test';
@@ -50,6 +68,10 @@ export async function demarrer(surcharges: Partial<Configuration> = {}, controle
   const base = app.get(BaseService);
   const [b] = await base.requete<{ base: string }>('SELECT current_database() AS base');
   if (b.base !== 'mawjoud_test') throw new Error('Les tests ne tournent que sur mawjoud_test.');
+  if (!baseRemiseAZero) {
+    await reinitialiserBase(base);
+    baseRemiseAZero = true;
+  }
   return { app, http: app.getHttpServer() as App, emails: app.get(FOURNISSEUR_EMAIL), base, comptes: app.get(ComptesService), config };
 }
 

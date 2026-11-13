@@ -4,6 +4,14 @@ export interface MessageEmail {
   a: string;
   sujet: string;
   texte: string;
+  /** Présent sur un e-mail d'alerte : le corps associe l'adresse à un médicament (donnée de santé). */
+  sante?: { lienDesabonnement: string };
+}
+
+/** Adresse masquée pour les journaux : première lettre et domaine (t***@exemple.tn). */
+export function masquerAdresse(adresse: string): string {
+  const i = adresse.lastIndexOf('@');
+  return i > 0 ? `${adresse[0]}***${adresse.slice(i)}` : '***';
 }
 
 /** Interface commune : brancher Brevo en production ne change rien d'autre. */
@@ -13,15 +21,20 @@ export interface FournisseurEmail {
 }
 
 /**
- * Développement seulement : écrit l'e-mail dans la console du serveur (lien compris).
- * Refusé en production par la configuration.
+ * Développement seulement (refusé en production par la configuration) : écrit l'e-mail dans la console du
+ * serveur, adresse masquée. Les liens de vérification et de réinitialisation restent lisibles pour développer.
+ * E-mail d'alerte : seulement le sujet (sans médicament) et le lien de désinscription, jamais le corps
+ * (décision du 13 novembre 2026, Partie 9d).
  */
 export class EmailConsole implements FournisseurEmail {
   readonly nom = 'console';
   private readonly journal = new Logger('E-mail (console, développement)');
 
   async envoyer(m: MessageEmail): Promise<void> {
-    this.journal.log(`À : ${m.a}\nSujet : ${m.sujet}\n\n${m.texte}\n`);
+    const corps = m.sante
+      ? `(corps non journalisé : donnée de santé)\nDésinscription : ${m.sante.lienDesabonnement}`
+      : m.texte;
+    this.journal.log(`À : ${masquerAdresse(m.a)}\nSujet : ${m.sujet}\n\n${corps}\n`);
   }
 }
 
