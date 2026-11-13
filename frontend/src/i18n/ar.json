@@ -584,7 +584,8 @@
       "deja-inscrite": "Cette pharmacie est déjà inscrite. Retirez d'abord son inscription depuis l'annuaire.",
       "deux-inscrites": "Les deux fiches sont inscrites. Retirez d'abord une inscription.",
       "hors-tunisie": "Cette position est hors de Tunisie.",
-      "non-inscrite": "Cette pharmacie n'est pas inscrite."
+      "non-inscrite": "Cette pharmacie n'est pas inscrite.",
+      "indisponible": "Cette action n'est pas encore possible avec le serveur."
     },
     "motif": {
       "libelle": "Motif visible par le pharmacien",
@@ -788,6 +789,10 @@
     "donnees": {
       "titre": "بياناتك",
       "texte": "لا نطلب أي بيانات صحية. بالنسبة إلى التنبيهات، نحتفظ فقط ببريدك الإلكتروني وكلمة مرورك المحمية والدواء والمدينة."
+    },
+    "carte": {
+      "titre": "الخريطة",
+      "texte": "خلفية الخريطة من OpenFreeMap. بيانات الخريطة وجزء من مواقع الصيدليات: OpenStreetMap، برخصة ODbL."
     },
     "projet": {
       "titre": "المشروع",

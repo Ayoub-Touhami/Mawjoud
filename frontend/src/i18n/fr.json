@@ -584,7 +584,8 @@
       "deja-inscrite": "Cette pharmacie est déjà inscrite. Retirez d'abord son inscription depuis l'annuaire.",
       "deux-inscrites": "Les deux fiches sont inscrites. Retirez d'abord une inscription.",
       "hors-tunisie": "Cette position est hors de Tunisie.",
-      "non-inscrite": "Cette pharmacie n'est pas inscrite."
+      "non-inscrite": "Cette pharmacie n'est pas inscrite.",
+      "indisponible": "Cette action n'est pas encore possible avec le serveur."
     },
     "motif": {
       "libelle": "Motif visible par le pharmacien",
@@ -788,6 +789,10 @@
     "donnees": {
       "titre": "Vos données",
       "texte": "Aucune donnée de santé n'est demandée. Pour les alertes, seuls votre e-mail, votre mot de passe protégé, le médicament et la ville sont conservés."
+    },
+    "carte": {
+      "titre": "Carte",
+      "texte": "Fonds de carte OpenFreeMap. Données cartographiques et une partie des positions des pharmacies : OpenStreetMap, sous licence ODbL."
     },
     "projet": {
       "titre": "Le projet",

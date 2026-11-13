@@ -57,7 +57,9 @@ export type ErreurAdmin =
   | 'deja-inscrite'
   | 'deux-inscrites'
   | 'hors-tunisie'
-  | 'non-inscrite';
+  | 'non-inscrite'
+  /** L'API ne sait pas encore faire cette action (Partie 9e). */
+  | 'indisponible';
 
 export type ActionJournal =
   | 'valider'
