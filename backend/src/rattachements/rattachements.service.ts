@@ -75,6 +75,31 @@ export class RattachementsService {
   ) {}
 
   /** Dernière demande du pharmacien connecté, ou null. */
+  /**
+   * Fiches réclamables (Partie 9e), par nom, ville ou rue, sans accents ni casse. Les fiches dont le nom est
+   * « à relire » (souvent un nom de personne) ne sont jamais proposées. 20 au plus.
+   */
+  async rechercherFiches(q: string) {
+    const lignes = await this.base.requete<{ uuid: string; nom: string; rue: string | null; ville: string | null; code_postal: string | null; gouvernorat: string | null; latitude: number | null; longitude: number | null; telephone_principal: string | null; etat: string }>(
+      `SELECT p.uuid, p.nom, p.rue, p.ville, p.code_postal, g.nom AS gouvernorat, p.latitude, p.longitude, p.telephone_principal,
+              CASE WHEN EXISTS (SELECT 1 FROM prive.rattachement_pharmacien r WHERE r.pharmacie_id = p.id AND r.statut = 'validee') THEN 'inscrite'
+                   WHEN EXISTS (SELECT 1 FROM prive.rattachement_pharmacien r WHERE r.pharmacie_id = p.id AND r.statut = 'en_attente') THEN 'reclamee'
+                   ELSE 'non-inscrite' END AS etat
+         FROM annuaire.pharmacie p LEFT JOIN annuaire.gouvernorat g ON g.code = p.gouvernorat_code
+        WHERE p.statut_publication = ANY($2::text[]) AND NOT p.nom_a_verifier AND p.nom IS NOT NULL
+          AND (strpos(public.normaliser(p.nom), public.normaliser($1)) > 0
+               OR strpos(public.normaliser(coalesce(p.ville, '')), public.normaliser($1)) > 0
+               OR strpos(public.normaliser(coalesce(p.rue, '')), public.normaliser($1)) > 0)
+        ORDER BY p.nom, p.ville, p.uuid LIMIT 20`,
+      [q, STATUTS_RECLAMABLES]);
+    return {
+      elements: lignes.map((l) => ({
+        id: l.uuid, nom: l.nom, rue: l.rue, ville: l.ville, codePostal: l.code_postal, gouvernorat: l.gouvernorat,
+        latitude: l.latitude, longitude: l.longitude, telephone: l.telephone_principal, etat: l.etat,
+      })),
+    };
+  }
+
   async maDemande(compte: CompteConnecte) {
     const [l] = await this.base.requete<LigneDemande>(`${SELECT_DEMANDE} WHERE r.utilisateur_id = $1 ORDER BY r.created_at DESC LIMIT 1`, [
       compte.id,

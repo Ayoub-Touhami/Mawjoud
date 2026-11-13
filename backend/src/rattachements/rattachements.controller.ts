@@ -5,7 +5,7 @@ import { ErreurApi } from '../securite/erreurs.js';
 import type { CompteConnecte } from '../securite/sessions.service.js';
 import { LimiteAdminGuard } from '../administration/administration.controller.js';
 import { LimitePharmacienGuard } from '../pharmacien/pharmacien.controller.js';
-import { DemandeRattachementDto, FiltreDemandesDto, RefusDto } from './dto.js';
+import { DemandeRattachementDto, FiltreDemandesDto, RechercheFichesDto, RefusDto } from './dto.js';
 import { RattachementsService } from './rattachements.service.js';
 
 const uuidValide = new ParseUUIDPipe({ exceptionFactory: () => new ErreurApi(404, 'introuvable') });
@@ -23,6 +23,13 @@ export class RattachementPharmacienController {
   @ApiOperation({ summary: 'Dernière demande de rattachement du pharmacien connecté (ou null), même suspendu.' })
   maDemande(@CompteCourant() compte: CompteConnecte) {
     return this.rattachements.maDemande(compte);
+  }
+
+  @Get('recherche')
+  @Pharmacien({ emailVerifie: true })
+  @ApiOperation({ summary: "Fiches de l'annuaire réclamables, par nom, ville ou rue (20 au plus ; jamais un nom à relire)." })
+  rechercher(@Query() r: RechercheFichesDto) {
+    return this.rattachements.rechercherFiches(r.q);
   }
 
   @Post()

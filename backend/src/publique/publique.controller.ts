@@ -59,6 +59,15 @@ export class PharmaciesPubliquesController {
     return this.service.carte(c);
   }
 
+  @Get(':id/disponibilites')
+  @Public({ sansSession: true })
+  @Header('Cache-Control', CACHE_DISPONIBILITES)
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOperation({ summary: 'Disponibilités déclarées d\'une pharmacie publiée et inscrite (tous statuts, date de déclaration).' })
+  disponibilitesPharmacie(@Param('id', uuidValide) id: string) {
+    return this.service.disponibilitesPharmacie(id);
+  }
+
   @Get(':id')
   @Public({ sansSession: true })
   @Header('Cache-Control', CACHE_ANNUAIRE)
@@ -82,6 +91,14 @@ export class MedicamentsPublicsController {
   @ApiOperation({ summary: 'Recherche par nom commercial ou DCI, sans accents ni casse, triée par pertinence.' })
   rechercher(@Query() r: RechercheMedicamentsDto) {
     return this.service.medicaments(r);
+  }
+
+  @Get('tous')
+  @Public({ sansSession: true })
+  @Header('Cache-Control', CACHE_ANNUAIRE)
+  @ApiOperation({ summary: 'Catalogue actif complet, trié par nom (le front-end le charge une fois).' })
+  tous() {
+    return this.service.catalogue();
   }
 
   @Get(':id/pharmacies')

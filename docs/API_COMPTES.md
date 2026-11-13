@@ -39,6 +39,7 @@ Préfixe `/api`. Corps en JSON (10 Ko au plus). Toute route déclare qui peut l'
 | `POST /comptes/mot-de-passe-oublie` | public | `email`, `langue?` | 202, toujours |
 | `POST /comptes/reinitialisation` | public | `jeton`, `nouveauMotDePasse` | 204, toutes les sessions fermées |
 | `GET /pharmacien/rattachement` | pharmacien | — | dernière demande ou `null` |
+| `GET /pharmacien/rattachement/recherche` | pharmacien, e-mail vérifié | `q` (2 à 100 caractères) | `{ elements }` : 20 fiches réclamables au plus, par nom, ville ou rue ; jamais un nom « à relire » (Partie 9e) |
 | `POST /pharmacien/rattachement` | pharmacien, e-mail vérifié | `pharmacieId` **ou** `ajout`, `justificatif?` | 201 `DemandeReclamation` ; 409 `demande-en-cours`, `deja-rattache` ; 404 |
 | `GET /admin/rattachements?etat=en-attente` | administrateur | — | liste des demandes |
 | `POST /admin/rattachements/:id/valider` | administrateur | — | 200 ; 409 `deja-decidee`, `pharmacie-attribuee`, `pharmacie-a-creer` |

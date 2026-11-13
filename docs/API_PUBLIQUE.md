@@ -22,6 +22,8 @@ Dans la base de développement `mawjoud`, aucune pharmacie n'est encore publiée
 | `GET /v1/pharmacies/:id` | `id` (uuid) | fiche ; `404 introuvable` si absente ou non publiée |
 | `GET /v1/medicaments` | `q` (2 à 100 caractères), `limite` (1 à 50) | `{ elements }`, par pertinence |
 | `GET /v1/medicaments/:id/pharmacies` | `lat` et `lng` (ensemble, facultatifs), `limite` | `{ elements: [{ pharmacie, statut, declareLe }] }` ; `404` si médicament inconnu |
+| `GET /v1/pharmacies/:id/disponibilites` | `id` (uuid) | `{ elements: [{ medicamentId, statut, declareLe }] }`, tous statuts (Partie 9e) ; `404` si non publiée |
+| `GET /v1/medicaments/tous` | — | `{ elements }` : catalogue actif complet, trié par nom (Partie 9e, chargé une fois par le front-end) |
 | `GET /v1/gouvernorats` | — | `{ elements: [{ code, nom, nombrePharmacies }] }` |
 | `GET /v1/villes` | `gouvernorat` (facultatif) | `{ elements: [{ nom, gouvernorat, nombrePharmacies }] }` |
 
