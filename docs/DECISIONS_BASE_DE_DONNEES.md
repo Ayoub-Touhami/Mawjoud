@@ -41,7 +41,7 @@ Le langage du back-end n'est pas encore choisi. La base est donc conçue pour ne
 
 ## Règles de sécurité
 
-- `DATABASE_URL` uniquement dans `.env` à la racine, ignoré par Git. `.env` doit être ajouté au `.gitignore` **avant** la création du fichier : il ne l'est pas encore.
+- `DATABASE_URL` uniquement dans `.env` à la racine, ignoré par Git. Le `.gitignore` exclut `.env` et `.env.*` (sauf `.env.example`) ; la règle a été ajoutée avant la création du fichier.
 - Aucun mot de passe, clé ou jeton dans le code ni dans un fichier suivi par Git.
 - Requêtes SQL toujours paramétrées.
 - Les droits sont contrôlés par le serveur : un pharmacien ne modifie que sa pharmacie, l'administration est réservée.

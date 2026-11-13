@@ -1,6 +1,6 @@
 # Modèle de données de Mawjoud
 
-PostgreSQL 16, SQL pur. Fichiers : `database/migrations/001` à `021`. Proposition à valider : **rien n'est appliqué**.
+PostgreSQL 16, SQL pur. Fichiers : `database/migrations/001` à `021`, appliqués à la base `mawjoud` le 13 novembre 2026 (aucune donnée importée). Schéma généré : `database/schema.sql`.
 
 ## Choix de conception
 
@@ -12,7 +12,7 @@ PostgreSQL 16, SQL pur. Fichiers : `database/migrations/001` à `021`. Propositi
 | Pharmacies par compte | Table `prive.rattachement_pharmacien`, un index unique en limite à une | Validé. Retirer l'index suffira pour en autoriser plusieurs. |
 | Favori | Pas de table | Validé : absent de la spécification et du front-end. |
 | Signalement | Erreur sur une fiche seulement, jamais sur un stock | Validé : respecte l'idée écartée 13.3. |
-| Noms de personnes (47 pharmacies) | Colonne `nom_a_verifier`, statut `a_relire` ; exclues de la publication tant que le nom n'est pas relu | Validé. Liste dans `docs/NOMS_A_VERIFIER.csv`. |
+| Noms de personnes (47 pharmacies) | Colonne `nom_a_verifier`, statut `a_relire` ; exclues de la publication tant que le nom n'est pas relu | Validé. Liste dans `../data/travail/NOMS_A_VERIFIER.csv`, hors du dépôt (noms de personnes : jamais dans Git). |
 | Pharmacie publique et position confirmée | **Contrainte CHECK** `pharmacie_publique_complete` | La règle porte sur une seule ligne : une CHECK est déclarative, vérifiée à chaque écriture, impossible à contourner et visible dans le schéma. Un déclencheur ne sert que pour les règles qui lisent d'autres tables. |
 | Position jamais écrasée en silence | **Déclencheur** `tracer_position` | Copie chaque position dans l'historique ; refuse de changer une position existante sans motif. |
 | R3 et R9 (seul le pharmacien vérifié de cette pharmacie déclare) | **Déclencheur** `verifier_declarant` | Règle sur plusieurs tables, appliquée par la base même si le back-end se trompe. |
@@ -22,7 +22,7 @@ PostgreSQL 16, SQL pur. Fichiers : `database/migrations/001` à `021`. Propositi
 | Recherche | `public.normaliser()` = `unaccent` + minuscules ; index `pg_trgm` | Recherche sans accent, sans casse et tolérante aux fautes. |
 | Historiques et journal | Ajout seul ; modification et suppression refusées par déclencheur | Le compte qui agit est gardé sans clé étrangère, pour que le journal survive à une suppression de compte. |
 
-**Extensions** : `unaccent`, `pg_trgm`, `citext` et `pgcrypto` sont présentes dans `C:\Program Files\PostgreSQL\16` (fichiers `.control` et `.dll`). Elles ne sont **pas installées** dans une base. Le schéma n'utilise que `unaccent` et `pg_trgm`, toutes deux « trusted » : le propriétaire de la base peut les créer. `gen_random_uuid()` est natif, sans `pgcrypto`.
+**Extensions** : `unaccent`, `pg_trgm`, `citext` et `pgcrypto` sont présentes dans `C:\Program Files\PostgreSQL\16` (fichiers `.control` et `.dll`). Seules `unaccent` et `pg_trgm` sont installées, dans la base `mawjoud` (migration 002). Le schéma n'utilise que `unaccent` et `pg_trgm`, toutes deux « trusted » : le propriétaire de la base peut les créer. `gen_random_uuid()` est natif, sans `pgcrypto`.
 
 ## Diagramme entité-association
 

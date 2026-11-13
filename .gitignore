@@ -2,3 +2,6 @@
 .env
 .env.*
 !.env.example
+
+# Données personnelles (noms de personnes) : jamais dans Git.
+NOMS_A_VERIFIER*.csv

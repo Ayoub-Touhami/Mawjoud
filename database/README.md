@@ -23,7 +23,7 @@ SQL pur sur PostgreSQL 16, indépendant du langage du back-end. Modèle et dicti
 | N° | Fichier | Sujet |
 |---|---|---|
 | 001 | `001_schema_migrations.sql` | Registre des migrations |
-| 002 | `002_extensions.sql` | `unaccent` et `pg_trgm` (accord donné ; appliquée à la partie 3) |
+| 002 | `002_extensions.sql` | `unaccent` et `pg_trgm` (accord donné) |
 | 003 | `003_schemas_et_fonctions.sql` | Schémas `annuaire`, `prive`, `publique` ; fonctions `normaliser`, `maj_updated_at`, `interdire_modification` |
 | 004 | `004_gouvernorat.sql` | Les 24 gouvernorats |
 | 005 | `005_utilisateur.sql` | Comptes et contrôle des rôles |
@@ -48,13 +48,20 @@ L'ordre suit les dépendances : une table vient après celles qu'elle référenc
 
 ## Application
 
-Le script PowerShell qui applique dans l'ordre les fichiers absents de `schema_migrations` reste à écrire. En attendant, un fichier s'applique ainsi :
+Script : `database/appliquer-migrations.ps1`, à lancer depuis la racine du dépôt.
 
 ```powershell
-psql $env:DATABASE_URL -f database/migrations/001_schema_migrations.sql
+.\database\appliquer-migrations.ps1 -Lister      # état : appliquées et en attente, sans rien changer
+.\database\appliquer-migrations.ps1 -CreerBase   # crée la base si besoin, puis applique
+.\database\appliquer-migrations.ps1              # applique les fichiers absents de schema_migrations
 ```
 
-**Rien n'est appliqué pour l'instant** : ces fichiers attendent la validation du modèle.
+- Lit `DATABASE_URL` dans `.env`. Le mot de passe passe à `psql` par `PGPASSWORD`, jamais en argument ni à l'écran.
+- Refuse les bases `cleanapp`, `postgres`, `template0` et `template1` comme cible.
+- Applique dans l'ordre des numéros, s'arrête à la première erreur (la transaction du fichier fautif est annulée).
+- Régénère `schema.sql` après chaque application (`pg_dump --schema-only --no-owner`, clé `\restrict` fixe pour un fichier stable). `-SansSchema` l'évite.
+
+**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 021 appliquées, contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, historique des positions, déclarant du stock, droits des rôles). Aucune donnée importée.
 
 ## Pour le back-end, quand il sera choisi
 
