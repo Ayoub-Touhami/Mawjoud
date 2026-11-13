@@ -515,10 +515,10 @@ CREATE TABLE annuaire.pharmacie (
     CONSTRAINT pharmacie_position_complete CHECK (((latitude IS NULL) = (longitude IS NULL))),
     CONSTRAINT pharmacie_position_sourcee CHECK (((latitude IS NULL) OR (source_gps IS NOT NULL))),
     CONSTRAINT pharmacie_precision_gps_check CHECK ((precision_gps = ANY (ARRAY['exact'::text, 'nom'::text, 'inconnu'::text]))),
-    CONSTRAINT pharmacie_publique_complete CHECK (((statut_publication <> 'publiee'::text) OR (position_confirmee AND (nom IS NOT NULL) AND (NOT nom_a_verifier) AND (ville IS NOT NULL) AND (gouvernorat_code IS NOT NULL)))),
+    CONSTRAINT pharmacie_publique_complete CHECK (((statut_publication <> ALL (ARRAY['pret_a_publier'::text, 'publiee'::text])) OR (position_confirmee AND (nom IS NOT NULL) AND (NOT nom_a_verifier) AND (ville IS NOT NULL) AND (gouvernorat_code IS NOT NULL)))),
     CONSTRAINT pharmacie_source_gps_check CHECK ((source_gps = ANY (ARRAY['tunidoc'::text, 'osm_telephone'::text, 'osm_nom_ville'::text, 'saisie_pharmacien'::text, 'saisie_admin'::text]))),
     CONSTRAINT pharmacie_sources_check CHECK ((sources <@ ARRAY['tunidoc'::text, 'goafricaonline'::text, 'medtn'::text, 'pdf'::text, 'osm'::text, 'saisie_pharmacien'::text, 'saisie_admin'::text])),
-    CONSTRAINT pharmacie_statut_publication_check CHECK ((statut_publication = ANY (ARRAY['en_attente_position'::text, 'a_relire'::text, 'publiee'::text, 'non_publiable'::text, 'fermee'::text, 'fusionnee'::text]))),
+    CONSTRAINT pharmacie_statut_publication_check CHECK ((statut_publication = ANY (ARRAY['en_attente_position'::text, 'a_relire'::text, 'pret_a_publier'::text, 'publiee'::text, 'non_publiable'::text, 'fermee'::text, 'fusionnee'::text]))),
     CONSTRAINT pharmacie_telephone_principal_check CHECK ((telephone_principal ~ '^\+216[0-9]{8}$'::text)),
     CONSTRAINT pharmacie_telephones_autres_check CHECK ((array_to_string(telephones_autres, ' '::text) ~ '^(\+216[0-9]{8}( \+216[0-9]{8})*)?$'::text)),
     CONSTRAINT pharmacie_ville_check CHECK ((ville <> ''::text))
@@ -544,6 +544,13 @@ COMMENT ON COLUMN annuaire.pharmacie.id_source IS 'Identifiant C00001… des CSV
 --
 
 COMMENT ON COLUMN annuaire.pharmacie.horaires_texte IS 'Texte d''origine du CSV, gardé pour la traçabilité ; la forme structurée est dans annuaire.horaire.';
+
+
+--
+-- Name: COLUMN pharmacie.statut_publication; Type: COMMENT; Schema: annuaire; Owner: -
+--
+
+COMMENT ON COLUMN annuaire.pharmacie.statut_publication IS 'en_attente_position, a_relire (nom à relire), pret_a_publier (complète, attend l''autorisation des sources), publiee (seule visible), non_publiable, fermee, fusionnee.';
 
 
 --
@@ -846,7 +853,7 @@ CREATE TABLE prive.pharmacie_interne (
     origine_horaires text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT pharmacie_interne_osm_id_check CHECK ((osm_id ~ '^[nwr][0-9]+$'::text))
+    CONSTRAINT pharmacie_interne_osm_id_check CHECK ((osm_id ~ '^[nwra][0-9]+$'::text))
 );
 
 
@@ -855,6 +862,13 @@ CREATE TABLE prive.pharmacie_interne (
 --
 
 COMMENT ON TABLE prive.pharmacie_interne IS 'Une ligne par pharmacie issue des CSV. Contient des noms de personnes : aucune vue publique n''y accède.';
+
+
+--
+-- Name: COLUMN pharmacie_interne.osm_id; Type: COMMENT; Schema: prive; Owner: -
+--
+
+COMMENT ON COLUMN prive.pharmacie_interne.osm_id IS 'Type + identifiant OSM : n (point), w (chemin), r (relation), a (surface, telle que donnée par l''export d''origine).';
 
 
 --
