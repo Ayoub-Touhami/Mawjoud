@@ -89,6 +89,30 @@ COMMENT ON EXTENSION unaccent IS 'text search dictionary that removes accents';
 
 
 --
+-- Name: analyser_annuaire(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.analyser_annuaire() RETURNS void
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO ''
+    AS $$
+BEGIN
+  ANALYZE annuaire.pharmacie;
+  ANALYZE annuaire.horaire;
+  ANALYZE annuaire.medicament;
+  ANALYZE annuaire.stock;
+END;
+$$;
+
+
+--
+-- Name: FUNCTION analyser_annuaire(); Type: COMMENT; Schema: annuaire; Owner: -
+--
+
+COMMENT ON FUNCTION annuaire.analyser_annuaire() IS 'ANALYZE des tables de l''annuaire, pour l''application (SECURITY DEFINER, portée fixe). Migration 030.';
+
+
+--
 -- Name: tracer_position(); Type: FUNCTION; Schema: annuaire; Owner: -
 --
 
@@ -1543,6 +1567,13 @@ CREATE INDEX pharmacie_nom_trgm ON annuaire.pharmacie USING gin (public.normalis
 
 
 --
+-- Name: pharmacie_publiee_position; Type: INDEX; Schema: annuaire; Owner: -
+--
+
+CREATE INDEX pharmacie_publiee_position ON annuaire.pharmacie USING btree (latitude, longitude) WHERE (statut_publication = 'publiee'::text);
+
+
+--
 -- Name: pharmacie_statut; Type: INDEX; Schema: annuaire; Owner: -
 --
 
@@ -2250,6 +2281,14 @@ GRANT USAGE ON SCHEMA prive TO mawjoud_application;
 
 GRANT USAGE ON SCHEMA publique TO mawjoud_lecture_publique;
 GRANT USAGE ON SCHEMA publique TO mawjoud_application;
+
+
+--
+-- Name: FUNCTION analyser_annuaire(); Type: ACL; Schema: annuaire; Owner: -
+--
+
+REVOKE ALL ON FUNCTION annuaire.analyser_annuaire() FROM PUBLIC;
+GRANT ALL ON FUNCTION annuaire.analyser_annuaire() TO mawjoud_application;
 
 
 --

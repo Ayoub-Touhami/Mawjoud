@@ -105,7 +105,18 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 - Service worker pour le hors connexion : non ajouté.
 - Données de test : noms et téléphones qui semblent réels à côté de stocks inventés. **Ne pas publier le site tel quel.**
 
+## Back-end : API publique (Partie 6)
+
+- Recherche et carte en lecture seule, sans compte : `/api/v1/pharmacies` (liste, `proches`, `carte`, fiche), `/api/v1/medicaments` (recherche, disponibilités), `/api/v1/gouvernorats`, `/api/v1/villes`. Détail : `docs/API_PUBLIQUE.md`.
+- Seules les pharmacies `publiee` sortent ; dans `mawjoud`, il n'y en a aucune pour l'instant (755 `pret_a_publier`) : les listes sont vides en développement, c'est normal. Aucun statut n'a été changé pour une démonstration.
+- Migration **029** (la **028 reste réservée** à la règle R9 de la Partie 8) : rôle de lecture publique pour l'API, index des positions publiées. PostGIS n'est pas installé : distance par boîte englobante indexée puis haversine en SQL. L'ancien index GiST `pharmacie_carte` est gardé pour l'administration.
+- Migration **030** : `annuaire.analyser_annuaire()`, ANALYZE de l'annuaire exécutable par l'application (SECURITY DEFINER, portée fixe) ; utilisée par les tests après l'insertion de leurs données, et utile après une publication en masse.
+- Disponibilités : seulement `disponible` et `quantite-limitee` (`en-rupture` n'est pas renvoyé, décision du 13 novembre 2026).
+- « À confirmer » (R6) reste calculé par le front-end (`FraicheurService`) à partir de `declareLe`.
+- 86 tests Jest, sur `mawjoud_test`.
+
 ## À faire plus tard
 
 1. **Juste avant la Partie 9 : catalogue de référence de 200 médicaments.** Créer `../data/final/medicaments_200.csv` (hors du dépôt ; le fichier n'existe pas encore au 13 novembre 2026), puis l'importer dans `annuaire.medicament`. Liste par DCI, sans marque inventée, hors nomenclature officielle (son accès et sa licence restent à vérifier), à faire relire par un pharmacien avant tout usage. Les 40 lignes de test (`donnee_test`) sont gardées.
-2. **Avec la Partie 8 : migration 028, règle R9 pour `prive.demande_position`.** Aujourd'hui, la base vérifie que le demandeur est pharmacien et non suspendu (027), mais pas qu'il est rattaché (rattachement validé) à la pharmacie dont il propose la position. La migration 028 ajoute ce contrôle, avec un test qui prouve qu'un pharmacien ne peut pas proposer une position pour une pharmacie à laquelle il n'est pas rattaché.
+2. **Avec la Partie 8 : migration 028, règle R9 pour `prive.demande_position`.** **Elle doit rester indépendante des migrations 029 et 030** : sur `mawjoud`, où 029 et 030 sont déjà passées, le script l'appliquera après elles ; sur une base neuve (`mawjoud_test`), avant. Aujourd'hui, la base vérifie que le demandeur est pharmacien et non suspendu (027), mais pas qu'il est rattaché (rattachement validé) à la pharmacie dont il propose la position. La migration 028 ajoute ce contrôle, avec un test qui prouve qu'un pharmacien ne peut pas proposer une position pour une pharmacie à laquelle il n'est pas rattaché.
+3. **Carte : regroupement des points selon le zoom.** Aujourd'hui, `GET /api/v1/pharmacies/carte` contrôle `zoom` (0 à 22) sans s'en servir : 500 points au plus, avec l'indicateur `tronque`. Décider du regroupement (côté serveur, ou côté MapLibre avec ses grappes) quand le nombre de pharmacies publiées le demandera.

@@ -5,3 +5,6 @@
 
 # Données personnelles (noms de personnes) : jamais dans Git.
 NOMS_A_VERIFIER*.csv
+
+# Démonstration (données de test) : non commitée tant qu'elle n'est pas validée.
+/database/demo/
