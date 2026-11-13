@@ -17,7 +17,12 @@ export type ActionAudit =
   | 'refuser_position'
   | 'relire_nom'
   | 'changer_statut'
-  | 'confirmer_tout';
+  | 'confirmer_tout'
+  | 'corriger'
+  | 'creer_fiche'
+  | 'fusionner'
+  | 'suspendre'
+  | 'retablir';
 
 export type CibleAudit = 'utilisateur' | 'rattachement' | 'pharmacie' | 'demande_position';
 
