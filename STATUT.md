@@ -104,3 +104,8 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 - Détail des actions d'abus, et origine des signalements : seules suspendre, rétablir et supprimer existent.
 - Service worker pour le hors connexion : non ajouté.
 - Données de test : noms et téléphones qui semblent réels à côté de stocks inventés. **Ne pas publier le site tel quel.**
+
+## À faire plus tard
+
+1. **Juste avant la Partie 9 : catalogue de référence de 200 médicaments.** Créer `../data/final/medicaments_200.csv` (hors du dépôt ; le fichier n'existe pas encore au 13 novembre 2026), puis l'importer dans `annuaire.medicament`. Liste par DCI, sans marque inventée, hors nomenclature officielle (son accès et sa licence restent à vérifier), à faire relire par un pharmacien avant tout usage. Les 40 lignes de test (`donnee_test`) sont gardées.
+2. **Avec la Partie 8 : migration 028, règle R9 pour `prive.demande_position`.** Aujourd'hui, la base vérifie que le demandeur est pharmacien et non suspendu (027), mais pas qu'il est rattaché (rattachement validé) à la pharmacie dont il propose la position. La migration 028 ajoute ce contrôle, avec un test qui prouve qu'un pharmacien ne peut pas proposer une position pour une pharmacie à laquelle il n'est pas rattaché.

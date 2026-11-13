@@ -148,6 +148,20 @@ $$;
 
 
 --
+-- Name: verifier_acteur_position(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.verifier_acteur_position() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  PERFORM prive.exiger_non_suspendu(nullif(current_setting('mawjoud.acteur_id', true), '')::bigint);
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: verifier_declarant(); Type: FUNCTION; Schema: annuaire; Owner: -
 --
 
@@ -168,6 +182,21 @@ BEGIN
       USING ERRCODE = 'insufficient_privilege';
   END IF;
   RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: exiger_non_suspendu(bigint); Type: FUNCTION; Schema: prive; Owner: -
+--
+
+CREATE FUNCTION prive.exiger_non_suspendu(compte bigint) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF compte IS NOT NULL AND EXISTS (SELECT 1 FROM prive.utilisateur WHERE id = compte AND suspendu) THEN
+    RAISE EXCEPTION 'Le compte % est suspendu.', compte USING ERRCODE = 'insufficient_privilege';
+  END IF;
 END;
 $$;
 
@@ -220,6 +249,20 @@ $$;
 
 
 --
+-- Name: verifier_demandeur_position_actif(); Type: FUNCTION; Schema: prive; Owner: -
+--
+
+CREATE FUNCTION prive.verifier_demandeur_position_actif() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  PERFORM prive.exiger_non_suspendu(NEW.demandeur_id);
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: verifier_rattachement(); Type: FUNCTION; Schema: prive; Owner: -
 --
 
@@ -229,6 +272,20 @@ CREATE FUNCTION prive.verifier_rattachement() RETURNS trigger
 BEGIN
   PERFORM prive.exiger_role(NEW.utilisateur_id, 'pharmacien');
   PERFORM prive.exiger_role(NEW.decide_par, 'administrateur');
+  RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: verifier_rattachement_demandeur_actif(); Type: FUNCTION; Schema: prive; Owner: -
+--
+
+CREATE FUNCTION prive.verifier_rattachement_demandeur_actif() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  PERFORM prive.exiger_non_suspendu(NEW.utilisateur_id);
   RETURN NEW;
 END;
 $$;
@@ -701,7 +758,7 @@ CREATE TABLE prive.envoi_email (
     CONSTRAINT envoi_email_check1 CHECK (((statut = 'envoye'::text) = (envoye_le IS NOT NULL))),
     CONSTRAINT envoi_email_statut_check CHECK ((statut = ANY (ARRAY['a_envoyer'::text, 'envoye'::text, 'abandonne'::text]))),
     CONSTRAINT envoi_email_tentatives_check CHECK ((tentatives >= 0)),
-    CONSTRAINT envoi_email_type_check CHECK ((type = ANY (ARRAY['verification_email'::text, 'alerte'::text])))
+    CONSTRAINT envoi_email_type_check CHECK ((type = ANY (ARRAY['verification_email'::text, 'alerte'::text, 'reinitialisation_mot_de_passe'::text, 'compte_existant'::text])))
 );
 
 
@@ -740,7 +797,7 @@ CREATE TABLE prive.jeton (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT jeton_check CHECK (((type = 'desabonnement'::text) OR (expire_le IS NOT NULL))),
     CONSTRAINT jeton_jeton_hache_check CHECK ((length(jeton_hache) = 32)),
-    CONSTRAINT jeton_type_check CHECK ((type = ANY (ARRAY['verification_email'::text, 'desabonnement'::text])))
+    CONSTRAINT jeton_type_check CHECK ((type = ANY (ARRAY['verification_email'::text, 'desabonnement'::text, 'reinitialisation_mot_de_passe'::text])))
 );
 
 
@@ -770,7 +827,7 @@ CREATE TABLE prive.journal_audit (
     cible_id text NOT NULL,
     detail jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text]))),
+    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text, 'connexion_reussie'::text, 'connexion_echouee'::text, 'changer_mot_de_passe'::text, 'reinitialiser_mot_de_passe'::text, 'creer_administrateur'::text]))),
     CONSTRAINT journal_audit_cible_type_check CHECK ((cible_type = ANY (ARRAY['pharmacie'::text, 'rattachement'::text, 'demande_position'::text, 'utilisateur'::text, 'signalement'::text, 'message_contact'::text])))
 );
 
@@ -1605,6 +1662,13 @@ CREATE INDEX envoi_email_utilisateur ON prive.envoi_email USING btree (utilisate
 
 
 --
+-- Name: jeton_actifs; Type: INDEX; Schema: prive; Owner: -
+--
+
+CREATE INDEX jeton_actifs ON prive.jeton USING btree (utilisateur_id, type) WHERE (utilise_le IS NULL);
+
+
+--
 -- Name: jeton_desabonnement_unique; Type: INDEX; Schema: prive; Owner: -
 --
 
@@ -1780,6 +1844,13 @@ CREATE TRIGGER medicament_maj BEFORE UPDATE ON annuaire.medicament FOR EACH ROW 
 
 
 --
+-- Name: pharmacie pharmacie_acteur_position_actif; Type: TRIGGER; Schema: annuaire; Owner: -
+--
+
+CREATE TRIGGER pharmacie_acteur_position_actif BEFORE UPDATE OF latitude, longitude, position_confirmee ON annuaire.pharmacie FOR EACH ROW EXECUTE FUNCTION annuaire.verifier_acteur_position();
+
+
+--
 -- Name: pharmacie pharmacie_maj; Type: TRIGGER; Schema: annuaire; Owner: -
 --
 
@@ -1819,6 +1890,13 @@ CREATE TRIGGER alerte_maj BEFORE UPDATE ON prive.alerte FOR EACH ROW EXECUTE FUN
 --
 
 CREATE TRIGGER alerte_role BEFORE INSERT OR UPDATE OF utilisateur_id ON prive.alerte FOR EACH ROW EXECUTE FUNCTION prive.verifier_alerte();
+
+
+--
+-- Name: demande_position demande_position_demandeur_actif; Type: TRIGGER; Schema: prive; Owner: -
+--
+
+CREATE TRIGGER demande_position_demandeur_actif BEFORE INSERT OR UPDATE OF demandeur_id, latitude, longitude ON prive.demande_position FOR EACH ROW EXECUTE FUNCTION prive.verifier_demandeur_position_actif();
 
 
 --
@@ -1868,6 +1946,13 @@ CREATE TRIGGER message_contact_maj BEFORE UPDATE ON prive.message_contact FOR EA
 --
 
 CREATE TRIGGER pharmacie_interne_maj BEFORE UPDATE ON prive.pharmacie_interne FOR EACH ROW EXECUTE FUNCTION public.maj_updated_at();
+
+
+--
+-- Name: rattachement_pharmacien rattachement_demandeur_actif; Type: TRIGGER; Schema: prive; Owner: -
+--
+
+CREATE TRIGGER rattachement_demandeur_actif BEFORE INSERT ON prive.rattachement_pharmacien FOR EACH ROW EXECUTE FUNCTION prive.verifier_rattachement_demandeur_actif();
 
 
 --

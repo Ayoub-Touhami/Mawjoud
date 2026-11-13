@@ -20,6 +20,10 @@
 .PARAMETER SansSchema
   Ne régénère pas schema.sql.
 
+.PARAMETER BaseTest
+  Travaille sur la base des tests automatiques, mawjoud_test (même serveur, même compte que DATABASE_URL).
+  schema.sql n'est jamais régénéré depuis cette base.
+
 .EXAMPLE
   .\database\appliquer-migrations.ps1 -Lister
   .\database\appliquer-migrations.ps1 -CreerBase
@@ -28,7 +32,8 @@
 param(
   [switch]$Lister,
   [switch]$CreerBase,
-  [switch]$SansSchema
+  [switch]$SansSchema,
+  [switch]$BaseTest
 )
 
 $ErrorActionPreference = 'Stop'
@@ -42,7 +47,7 @@ $schemaSql  = Join-Path $PSScriptRoot 'schema.sql'
 try {
   [Console]::OutputEncoding = [Text.Encoding]::UTF8
   $script:psql = Trouver-Outil 'psql'
-  $c = Lire-Connexion
+  $c = if ($BaseTest) { Lire-Connexion 'mawjoud_test' } else { Lire-Connexion }
   Write-Host "Cible : base « $($c.Base) » sur $($c.Hote):$($c.Port), utilisateur $($c.Utilisateur)."
 
   # Fichiers de migrations : NNN_nom.sql, numéros uniques.
@@ -95,7 +100,7 @@ try {
     }
   }
 
-  if ($enAttente.Count -gt 0 -and -not $SansSchema) {
+  if ($enAttente.Count -gt 0 -and -not $SansSchema -and -not $BaseTest) {
     $pgDump = Trouver-Outil 'pg_dump'
     # Clé \restrict fixe : sans elle, pg_dump en tire une au hasard et schema.sql changerait à chaque fois.
     & $pgDump --schema-only --no-owner --restrict-key=mawjoud --encoding=UTF8 --file=$schemaSql

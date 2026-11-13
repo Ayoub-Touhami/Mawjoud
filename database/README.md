@@ -1,6 +1,6 @@
 # Base de données Mawjoud
 
-SQL pur sur PostgreSQL 16, indépendant du langage du back-end. Modèle et dictionnaire des tables : `docs/MODELE_DONNEES.md`. Décisions : `docs/DECISIONS_BASE_DE_DONNEES.md`.
+SQL pur sur PostgreSQL 16. Le back-end (NestJS, dossier `backend/`) y accède avec `pg` et des requêtes paramétrées, sans ORM. Modèle et dictionnaire des tables : `docs/MODELE_DONNEES.md`. Décisions : `docs/DECISIONS_BASE_DE_DONNEES.md`.
 
 ## Règles
 
@@ -46,6 +46,9 @@ SQL pur sur PostgreSQL 16, indépendant du langage du back-end. Modèle et dicti
 | 022 | `022_statut_pret_a_publier.sql` | Statut `pret_a_publier` : fiche complète en attente de l'autorisation des sources |
 | 023 | `023_osm_id_area.sql` | `osm_id` de type `a` (surface), gardé tel que dans l'export OSM |
 | 024 | `024_connexion_base.sql` | Droit de connexion retiré à `PUBLIC`, donné aux rôles `mawjoud_application` et `mawjoud_lecture_publique` |
+| 025 | `025_role_api.sql` | Compte de connexion `mawjoud_api` du back-end, membre de `mawjoud_application`, sans superutilisateur ; sans mot de passe dans la migration |
+| 026 | `026_comptes_authentification.sql` | Jeton de réinitialisation du mot de passe, e-mails de compte, actions du journal (connexions, mots de passe, création d'administrateur) |
+| 027 | `027_compte_suspendu.sql` | Un compte suspendu ne propose ni ne change de position, ni ne demande de rattachement (le stock l'était déjà, 014) |
 
 L'ordre suit les dépendances : une table vient après celles qu'elle référence.
 
@@ -64,9 +67,23 @@ Script : `database/appliquer-migrations.ps1`, à lancer depuis la racine du dép
 - Applique dans l'ordre des numéros, s'arrête à la première erreur (la transaction du fichier fautif est annulée).
 - Régénère `schema.sql` après chaque application (`pg_dump --schema-only --no-owner`, clé `\restrict` fixe pour un fichier stable). `-SansSchema` l'évite.
 
-**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 024 appliquées, contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
+**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 027 appliquées, contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
 
-Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/connexion-pg.ps1`.
+Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/connexion-pg.ps1`. Les scripts n'acceptent que deux bases : `mawjoud` et `mawjoud_test` (et refusent toujours `cleanapp`, `postgres`, `template0`, `template1`).
+
+## Compte du back-end et base de test
+
+```powershell
+.\database\definir-mot-de-passe-api.ps1             # mot de passe de mawjoud_api -> .env (API_DATABASE_URL)
+.\database\definir-mot-de-passe-api.ps1 -Remplacer  # le changer
+.\database\preparer-base-test.ps1                  # recrée mawjoud_test, vide, avec toutes les migrations
+.\database\appliquer-migrations.ps1 -BaseTest      # migrations sur mawjoud_test seulement
+```
+
+- `definir-mot-de-passe-api.ps1` : mot de passe aléatoire de 256 bits, jamais affiché ; le serveur ne reçoit que son empreinte SCRAM-SHA-256, calculée par le script ; seule la ligne `API_DATABASE_URL` de `.env` est écrite. `DATABASE_URL` (compte `postgres`) reste réservée aux scripts.
+- `preparer-base-test.ps1` ne vise que la base nommée exactement `mawjoud_test` ; `npm test` (dans `backend`) le lance avant les tests. `schema.sql` n'est jamais régénéré depuis cette base.
+- Les rôles sont communs au serveur : 025 crée `mawjoud_api` une fois et le retrouve dans `mawjoud_test`.
+- Une nouvelle table créée par une migration doit recevoir ses droits explicitement (`GRANT … TO mawjoud_application`) : 021 ne couvre que les tables existantes à son passage.
 
 ## Connexion à la base (migration 024)
 

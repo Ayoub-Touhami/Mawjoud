@@ -1,10 +1,10 @@
 # Décisions : base de données et back-end de Mawjoud
 
-Choix validés par l'équipe lors du cadrage du 8 novembre 2026, puis révisés le même jour (back-end non choisi, SQL pur, migrations avec `psql` seul). Chaque choix a été présenté avec ses avantages, ses inconvénients et une recommandation avant d'être retenu.
+Choix validés par l'équipe lors du cadrage du 8 novembre 2026, puis révisés le même jour (SQL pur, migrations avec `psql` seul). Back-end choisi le 13 novembre 2026 : NestJS. Chaque choix a été présenté avec ses avantages, ses inconvénients et une recommandation avant d'être retenu.
 
 ## Principe : une base indépendante du back-end
 
-Le langage du back-end n'est pas encore choisi. La base est donc conçue pour ne dépendre d'aucun langage :
+Le back-end est écrit avec NestJS (TypeScript), mais la base reste conçue pour ne dépendre d'aucun langage :
 
 - **SQL pur sur PostgreSQL.** Pas d'ORM, pas de Prisma.
 - **Schéma en fichiers `.sql` versionnés** dans un dossier dédié (`database/`) : un fichier `schema.sql` et des migrations numérotées (`001_…sql`, `002_…sql`).
@@ -13,20 +13,23 @@ Le langage du back-end n'est pas encore choisi. La base est donc conçue pour ne
 - **Table `schema_migrations`** : elle enregistre chaque migration déjà appliquée (numéro, nom du fichier, date d'application). Une migration ne passe qu'une fois.
 - **Script PowerShell d'application** : il lit `DATABASE_URL` dans `.env`, compare les fichiers de migrations à `schema_migrations`, puis applique avec `psql`, dans l'ordre des numéros, seulement les fichiers pas encore passés. Chaque migration s'exécute dans une transaction et s'arrête à la première erreur. Le script n'affiche jamais le mot de passe.
 - **Import des CSV en SQL**, avec `COPY` ou `\copy` de `psql`, éventuellement un petit script d'appui, jamais du code propre à un framework.
-- **Accès futur du back-end** par une bibliothèque PostgreSQL et des **requêtes paramétrées uniquement**, jamais de concaténation de texte dans une requête SQL. Non implémenté pour l'instant.
-- **`.env`** ne contient que les paramètres de connexion à PostgreSQL (`DATABASE_URL`), sans rien qui dépende d'un langage.
+- **Accès du back-end** par la bibliothèque `pg` et des **requêtes paramétrées uniquement**, jamais de concaténation de texte dans une requête SQL. Pas d'ORM, pas de Prisma.
+- **`.env`** contient les paramètres de connexion : `DATABASE_URL` (compte `postgres`, pour les scripts de migrations et d'import) et `API_DATABASE_URL` (compte `mawjoud_api`, pour le back-end), plus quelques réglages du back-end.
 
 ## Choix techniques
 
 | Sujet | Décision | Raison principale |
 |---|---|---|
-| Back-end | **Langage et framework à décider.** NestJS (TypeScript) reste une hypothèse provisoire, qui peut changer. Rien ne doit enfermer le projet dans NestJS. | Le choix se fera plus tard ; la base reste utilisable par n'importe quel langage. |
+| Back-end | **NestJS (TypeScript)**, dossier `backend/`, gestionnaire de paquets npm, versions figées. Accès à la base avec `pg` et des requêtes paramétrées, sans ORM. | Même langage que le front-end Angular ; structure (modules, gardes, validation des entrées) adaptée aux règles de sécurité. Le SQL reste dans les migrations et dans des requêtes visibles. |
+| Compte de connexion du back-end | **`mawjoud_api`**, membre de `mawjoud_application`, sans superutilisateur (migration 025). Le back-end refuse de démarrer avec le compte `postgres` ou tout superutilisateur. | Moindre privilège : une faille du back-end ne donne pas la main sur le serveur PostgreSQL. |
 | Base de données | **PostgreSQL 16**, base `mawjoud` | Déjà installé et prévu dans `CLAUDE.md`. La base `cleanapp` appartient à un autre projet : ne pas y toucher. |
 | Accès à la base et migrations | **SQL pur, migrations en fichiers `.sql`** appliquées avec `psql` seul, suivies par la table `schema_migrations` et un script PowerShell ; pas d'outil de migrations (dbmate écarté pour l'instant) | Indépendant du langage ; chaque requête reste visible et maîtrisée. La recherche tolérante aux fautes utilise l'extension `pg_trgm`, fournie avec PostgreSQL. |
 | Position des pharmacies | **Colonnes latitude et longitude**, avec index et contrôle des bornes de la Tunisie | Suffisant pour quelques milliers de pharmacies, disponible partout. PostGIS reste possible plus tard. |
-| Connexion des utilisateurs | **Sessions** stockées dans PostgreSQL, cookie HttpOnly, protection CSRF | Une suspension ou une suppression de compte prend effet immédiatement ; aucun jeton gardé dans le navigateur. La table des sessions fait partie du schéma ; la gestion des sessions sera réalisée côté back-end une fois le langage choisi. |
-| Mots de passe | **argon2id** | Premier choix des recommandations OWASP. La base stocke seulement l'empreinte ; le hachage sera réalisé côté back-end une fois le langage choisi. |
-| E-mails | Développement : **console**, ou **Mailpit** (à installer seulement avec accord). Production : **Brevo** | Rien ne sort du PC pendant le développement. Production soumise au choix de l'hébergement et d'un nom de domaine (SPF, DKIM). |
+| Connexion des utilisateurs | **Sessions** stockées dans PostgreSQL, cookie HttpOnly, protection CSRF | Une suspension ou une suppression de compte prend effet immédiatement ; aucun jeton gardé dans le navigateur. Réalisé dans `backend/` (Partie 5) : 7 jours glissants, 30 jours au plus, pas de JWT. |
+| Mots de passe | **argon2id** | Premier choix des recommandations OWASP. La base stocke seulement l'empreinte, calculée par le back-end (19 Mio, 2 passes, 1 fil). Politique : 10 caractères au moins, 128 au plus, refus des 10 000 mots de passe les plus courants et de l'adresse e-mail, sans règle de composition (NIST 800-63B). |
+| Identifiant de connexion | **E-mail seul** | Respecte R13 : aucune autre donnée personnelle (pas de téléphone). |
+| Adresse déjà inscrite | **Réponse neutre** à l'inscription ; le propriétaire de l'adresse reçoit un e-mail « vous avez déjà un compte » | Personne ne peut tester quelles adresses sont inscrites (OWASP). Écart avec F9 et l'erreur `email-utilise` du front-end, à adapter en Partie 9. |
+| E-mails | Développement : **console** (choisi le 13 novembre 2026 ; Mailpit écarté). Production : **Brevo**, interface prête, non réalisée | Rien ne sort du PC pendant le développement. Production soumise au choix de l'hébergement et d'un nom de domaine (SPF, DKIM). |
 | Catalogue de médicaments | **Nomenclature officielle tunisienne (DPM)**, avec nom commercial, DCI, forme et dosage | Après vérification de l'accès et de la licence. Les 40 médicaments de test restent en attendant. Pas de saisie libre : les alertes demandent un médicament identifié. |
 
 ## Données des pharmacies
@@ -50,7 +53,7 @@ Le langage du back-end n'est pas encore choisi. La base est donc conçue pour ne
 
 - Base : dossier `database/` avec les migrations numérotées, la table `schema_migrations`, le script PowerShell d'application, `schema.sql` généré par `pg_dump --schema-only`, et les scripts d'import en `\copy`.
 - Front-end : parcours « le pharmacien place sa position » et « l'administrateur la valide » ; affichage « Téléphone non renseigné ».
-- Une fois le back-end choisi : remplacer les services simulés par des appels à l'API, sans changer les écrans ; sessions et argon2id ; déclenchement des alertes avec un seul e-mail par disponibilité et nouvelle tentative en cas d'échec ; dépôt des justificatifs ; réception des messages de contact.
+- Back-end (NestJS) : remplacer les services simulés par des appels à l'API, sans changer les écrans ; sessions et argon2id ; déclenchement des alertes avec un seul e-mail par disponibilité et nouvelle tentative en cas d'échec ; dépôt des justificatifs ; réception des messages de contact.
 - Convertir les horaires texte (701 fiches) au format du front-end.
 - Ajouter la traçabilité des 3 138 pharmacies en attente : `pharmacies_interne.csv` ne couvre que les 802 du fichier final.
 - Corriger `LISEZMOI_donnees.md`, dont la première partie parle encore d'afficher 3 257 pharmacies.
@@ -58,7 +61,6 @@ Le langage du back-end n'est pas encore choisi. La base est donc conçue pour ne
 
 ## Points encore ouverts
 
-- **Langage et framework du back-end.**
 - Hébergement et nom de domaine.
 - Autorisations de publication des sources web ; loi tunisienne sur les données personnelles (INPDP).
 - Méthode de vérification des pharmaciens ; mot de passe oublié ; historique des déclarations ; plusieurs pharmacies par compte ; ville pilote.

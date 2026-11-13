@@ -4,6 +4,8 @@
 
 $script:racineDepot     = Split-Path -Parent $PSScriptRoot
 $script:basesInterdites = @('cleanapp', 'postgres', 'template0', 'template1')
+# Seules bases que ces scripts acceptent de modifier : la base du projet et la base des tests automatiques.
+$script:basesAutorisees = @('mawjoud', 'mawjoud_test')
 
 function Trouver-Outil([string]$nom) {
   $cmd = Get-Command $nom -ErrorAction SilentlyContinue
@@ -13,7 +15,8 @@ function Trouver-Outil([string]$nom) {
   throw "$nom introuvable : installer PostgreSQL 16 ou ajouter son dossier bin au PATH."
 }
 
-function Lire-Connexion {
+# $BaseForcee : remplace la base de DATABASE_URL (par exemple mawjoud_test), mêmes contrôles.
+function Lire-Connexion([string]$BaseForcee) {
   $fichierEnv = Join-Path $script:racineDepot '.env'
   if (-not (Test-Path -LiteralPath $fichierEnv)) { throw "Fichier .env absent à la racine du dépôt." }
   $ligne = Get-Content -LiteralPath $fichierEnv -Encoding UTF8 |
@@ -37,9 +40,13 @@ function Lire-Connexion {
     if ($kv[0] -eq 'sslmode') { $c.SslMode = $kv[1] }
     else { throw "Paramètre « $($kv[0]) » de DATABASE_URL non pris en charge." }
   }
+  if ($BaseForcee) { $c.Base = $BaseForcee }
   if (-not $c.Base) { throw "DATABASE_URL ne précise pas de base." }
   if ($script:basesInterdites -contains $c.Base.ToLower()) {
     throw "Base « $($c.Base) » interdite : ces scripts ne touchent qu'à la base du projet."
+  }
+  if ($script:basesAutorisees -notcontains $c.Base) {
+    throw "Base « $($c.Base) » inconnue : bases acceptées : $($script:basesAutorisees -join ', ')."
   }
   return $c
 }
