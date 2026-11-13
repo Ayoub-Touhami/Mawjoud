@@ -49,10 +49,12 @@ SQL pur sur PostgreSQL 16. Le back-end (NestJS, dossier `backend/`) y accède av
 | 025 | `025_role_api.sql` | Compte de connexion `mawjoud_api` du back-end, membre de `mawjoud_application`, sans superutilisateur ; sans mot de passe dans la migration |
 | 026 | `026_comptes_authentification.sql` | Jeton de réinitialisation du mot de passe, e-mails de compte, actions du journal (connexions, mots de passe, création d'administrateur) |
 | 027 | `027_compte_suspendu.sql` | Un compte suspendu ne propose ni ne change de position, ni ne demande de rattachement (le stock l'était déjà, 014) |
-| 028 | (réservée) | Règle R9 sur `prive.demande_position`, prévue avec la Partie 8 |
+| 028 | `028_r9_demande_position.sql` | R9 : un pharmacien ne propose une position que pour sa pharmacie (rattachement validé). Écrite en Partie 8, indépendante de 029 à 033 (appliquée après elles sur `mawjoud`) |
 | 029 | `029_lecture_publique_api.sql` | `mawjoud_api` peut prendre le rôle `mawjoud_lecture_publique` (sans hériter de ses droits) pour l'API publique ; index (latitude, longitude) des fiches publiées |
 | 030 | `030_analyser_annuaire.sql` | `annuaire.analyser_annuaire()` : ANALYZE de l'annuaire par l'application (SECURITY DEFINER, sans paramètre, exécutable par `mawjoud_application` seulement) |
 | 031 | `031_espace_pharmacien.sql` | Retrait d'une déclaration de stock vérifié par la base (acteur : le pharmacien rattaché ou un administrateur) ; actions du journal `modifier_fiche`, `retirer_declaration`, `acces_refuse` |
+| 032 | `032_droits_fiche_et_transitions.sql` | `mawjoud_api` sans `INSERT` ni `DELETE` sur `annuaire.pharmacie`, `UPDATE` par colonne ; modifications de fiche et d'horaires contrôlées par la base (acteur obligatoire, pharmacien limité à sa pharmacie et à téléphones, garde, horaires) ; transitions de statut en liste blanche (`annuaire.transition_publication_autorisee`) |
+| 033 | `033_demandes_position.sql` | Demandes de position en ajout seul (seule la décision s'enregistre, une fois), statut `remplacee` ; actions du journal `proposer_position`, `relire_nom`, `changer_statut` |
 
 L'ordre suit les dépendances : une table vient après celles qu'elle référence.
 
@@ -71,7 +73,7 @@ Script : `database/appliquer-migrations.ps1`, à lancer depuis la racine du dép
 - Applique dans l'ordre des numéros, s'arrête à la première erreur (la transaction du fichier fautif est annulée).
 - Régénère `schema.sql` après chaque application (`pg_dump --schema-only --no-owner`, clé `\restrict` fixe pour un fichier stable). `-SansSchema` l'évite.
 
-**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 027 et 029 à 031 appliquées (028 réservée, indépendante des suivantes), contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
+**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 033 appliquées (028 écrite en Partie 8, après 029 à 031 sur `mawjoud`), contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
 
 Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/connexion-pg.ps1`. Les scripts n'acceptent que deux bases : `mawjoud` et `mawjoud_test` (et refusent toujours `cleanapp`, `postgres`, `template0`, `template1`).
 
@@ -85,6 +87,7 @@ Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/
 ```
 
 - `definir-mot-de-passe-api.ps1` : mot de passe aléatoire de 256 bits, jamais affiché ; le serveur ne reçoit que son empreinte SCRAM-SHA-256, calculée par le script ; seule la ligne `API_DATABASE_URL` de `.env` est écrite. `DATABASE_URL` (compte `postgres`) reste réservée aux scripts.
+- `preparer-base-test.ps1` crée aussi le rôle `mawjoud_test_fixtures` (sans connexion), avec `INSERT` sur `annuaire.pharmacie`, `annuaire.horaire` et `annuaire.historique_position` **dans `mawjoud_test` seulement**, et permet à `mawjoud_api` de le prendre (`SET ROLE`, sans hériter) : depuis 032, `mawjoud_api` ne peut plus créer de fiche, et les tests créent les leurs avec ce rôle. Dans `mawjoud`, il n'a aucun droit.
 - `preparer-base-test.ps1` ne vise que la base nommée exactement `mawjoud_test` ; `npm test` (dans `backend`) le lance avant les tests. `schema.sql` n'est jamais régénéré depuis cette base.
 - Les rôles sont communs au serveur : 025 crée `mawjoud_api` une fois et le retrouve dans `mawjoud_test`.
 - Une nouvelle table créée par une migration doit recevoir ses droits explicitement (`GRANT … TO mawjoud_application`) : 021 ne couvre que les tables existantes à son passage.

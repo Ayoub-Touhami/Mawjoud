@@ -122,14 +122,23 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 - La date de déclaration est celle du serveur ; une date envoyée par le client est refusée (400).
 - 115 tests Jest, sur `mawjoud_test`.
 
+## Back-end : positions, validation et publication (Partie 8)
+
+- Branche `partie-8-positions-publication` (les Parties 1 à 7 sont sur `main`) ; fusion après accord.
+- **Priorité faite** : `mawjoud_api` n'a plus `INSERT` ni `DELETE` sur `annuaire.pharmacie`, et `UPDATE` seulement colonne par colonne (032) ; la base contrôle les champs modifiables par le pharmacien (téléphones, garde, horaires, sa pharmacie seulement) ; R9 sur les demandes de position (028).
+- Pharmacien : proposer une position, voir l'état de sa demande. Administrateur : file des demandes, valider, refuser ; liste des fiches avec les motifs de blocage, relecture du nom, changement de statut (transitions en liste blanche, dans la base). Détail : `docs/API_ADMIN.md`.
+- Demandes de position en ajout seul (033). Seuils des positions réglables par configuration (15 m, 50 m, 6 décimales par défaut).
+- **Rôle `mawjoud_test_fixtures`** : créé uniquement par `database/preparer-base-test.ps1`, jamais par une migration, avec des droits dans `mawjoud_test` seulement (les tests y créent leurs fiches). **Sur tout serveur de production : `DROP ROLE mawjoud_test_fixtures;`** (il ne doit pas y exister ; ne jamais y lancer `preparer-base-test.ps1`).
+- 145 tests Jest, sur `mawjoud_test`.
+
 ## À faire plus tard
 
-**Priorité : à faire en tête de la Partie 8**, avant tout le reste de l'administration :
-- **resserrer les droits de `mawjoud_api` sur `annuaire.pharmacie`** : retirer `INSERT` et `DELETE`, que l'API n'utilise pas (la création de fiche par l'administration passera par une route dédiée, à décider) ;
-- **faire contrôler par la base les champs modifiables par le pharmacien** (téléphone, autres téléphones, garde, horaires) : un pharmacien ne change que ces champs, et seulement sur sa pharmacie (rattachement validé, compte non suspendu), aujourd'hui assuré par l'API et les tests seulement.
+**Priorité de la Partie 8 : faite** (droits de `mawjoud_api` sur les pharmacies, champs du pharmacien contrôlés par la base : migration 032).
 
 1. **Juste avant la Partie 9 : catalogue de référence de 200 médicaments.** Créer `../data/final/medicaments_200.csv` (hors du dépôt ; le fichier n'existe pas encore au 13 novembre 2026), puis l'importer dans `annuaire.medicament`. Liste par DCI, sans marque inventée, hors nomenclature officielle (son accès et sa licence restent à vérifier), à faire relire par un pharmacien avant tout usage. Les 40 lignes de test (`donnee_test`) sont gardées.
-2. **Avec la Partie 8 : migration 028, règle R9 pour `prive.demande_position`.** **Elle doit rester indépendante des migrations 029 à 031** : sur `mawjoud`, où elles sont déjà passées, le script l'appliquera après elles ; sur une base neuve (`mawjoud_test`), avant. (Voir aussi la priorité en tête de la Partie 8, ci-dessus.) Aujourd'hui, la base vérifie que le demandeur est pharmacien et non suspendu (027), mais pas qu'il est rattaché (rattachement validé) à la pharmacie dont il propose la position. La migration 028 ajoute ce contrôle, avec un test qui prouve qu'un pharmacien ne peut pas proposer une position pour une pharmacie à laquelle il n'est pas rattaché.
+2. **Fait en Partie 8 : migration 028, règle R9 pour `prive.demande_position`**, indépendante des migrations 029 à 033 et testée.
 3. **Carte : regroupement des points selon le zoom.** Aujourd'hui, `GET /api/v1/pharmacies/carte` contrôle `zoom` (0 à 22) sans s'en servir : 500 points au plus, avec l'indicateur `tronque`. Décider du regroupement (côté serveur, ou côté MapLibre avec ses grappes) quand le nombre de pharmacies publiées le demandera.
 4. **Avant la Partie 9 (connexion du front-end) : base de démonstration séparée `mawjoud_demo`** (décision du 13 novembre 2026). Mêmes migrations que `mawjoud`, données de démonstration clairement marquées « données de test », supprimable d'un coup (`DROP DATABASE`), sur le modèle de `mawjoud_test`. On n'installe pas de fausses fiches dans `mawjoud`, et on ne suspend pas les déclencheurs. Le premier script préparé pour `mawjoud` (`database/demo/`, ignoré par Git, jamais lancé) sera remplacé ; `mawjoud_demo` devra être ajoutée à la liste des bases acceptées par les scripts, avec les mêmes garde-fous.
 5. **Avec la Partie 9 : « suivre un médicament » et « tout confirmer ».** Le front-end les attend (`StockService.suivreMedicament`, `confirmerTout`) ; l'API ne les a pas (Partie 7 : déclarer, lot, retirer). Décider s'il faut les ajouter ou adapter le front-end (le lot redéclare déjà tous les statuts d'un coup).
+6. **Administration, suite.** Correction du nom d'une fiche par l'administrateur (droit de colonne non accordé), création d'une fiche pour une demande d'ajout (`pharmacie-a-creer`), fusion de fiches (`fusionnee`), suspension d'un compte par une route : à décider et écrire. Les tests suspendent encore un compte directement en base.
+7. **Avec la Partie 9 : tests indépendants les uns des autres.** Aujourd'hui, les fichiers de tests partagent `mawjoud_test` et un fichier (positions-admin) remet ses fiches dans l'état attendu par les autres à la fin. À faire : chaque fichier de tests remet la base à son état de départ **au début** (et ne dépend plus de ce qu'un autre a laissé), puis vérifier que tous les fichiers passent **dans un ordre différent** (ordre inversé ou aléatoire de Jest).

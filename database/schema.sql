@@ -89,6 +89,27 @@ COMMENT ON EXTENSION unaccent IS 'text search dictionary that removes accents';
 
 
 --
+-- Name: acteur_actif(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.acteur_actif(OUT id bigint, OUT role text) RETURNS record
+    LANGUAGE plpgsql STABLE
+    AS $$
+DECLARE
+  id_acteur bigint := nullif(current_setting('mawjoud.acteur_id', true), '')::bigint;
+BEGIN
+  IF id_acteur IS NULL THEN
+    RAISE EXCEPTION 'Modification de l''annuaire sans acteur (mawjoud.acteur_id) : refusée.' USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  SELECT u.id, u.role INTO id, role FROM prive.utilisateur u WHERE u.id = id_acteur AND NOT u.suspendu;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Compte % absent ou suspendu : modification refusée.', id_acteur USING ERRCODE = 'insufficient_privilege';
+  END IF;
+END;
+$$;
+
+
+--
 -- Name: analyser_annuaire(); Type: FUNCTION; Schema: annuaire; Owner: -
 --
 
@@ -110,6 +131,88 @@ $$;
 --
 
 COMMENT ON FUNCTION annuaire.analyser_annuaire() IS 'ANALYZE des tables de l''annuaire, pour l''application (SECURITY DEFINER, portée fixe). Migration 030.';
+
+
+--
+-- Name: controler_modification_fiche(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.controler_modification_fiche() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  u record;
+  libres CONSTANT text[] := ARRAY['telephone_principal', 'telephones_autres', 'garde', 'updated_at'];
+BEGIN
+  IF NEW.statut_publication IS DISTINCT FROM OLD.statut_publication
+     AND NOT annuaire.transition_publication_autorisee(OLD.statut_publication, NEW.statut_publication) THEN
+    RAISE EXCEPTION 'Transition de statut interdite : % vers %.', OLD.statut_publication, NEW.statut_publication
+      USING ERRCODE = 'check_violation';
+  END IF;
+  IF NOT annuaire.est_application() THEN
+    RETURN NEW;
+  END IF;
+  SELECT * INTO u FROM annuaire.acteur_actif();
+  IF u.role = 'administrateur' THEN
+    RETURN NEW;
+  END IF;
+  IF u.role = 'pharmacien' AND annuaire.pharmacien_de(u.id, OLD.id)
+     AND (to_jsonb(NEW) - libres) = (to_jsonb(OLD) - libres) THEN
+    RETURN NEW;
+  END IF;
+  RAISE EXCEPTION 'Modification refusée : un pharmacien ne change que le téléphone et la garde de sa pharmacie.'
+    USING ERRCODE = 'insufficient_privilege';
+END;
+$$;
+
+
+--
+-- Name: controler_modification_horaire(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.controler_modification_horaire() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  u record;
+BEGIN
+  IF NOT annuaire.est_application() THEN
+    RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
+  END IF;
+  SELECT * INTO u FROM annuaire.acteur_actif();
+  IF u.role = 'administrateur'
+     OR (u.role = 'pharmacien'
+         AND (TG_OP = 'INSERT' OR annuaire.pharmacien_de(u.id, OLD.pharmacie_id))
+         AND (TG_OP = 'DELETE' OR annuaire.pharmacien_de(u.id, NEW.pharmacie_id))) THEN
+    RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
+  END IF;
+  RAISE EXCEPTION 'Horaires : un pharmacien ne modifie que ceux de sa pharmacie.' USING ERRCODE = 'insufficient_privilege';
+END;
+$$;
+
+
+--
+-- Name: est_application(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.est_application() RETURNS boolean
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT NOT r.rolsuper AND pg_has_role(current_user, 'mawjoud_application', 'MEMBER')
+    FROM pg_roles r WHERE r.rolname = current_user;
+$$;
+
+
+--
+-- Name: pharmacien_de(bigint, bigint); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.pharmacien_de(compte bigint, pharmacie bigint) RETURNS boolean
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT EXISTS (SELECT 1 FROM prive.rattachement_pharmacien r
+                  WHERE r.utilisateur_id = compte AND r.pharmacie_id = pharmacie AND r.statut = 'validee');
+$$;
 
 
 --
@@ -169,6 +272,45 @@ BEGIN
   RETURN NULL;
 END;
 $$;
+
+
+--
+-- Name: transition_publication_autorisee(text, text); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.transition_publication_autorisee(de text, vers text) RETURNS boolean
+    LANGUAGE sql IMMUTABLE PARALLEL SAFE
+    AS $$
+  SELECT (de, vers) IN (
+    ('en_attente_position', 'a_relire'),        -- position validée, nom à relire
+    ('en_attente_position', 'pret_a_publier'),  -- position validée, fiche complète
+    ('en_attente_position', 'non_publiable'),
+    ('en_attente_position', 'fermee'),
+    ('a_relire', 'pret_a_publier'),             -- nom relu
+    ('a_relire', 'en_attente_position'),        -- position à refaire
+    ('a_relire', 'non_publiable'),
+    ('a_relire', 'fermee'),
+    ('pret_a_publier', 'publiee'),              -- publication
+    ('pret_a_publier', 'a_relire'),
+    ('pret_a_publier', 'non_publiable'),
+    ('pret_a_publier', 'fermee'),
+    ('publiee', 'pret_a_publier'),              -- dépublication
+    ('publiee', 'non_publiable'),
+    ('publiee', 'fermee'),
+    ('non_publiable', 'en_attente_position'),
+    ('non_publiable', 'a_relire'),
+    ('non_publiable', 'pret_a_publier'),
+    ('fermee', 'pret_a_publier'),               -- réouverture
+    ('fermee', 'non_publiable')
+  );
+$$;
+
+
+--
+-- Name: FUNCTION transition_publication_autorisee(de text, vers text); Type: COMMENT; Schema: annuaire; Owner: -
+--
+
+COMMENT ON FUNCTION annuaire.transition_publication_autorisee(de text, vers text) IS 'Liste blanche des transitions de statut_publication (fusionnee : jamais par cette voie). Migration 032.';
 
 
 --
@@ -269,6 +411,32 @@ $$;
 
 
 --
+-- Name: figer_demande_position(); Type: FUNCTION; Schema: prive; Owner: -
+--
+
+CREATE FUNCTION prive.figer_demande_position() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  decision CONSTANT text[] := ARRAY['statut', 'motif_refus', 'decide_par', 'decide_le', 'updated_at'];
+  comptes  CONSTANT text[] := ARRAY['demandeur_id', 'decide_par', 'updated_at'];
+BEGIN
+  -- Compte supprimé : seules les références au compte passent à vide.
+  IF (to_jsonb(NEW) - comptes) = (to_jsonb(OLD) - comptes)
+     AND (NEW.demandeur_id IS NOT DISTINCT FROM OLD.demandeur_id OR NEW.demandeur_id IS NULL)
+     AND (NEW.decide_par IS NOT DISTINCT FROM OLD.decide_par OR NEW.decide_par IS NULL) THEN
+    RETURN NEW;
+  END IF;
+  IF OLD.statut <> 'en_attente' OR NEW.statut = 'en_attente' OR (to_jsonb(NEW) - decision) <> (to_jsonb(OLD) - decision) THEN
+    RAISE EXCEPTION 'Une demande de position ne se modifie pas : seule sa décision s''enregistre, une fois.'
+      USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: verifier_alerte(); Type: FUNCTION; Schema: prive; Owner: -
 --
 
@@ -306,6 +474,32 @@ CREATE FUNCTION prive.verifier_demandeur_position_actif() RETURNS trigger
     AS $$
 BEGIN
   PERFORM prive.exiger_non_suspendu(NEW.demandeur_id);
+  RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: verifier_demandeur_rattache(); Type: FUNCTION; Schema: prive; Owner: -
+--
+
+CREATE FUNCTION prive.verifier_demandeur_rattache() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  -- Suppression du compte (ON DELETE SET NULL) : la demande garde sa trace sans demandeur.
+  IF TG_OP = 'UPDATE' AND NEW.demandeur_id IS NULL AND NEW.pharmacie_id = OLD.pharmacie_id THEN
+    RETURN NEW;
+  END IF;
+  IF NEW.demandeur_id IS NULL OR NOT EXISTS (
+    SELECT 1 FROM prive.rattachement_pharmacien r
+     WHERE r.utilisateur_id = NEW.demandeur_id
+       AND r.pharmacie_id = NEW.pharmacie_id
+       AND r.statut = 'validee'
+  ) THEN
+    RAISE EXCEPTION 'Un pharmacien ne propose une position que pour sa pharmacie (R9).'
+      USING ERRCODE = 'insufficient_privilege';
+  END IF;
   RETURN NEW;
 END;
 $$;
@@ -761,7 +955,7 @@ CREATE TABLE prive.demande_position (
     CONSTRAINT demande_position_commentaire_check CHECK ((length(commentaire) <= 1000)),
     CONSTRAINT demande_position_latitude_check CHECK (((latitude >= (30)::double precision) AND (latitude <= (38)::double precision))),
     CONSTRAINT demande_position_longitude_check CHECK (((longitude >= (7)::double precision) AND (longitude <= (12)::double precision))),
-    CONSTRAINT demande_position_statut_check CHECK ((statut = ANY (ARRAY['en_attente'::text, 'validee'::text, 'refusee'::text])))
+    CONSTRAINT demande_position_statut_check CHECK ((statut = ANY (ARRAY['en_attente'::text, 'validee'::text, 'refusee'::text, 'remplacee'::text])))
 );
 
 
@@ -876,7 +1070,7 @@ CREATE TABLE prive.journal_audit (
     cible_id text NOT NULL,
     detail jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text, 'connexion_reussie'::text, 'connexion_echouee'::text, 'changer_mot_de_passe'::text, 'reinitialiser_mot_de_passe'::text, 'creer_administrateur'::text, 'modifier_fiche'::text, 'retirer_declaration'::text, 'acces_refuse'::text]))),
+    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text, 'connexion_reussie'::text, 'connexion_echouee'::text, 'changer_mot_de_passe'::text, 'reinitialiser_mot_de_passe'::text, 'creer_administrateur'::text, 'modifier_fiche'::text, 'retirer_declaration'::text, 'acces_refuse'::text, 'proposer_position'::text, 'relire_nom'::text, 'changer_statut'::text]))),
     CONSTRAINT journal_audit_cible_type_check CHECK ((cible_type = ANY (ARRAY['pharmacie'::text, 'rattachement'::text, 'demande_position'::text, 'utilisateur'::text, 'signalement'::text, 'message_contact'::text])))
 );
 
@@ -1893,6 +2087,13 @@ CREATE TRIGGER historique_stock_fige_vidage BEFORE TRUNCATE ON annuaire.historiq
 
 
 --
+-- Name: horaire horaire_controle_modification; Type: TRIGGER; Schema: annuaire; Owner: -
+--
+
+CREATE TRIGGER horaire_controle_modification BEFORE INSERT OR DELETE OR UPDATE ON annuaire.horaire FOR EACH ROW EXECUTE FUNCTION annuaire.controler_modification_horaire();
+
+
+--
 -- Name: medicament medicament_maj; Type: TRIGGER; Schema: annuaire; Owner: -
 --
 
@@ -1904,6 +2105,13 @@ CREATE TRIGGER medicament_maj BEFORE UPDATE ON annuaire.medicament FOR EACH ROW 
 --
 
 CREATE TRIGGER pharmacie_acteur_position_actif BEFORE UPDATE OF latitude, longitude, position_confirmee ON annuaire.pharmacie FOR EACH ROW EXECUTE FUNCTION annuaire.verifier_acteur_position();
+
+
+--
+-- Name: pharmacie pharmacie_controle_modification; Type: TRIGGER; Schema: annuaire; Owner: -
+--
+
+CREATE TRIGGER pharmacie_controle_modification BEFORE UPDATE ON annuaire.pharmacie FOR EACH ROW EXECUTE FUNCTION annuaire.controler_modification_fiche();
 
 
 --
@@ -1963,6 +2171,13 @@ CREATE TRIGGER demande_position_demandeur_actif BEFORE INSERT OR UPDATE OF deman
 
 
 --
+-- Name: demande_position demande_position_figee; Type: TRIGGER; Schema: prive; Owner: -
+--
+
+CREATE TRIGGER demande_position_figee BEFORE UPDATE ON prive.demande_position FOR EACH ROW EXECUTE FUNCTION prive.figer_demande_position();
+
+
+--
 -- Name: demande_position demande_position_maj; Type: TRIGGER; Schema: prive; Owner: -
 --
 
@@ -1970,10 +2185,31 @@ CREATE TRIGGER demande_position_maj BEFORE UPDATE ON prive.demande_position FOR 
 
 
 --
+-- Name: demande_position demande_position_r9; Type: TRIGGER; Schema: prive; Owner: -
+--
+
+CREATE TRIGGER demande_position_r9 BEFORE INSERT OR UPDATE OF demandeur_id, pharmacie_id ON prive.demande_position FOR EACH ROW EXECUTE FUNCTION prive.verifier_demandeur_rattache();
+
+
+--
 -- Name: demande_position demande_position_roles; Type: TRIGGER; Schema: prive; Owner: -
 --
 
 CREATE TRIGGER demande_position_roles BEFORE INSERT OR UPDATE OF demandeur_id, decide_par ON prive.demande_position FOR EACH ROW EXECUTE FUNCTION prive.verifier_demande_position();
+
+
+--
+-- Name: demande_position demande_position_sans_suppression; Type: TRIGGER; Schema: prive; Owner: -
+--
+
+CREATE TRIGGER demande_position_sans_suppression BEFORE DELETE ON prive.demande_position FOR EACH ROW EXECUTE FUNCTION public.interdire_modification();
+
+
+--
+-- Name: demande_position demande_position_sans_vidage; Type: TRIGGER; Schema: prive; Owner: -
+--
+
+CREATE TRIGGER demande_position_sans_vidage BEFORE TRUNCATE ON prive.demande_position FOR EACH STATEMENT EXECUTE FUNCTION public.interdire_modification();
 
 
 --
@@ -2390,7 +2626,77 @@ GRANT SELECT,USAGE ON SEQUENCE annuaire.medicament_id_seq TO mawjoud_application
 -- Name: TABLE pharmacie; Type: ACL; Schema: annuaire; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE annuaire.pharmacie TO mawjoud_application;
+GRANT SELECT ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.telephone_principal; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(telephone_principal) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.telephones_autres; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(telephones_autres) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.latitude; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(latitude) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.longitude; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(longitude) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.position_confirmee; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(position_confirmee) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.source_gps; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(source_gps) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.precision_gps; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(precision_gps) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.garde; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(garde) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.statut_publication; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(statut_publication) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.nom_a_verifier; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(nom_a_verifier) ON TABLE annuaire.pharmacie TO mawjoud_application;
 
 
 --
@@ -2425,7 +2731,35 @@ GRANT SELECT,USAGE ON SEQUENCE prive.alerte_id_seq TO mawjoud_application;
 -- Name: TABLE demande_position; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE prive.demande_position TO mawjoud_application;
+GRANT SELECT,INSERT ON TABLE prive.demande_position TO mawjoud_application;
+
+
+--
+-- Name: COLUMN demande_position.statut; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(statut) ON TABLE prive.demande_position TO mawjoud_application;
+
+
+--
+-- Name: COLUMN demande_position.motif_refus; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(motif_refus) ON TABLE prive.demande_position TO mawjoud_application;
+
+
+--
+-- Name: COLUMN demande_position.decide_par; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(decide_par) ON TABLE prive.demande_position TO mawjoud_application;
+
+
+--
+-- Name: COLUMN demande_position.decide_le; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT UPDATE(decide_le) ON TABLE prive.demande_position TO mawjoud_application;
 
 
 --
