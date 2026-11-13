@@ -11,9 +11,14 @@ export type ActionAudit =
   | 'refuser'
   | 'modifier_fiche'
   | 'retirer_declaration'
-  | 'acces_refuse';
+  | 'acces_refuse'
+  | 'proposer_position'
+  | 'valider_position'
+  | 'refuser_position'
+  | 'relire_nom'
+  | 'changer_statut';
 
-export type CibleAudit = 'utilisateur' | 'rattachement' | 'pharmacie';
+export type CibleAudit = 'utilisateur' | 'rattachement' | 'pharmacie' | 'demande_position';
 
 /**
  * Détail : des codes courts et, pour une modification de fiche, l'ancienne et la nouvelle valeur

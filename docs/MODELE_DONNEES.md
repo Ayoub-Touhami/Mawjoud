@@ -279,7 +279,7 @@ Index : `(pharmacie_id, created_at DESC)` pour l'historique d'une fiche ; `deman
 | demandeur_id | bigint | N | | → `utilisateur.id` (rôle pharmacien), mis à vide à la suppression du compte |
 | latitude, longitude | double precision | | | Bornes de la Tunisie |
 | commentaire | text | N | | 1 000 caractères au plus |
-| statut | text | | en_attente | en_attente, validee, refusee |
+| statut | text | | en_attente | en_attente, validee, refusee, remplacee (033 : ajout seul, seule la décision s'enregistre, une fois) |
 | motif_refus | text | N | | Obligatoire si refusée |
 | decide_par | bigint | N | | → `utilisateur.id` (rôle administrateur) |
 | decide_le | timestamptz | N | | Rempli si et seulement si décidée |

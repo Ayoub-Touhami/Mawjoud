@@ -36,6 +36,24 @@ try {
 
   & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'appliquer-migrations.ps1') -BaseTest
   if ($LASTEXITCODE -ne 0) { throw "Migrations de mawjoud_test en échec (code $LASTEXITCODE)." }
+
+  # Rôle des données de test (décision du 13 novembre 2026, Partie 8). mawjoud_api n'a plus INSERT sur
+  # annuaire.pharmacie (032) : pour créer leurs fiches, les tests prennent ce rôle (SET ROLE, sans hériter
+  # de ses droits), qui n'a de droits QUE dans mawjoud_test. Le rôle est commun au serveur, mais dans mawjoud
+  # il ne peut rien faire. Les tests vérifient que mawjoud_api seul ne peut toujours pas insérer.
+  Definir-EnvPg $c 'mawjoud_test' 'mawjoud-base-test'
+  Requete @"
+DO `$`$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'mawjoud_test_fixtures') THEN
+    CREATE ROLE mawjoud_test_fixtures NOLOGIN NOINHERIT;
+  END IF;
+END `$`$;
+GRANT USAGE ON SCHEMA annuaire TO mawjoud_test_fixtures;
+GRANT SELECT, INSERT ON annuaire.pharmacie, annuaire.horaire, annuaire.historique_position TO mawjoud_test_fixtures;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA annuaire TO mawjoud_test_fixtures;
+GRANT mawjoud_test_fixtures TO mawjoud_api WITH INHERIT FALSE, SET TRUE;
+"@ | Out-Null
+  Write-Host "Rôle mawjoud_test_fixtures prêt (droits dans mawjoud_test seulement)."
 }
 catch {
   Write-Host "ERREUR : $($_.Exception.Message)" -ForegroundColor Red

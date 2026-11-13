@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { lireConfiguration } from '../src/config/configuration.js';
-import { administrateur, compteVerifie, connecter, demarrer, journal, type Contexte, type Session } from './aide.js';
+import { administrateur, commeActeur, compteVerifie, connecter, demarrer, fixtures, journal, type Contexte, type Session } from './aide.js';
 
 /**
  * Espace pharmacien (Partie 7), sur mawjoud_test.
@@ -21,9 +21,9 @@ const ecrire = (s: Session, r: request.Test) => r.set('Cookie', s.cookie).set('X
 const lire = (s: Session, chemin: string) => api().get(chemin).set('Cookie', s.cookie);
 
 async function pharmacie(nom: string): Promise<string> {
-  const [p] = await ctx.base.requete<{ uuid: string }>(
+  const [p] = await fixtures(ctx, (tx) => tx.requete<{ uuid: string }>(
     `INSERT INTO annuaire.pharmacie (nom, ville, gouvernorat_code, latitude, longitude, position_confirmee, source_gps, statut_publication, telephone_principal)
-     VALUES ($1, 'Tunis', 11, 36.81, 10.17, true, 'tunidoc', 'pret_a_publier', '+21671111111') RETURNING uuid`, [nom]);
+     VALUES ($1, 'Tunis', 11, 36.81, 10.17, true, 'tunidoc', 'pret_a_publier', '+21671111111') RETURNING uuid`, [nom]));
   return p.uuid;
 }
 
@@ -282,13 +282,14 @@ describe('Publication', () => {
     expect(await publics()).not.toContain(PA);
     await api().get(`/api/v1/pharmacies/${PA}`).expect(404);
 
-    // Publication (l'administration la fera en Partie 8 ; jamais depuis l'espace pharmacien).
-    await ctx.base.requete(`UPDATE annuaire.pharmacie SET statut_publication = 'publiee' WHERE uuid = $1`, [PA]);
+    // Publication par un administrateur (jamais depuis l'espace pharmacien).
+    const idAdmin = await idCompte(admin);
+    await commeActeur(ctx, idAdmin, (tx) => tx.requete(`UPDATE annuaire.pharmacie SET statut_publication = 'publiee' WHERE uuid = $1`, [PA]));
     const r = await api().get(`/api/v1/medicaments/${med}/pharmacies`).expect(200);
     const ligne = r.body.elements.find((e: { pharmacie: { id: string } }) => e.pharmacie.id === PA);
     expect(ligne).toMatchObject({ statut: 'disponible', pharmacie: { nom: 'Pharmacie Espace A', etat: 'inscrite' } });
     expect((await api().get(`/api/v1/pharmacies/${PA}`).expect(200)).body.horaires).toHaveLength(3);
-    await ctx.base.requete(`UPDATE annuaire.pharmacie SET statut_publication = 'pret_a_publier' WHERE uuid = $1`, [PA]);
+    await commeActeur(ctx, idAdmin, (tx) => tx.requete(`UPDATE annuaire.pharmacie SET statut_publication = 'pret_a_publier' WHERE uuid = $1`, [PA]));
   });
 });
 

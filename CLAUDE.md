@@ -12,7 +12,7 @@ Site tunisien qui montre sur une carte les pharmacies et la disponibilité des m
 ## Pile technique
 - Front-end : Angular (bilingue français/arabe, RTL pour l'arabe).
 - Base de données : PostgreSQL.
-- Back-end : NestJS (TypeScript), dossier `backend/`, npm, versions figées. SQL pur avec `pg` et requêtes paramétrées (pas d'ORM). Compte `mawjoud_api`, jamais `postgres`. Voir `docs/API_COMPTES.md`, `docs/API_PUBLIQUE.md` et `docs/API_PHARMACIEN.md`.
+- Back-end : NestJS (TypeScript), dossier `backend/`, npm, versions figées. SQL pur avec `pg` et requêtes paramétrées (pas d'ORM). Compte `mawjoud_api`, jamais `postgres`. Voir `docs/API_COMPTES.md`, `docs/API_PUBLIQUE.md`, `docs/API_PHARMACIEN.md` et `docs/API_ADMIN.md`.
 - Carte : MapLibre GL JS avec les tuiles OpenFreeMap (décidé).
 - Service d'e-mails, hébergement, source de l'annuaire des pharmacies : à décider ; ne pas trancher seul.
 
@@ -28,6 +28,7 @@ Site tunisien qui montre sur une carte les pharmacies et la disponibilité des m
 ## Façon de travailler
 - Avancer par petites étapes : structure Angular et routes du plan du site, puis carte, recherche, fiche pharmacie, comptes et alertes, espace pharmacien, administration.
 - Lancer et tester chaque étape avant la suivante, puis faire un commit clair.
+- Branches : chaque partie se fait sur sa propre branche (par exemple `partie-8-positions-publication`), créée AVANT de coder, et les commits se font dessus. Ne jamais commiter directement sur `main`. Ne fusionner dans `main` qu'après l'accord explicite de l'équipe, une fois tous les tests passés. (Les Parties 1 à 7 ont été commitées directement sur `main`.)
 
 ## État du projet
 - Parties 1 à 8 faites : front-end complet avec données simulées. Aucun serveur. Détail honnête dans `STATUT.md`, écarts avec le PDF dans `RAPPORT_ECARTS.md`, textes arabes à relire dans `TEXTES_ARABES_A_RELIRE.xlsx`.

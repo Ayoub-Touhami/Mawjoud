@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { AuditService, type ValeurAudit } from '../audit/audit.service.js';
 import { BaseService, type Executeur } from '../base/base.service.js';
 import { echapperLike } from '../publique/publique.service.js';
 import { ErreurApi } from '../securite/erreurs.js';
 import type { CompteConnecte } from '../securite/sessions.service.js';
-import type { DisponibilitesDto, LotDto, ModificationFicheDto, PageDto, PlageDto, StatutFront } from './dto.js';
+import { distanceMetresSql } from '../commun/geo.js';
+import { CONFIGURATION } from '../config/jetons-injection.js';
+import type { Configuration } from '../config/configuration.js';
+import type { DisponibilitesDto, LotDto, ModificationFicheDto, PageDto, PlageDto, PositionDto, StatutFront } from './dto.js';
 
 /**
  * Espace pharmacien (Partie 7). R9 : chaque route vérifie que la pharmacie appartient au compte
@@ -47,6 +50,7 @@ export class PharmacienService {
   constructor(
     private readonly base: BaseService,
     private readonly audit: AuditService,
+    @Inject(CONFIGURATION) private readonly config: Configuration,
   ) {}
 
   /** R9 : la pharmacie (uuid) doit être rattachée et validée pour ce compte. Sinon 404 et journal. */
@@ -242,6 +246,82 @@ export class PharmacienService {
       }
     });
     return this.fiche(p);
+  }
+
+  // ---------------------------------------------------------------- position (Partie 8)
+
+  /**
+   * Propose une position. Elle ne change rien sur la fiche publique tant qu'un administrateur ne l'a pas
+   * validée. Une nouvelle proposition remplace la demande en attente (conservée, statut « remplacee »).
+   * Une autre pharmacie publiée à moins de 15 m : 409 « position-proche », sauf confirmation explicite.
+   * La base vérifie aussi R9 (028) et la suspension (027).
+   */
+  async proposerPosition(compte: CompteConnecte, uuid: string, dto: PositionDto) {
+    const { precisionMaxM, decimales } = this.config.positions;
+    if (dto.precisionMetres !== undefined && dto.precisionMetres > precisionMaxM) {
+      throw new ErreurApi(400, 'donnees-invalides', { champs: ['precisionMetres'], precisionMaxM });
+    }
+    const p = await this.exigerMaPharmacie(compte, uuid, 'proposer_position');
+    const facteur = 10 ** decimales;
+    const latitude = Math.round(dto.latitude * facteur) / facteur;
+    const longitude = Math.round(dto.longitude * facteur) / facteur;
+    const proches = await this.pharmaciesProches(p.id, latitude, longitude);
+    if (proches.length && !dto.confirmerProximite) {
+      throw new ErreurApi(409, 'position-proche', { pharmacies: proches });
+    }
+    return this.base.transaction(async (tx) => {
+      await acteur(tx, compte);
+      const remplacees = await tx.requete<{ uuid: string }>(
+        `UPDATE prive.demande_position SET statut = 'remplacee', decide_le = now()
+          WHERE pharmacie_id = $1 AND statut = 'en_attente' RETURNING uuid`, [p.id]);
+      const [d] = await tx.requete<{ uuid: string; created_at: Date }>(
+        `INSERT INTO prive.demande_position (pharmacie_id, demandeur_id, latitude, longitude, commentaire)
+         VALUES ($1, $2, $3, $4, $5) RETURNING uuid, created_at`,
+        [p.id, compte.id, latitude, longitude, dto.commentaire ?? null]);
+      await this.audit.ecrire(compte.id, 'proposer_position', 'demande_position', d.uuid, {
+        pharmacie: uuid, latitude, longitude, remplace: remplacees.map((r) => r.uuid),
+        procheDe: proches.map((x) => x.id),
+      }, tx);
+      return {
+        demande: { id: d.uuid, latitude, longitude, etat: 'en-attente', creeeLe: d.created_at.toISOString() },
+        ...(proches.length ? { avertissement: { code: 'position-proche', pharmacies: proches } } : {}),
+      };
+    });
+  }
+
+  /** Ma dernière demande pour cette pharmacie, et la position actuelle de la fiche. */
+  async etatPosition(compte: CompteConnecte, uuid: string) {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'lire_position');
+    const [d] = await this.base.requete<{ uuid: string; latitude: number; longitude: number; commentaire: string | null;
+      statut: string; motif_refus: string | null; created_at: Date; decide_le: Date | null }>(
+      `SELECT uuid, latitude, longitude, commentaire, statut, motif_refus, created_at, decide_le
+         FROM prive.demande_position WHERE pharmacie_id = $1 AND demandeur_id = $2
+        ORDER BY created_at DESC, id DESC LIMIT 1`, [p.id, compte.id]);
+    const [f] = await this.base.requete<{ latitude: number | null; longitude: number | null; position_confirmee: boolean }>(
+      `SELECT latitude, longitude, position_confirmee FROM annuaire.pharmacie WHERE id = $1`, [p.id]);
+    return {
+      demande: d ? {
+        id: d.uuid, latitude: d.latitude, longitude: d.longitude, commentaire: d.commentaire,
+        etat: versFront(d.statut), creeeLe: d.created_at.toISOString(),
+        ...(d.decide_le ? { decideeLe: d.decide_le.toISOString() } : {}),
+        ...(d.motif_refus ? { motifRefus: d.motif_refus } : {}),
+      } : null,
+      positionActuelle: f.latitude === null ? null : { latitude: f.latitude, longitude: f.longitude, confirmee: f.position_confirmee },
+    };
+  }
+
+  /** Autres pharmacies publiées à moins du rayon configuré (15 m par défaut) : boîte englobante, puis distance exacte. */
+  private async pharmaciesProches(pharmacieId: string, latitude: number, longitude: number) {
+    const lignes = await this.base.requete<{ uuid: string; nom: string; distance: number }>(
+      `SELECT * FROM (
+         SELECT p.uuid, p.nom, ${distanceMetresSql('$2', '$3', 'p.latitude', 'p.longitude')} AS distance
+           FROM annuaire.pharmacie p
+          WHERE p.statut_publication = 'publiee' AND p.id <> $1
+            AND p.latitude BETWEEN $2::float8 - 0.0005 AND $2::float8 + 0.0005
+            AND p.longitude BETWEEN $3::float8 - 0.0006 AND $3::float8 + 0.0006
+       ) x WHERE x.distance <= $4 ORDER BY x.distance`,
+      [pharmacieId, latitude, longitude, this.config.positions.rayonProximiteM]);
+    return lignes.map((l) => ({ id: l.uuid, nom: l.nom, distanceM: Math.round(Number(l.distance) * 10) / 10 }));
   }
 
   private verifierPlages(plages: PlageDto[]): void {

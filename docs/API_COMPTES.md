@@ -1,6 +1,6 @@
 # API de Mawjoud : comptes et authentification
 
-Back-end NestJS 12 (TypeScript, module ES), dossier `backend/`. Routes publiques de recherche et de carte : `docs/API_PUBLIQUE.md` ; espace pharmacien : `docs/API_PHARMACIEN.md`. Accès à PostgreSQL avec `pg` et des requêtes paramétrées uniquement, sans ORM. Partie 5 : comptes et authentification seulement (recherche, stock et alertes : Parties 6 à 9). En développement, la documentation interactive est sur `http://127.0.0.1:3000/api/docs` (Swagger, absente en production).
+Back-end NestJS 12 (TypeScript, module ES), dossier `backend/`. Routes publiques de recherche et de carte : `docs/API_PUBLIQUE.md` ; espace pharmacien : `docs/API_PHARMACIEN.md` ; administration des positions et de la publication : `docs/API_ADMIN.md`. Accès à PostgreSQL avec `pg` et des requêtes paramétrées uniquement, sans ORM. Partie 5 : comptes et authentification seulement (recherche, stock et alertes : Parties 6 à 9). En développement, la documentation interactive est sur `http://127.0.0.1:3000/api/docs` (Swagger, absente en production).
 
 ## Lancer
 

@@ -6,7 +6,7 @@ import { CompteCourant, Pharmacien, type RequeteMawjoud } from '../securite/acce
 import { ErreurApi } from '../securite/erreurs.js';
 import { LimiteursService } from '../securite/limiteurs.service.js';
 import type { CompteConnecte } from '../securite/sessions.service.js';
-import { DeclarationDto, DisponibilitesDto, LotDto, ModificationFicheDto, PageDto } from './dto.js';
+import { DeclarationDto, DisponibilitesDto, LotDto, ModificationFicheDto, PageDto, PositionDto } from './dto.js';
 import { PharmacienService } from './pharmacien.service.js';
 
 /** 120 requêtes par minute et par compte (par IP si la requête n'a pas de session : elle sera refusée ensuite). */
@@ -105,6 +105,24 @@ export class EspacePharmacienController {
   @ApiOperation({ summary: 'Modifie téléphone, autres téléphones, garde, horaires. Tout autre champ : 400. Journalisé.' })
   modifier(@CompteCourant() compte: CompteConnecte, @Param('id', uuid('id')) id: string, @Body() dto: ModificationFicheDto) {
     return this.service.modifierFiche(compte, id, dto);
+  }
+
+  @Post('pharmacies/:id/position')
+  @Pharmacien({ emailVerifie: true })
+  @HttpCode(201)
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOperation({ summary: 'Propose une position (remplace la demande en attente). La fiche publique ne change qu\'après validation.' })
+  @ApiResponse({ status: 409, description: 'position-proche : autre pharmacie publiée à moins de 15 m (renvoyer avec confirmerProximite: true)' })
+  proposerPosition(@CompteCourant() compte: CompteConnecte, @Param('id', uuid('id')) id: string, @Body() dto: PositionDto) {
+    return this.service.proposerPosition(compte, id, dto);
+  }
+
+  @Get('pharmacies/:id/position')
+  @Pharmacien({ emailVerifie: true })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOperation({ summary: 'État de ma dernière demande de position, et position actuelle de la fiche.' })
+  etatPosition(@CompteCourant() compte: CompteConnecte, @Param('id', uuid('id')) id: string) {
+    return this.service.etatPosition(compte, id);
   }
 
   @Get('medicaments')

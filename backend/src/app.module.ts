@@ -19,6 +19,8 @@ import {
 import { PubliqueService } from './publique/publique.service.js';
 import { EspacePharmacienController, LimitePharmacienGuard } from './pharmacien/pharmacien.controller.js';
 import { PharmacienService } from './pharmacien/pharmacien.service.js';
+import { AdministrationController, LimiteAdminGuard } from './administration/administration.controller.js';
+import { AdministrationService } from './administration/administration.service.js';
 import { FiltreErreurs } from './securite/filtre-erreurs.js';
 import { AdministrateurGuard, ConnecteGuard, PatientGuard, PharmacienGuard, SecuriteGuard } from './securite/gardes.js';
 import { LimiteursService } from './securite/limiteurs.service.js';
@@ -35,7 +37,7 @@ function fournisseurEmail(config: Configuration): FournisseurEmail {
 
 /**
  * Comptes et authentification (Partie 5) ; recherche et carte, API publique en lecture (Partie 6).
- * Espace pharmacien (Partie 7). Administration et alertes viendront aux Parties 8 et 9.
+ * Espace pharmacien (Partie 7) ; positions, validation et publication (Partie 8). Alertes : Partie 9.
  * `controleursEnPlus` sert aux tests (route sans déclaration d'accès, pour vérifier le refus par défaut).
  */
 @Module({})
@@ -51,6 +53,7 @@ export class AppModule {
         MedicamentsPublicsController,
         ReferentielsPublicsController,
         EspacePharmacienController,
+        AdministrationController,
         ...controleursEnPlus,
       ],
       providers: [
@@ -68,6 +71,8 @@ export class AppModule {
         LimitePubliqueGuard,
         PharmacienService,
         LimitePharmacienGuard,
+        AdministrationService,
+        LimiteAdminGuard,
         ConnecteGuard,
         PatientGuard,
         PharmacienGuard,

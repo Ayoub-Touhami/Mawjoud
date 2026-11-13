@@ -5,7 +5,7 @@ import request from 'supertest';
 import type { App } from 'supertest/types.js';
 import { creerApplication } from '../src/application.js';
 import { AuditService } from '../src/audit/audit.service.js';
-import { BaseService } from '../src/base/base.service.js';
+import { BaseService, type Executeur } from '../src/base/base.service.js';
 import { creerAdministrateur } from '../src/comptes/administrateur.js';
 import { ComptesService } from '../src/comptes/comptes.service.js';
 import { chargerFichierEnv, lireConfiguration, type Configuration } from '../src/config/configuration.js';
@@ -40,6 +40,7 @@ export async function demarrer(surcharges: Partial<Configuration> = {}, controle
       envoisParIp: { max: 1000, fenetreMs: 60_000 },
       publicParIp: { max: 10_000, fenetreMs: 60_000 },
       pharmacienParCompte: { max: 10_000, fenetreMs: 60_000 },
+      adminParCompte: { max: 10_000, fenetreMs: 60_000 },
       ...surcharges.limites,
     },
   });
@@ -107,12 +108,36 @@ export async function administrateur(ctx: Contexte): Promise<string> {
   return email;
 }
 
+/**
+ * Données de test : mawjoud_api n'a plus INSERT sur annuaire.pharmacie (032). Les tests prennent le rôle
+ * mawjoud_test_fixtures (créé par preparer-base-test.ps1, droits dans mawjoud_test seulement).
+ */
+export function fixtures<R>(ctx: Contexte, fn: (tx: Executeur) => Promise<R>): Promise<R> {
+  return ctx.base.transaction(async (tx) => {
+    await tx.requete(`SET LOCAL ROLE mawjoud_test_fixtures`);
+    return fn(tx);
+  });
+}
+
+/** Écriture faite au nom d'un compte (mawjoud.acteur_id), comme le fait l'API. */
+export function commeActeur<R>(ctx: Contexte, acteurId: string, fn: (tx: Executeur) => Promise<R>, motifPosition?: string): Promise<R> {
+  return ctx.base.transaction(async (tx) => {
+    await tx.requete(`SELECT set_config('mawjoud.acteur_id', $1, true), set_config('mawjoud.motif_position', $2, true)`,
+      [acteurId, motifPosition ?? '']);
+    return fn(tx);
+  });
+}
+
+export async function idCompteParEmail(ctx: Contexte, email: string): Promise<string> {
+  return (await ctx.base.requete<{ id: string }>(`SELECT id FROM prive.utilisateur WHERE lower(email) = lower($1)`, [email]))[0].id;
+}
+
 /** Pharmacie de test dans l'annuaire de mawjoud_test. */
 export async function pharmacie(ctx: Contexte): Promise<string> {
-  const [p] = await ctx.base.requete<{ uuid: string }>(
+  const [p] = await fixtures(ctx, (tx) => tx.requete<{ uuid: string }>(
     `INSERT INTO annuaire.pharmacie (nom, ville, gouvernorat_code, statut_publication)
      VALUES ('Pharmacie de test', 'Tunis', 11, 'en_attente_position') RETURNING uuid`,
-  );
+  ));
   return p.uuid;
 }
 
