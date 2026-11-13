@@ -41,6 +41,7 @@
                     "start":  "npm run build \u0026\u0026 node dist/src/main.js",
                     "start:dev":  "tsc -p tsconfig.build.json \u0026\u0026 node --watch dist/src/main.js",
                     "admin:creer":  "npm run build \u0026\u0026 node dist/scripts/creer-admin.js",
+                    "taches":  "npm run build \u0026\u0026 node dist/scripts/taches.js",
                     "base:test":  "powershell -NoProfile -ExecutionPolicy Bypass -File ../database/preparer-base-test.ps1",
                     "test":  "npm run base:test \u0026\u0026 node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js --runInBand",
                     "test:sans-base":  "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js --runInBand"

@@ -70,3 +70,51 @@ export function composer(type: TypeEmail, langue: Langue, a: string, lien: strin
   const duree = DUREES[langue][type === 'reinitialisation_mot_de_passe' ? '1h' : '24h'];
   return { a, sujet: t.sujet, texte: t.corps(lien, duree) };
 }
+
+/**
+ * E-mails de la file (Partie 9b), en français ET en arabe dans le même message : la langue du patient
+ * n'est pas enregistrée (R13). Le sujet ne nomme jamais le médicament (il s'affiche sur un écran verrouillé) ;
+ * le nom n'apparaît que dans le corps. Chaque e-mail d'alerte porte un lien de désinscription (R12).
+ */
+export interface DonneesAlerte {
+  medicament: string;
+  pharmacie: string;
+  ville: string | null;
+  lienFiche: string;
+  lienDesabonnement: string;
+}
+
+export function composerAlerte(a: string, d: DonneesAlerte): MessageEmail {
+  const lieu = d.ville ? ` (${d.ville})` : '';
+  return {
+    a,
+    sujet: 'Mawjoud : un médicament que vous suivez est disponible / موجود: دواء تتابعه متوفر',
+    texte:
+      `Bonjour,\n\nLa pharmacie ${d.pharmacie}${lieu} déclare disponible : ${d.medicament}.\n` +
+      `Le stock est déclaré par la pharmacie : appelez-la avant de vous déplacer.\n${d.lienFiche}\n\n` +
+      `Cette alerte est maintenant terminée (un seul e-mail par alerte).\n` +
+      `Ne plus recevoir d'alerte : ${d.lienDesabonnement}\n\n` +
+      `— — —\n\nمرحبًا،\n\nتعلن الصيدلية ${d.pharmacie}${lieu} عن توفر: ${d.medicament}.\n` +
+      `المخزون تعلنه الصيدلية: اتصل بها قبل التنقل.\n${d.lienFiche}\n\n` +
+      `انتهى هذا التنبيه الآن (رسالة واحدة لكل تنبيه).\n` +
+      `لإيقاف التنبيهات: ${d.lienDesabonnement}\n\nMawjoud — موجود`,
+  };
+}
+
+export interface DonneesRappel {
+  pharmacie: string;
+  jours: number;
+  lienEspace: string;
+}
+
+export function composerRappel(a: string, d: DonneesRappel): MessageEmail {
+  return {
+    a,
+    sujet: 'Mawjoud : pensez à mettre à jour vos disponibilités / موجود: حدّث توفر الأدوية',
+    texte:
+      `Bonjour,\n\nAucune disponibilité n'a été mise à jour pour ${d.pharmacie} depuis plus de ${d.jours} jours.\n` +
+      `Les patients voient « à confirmer » après 24 heures. Une seule action suffit : « Tout est à jour ».\n${d.lienEspace}\n\n` +
+      `— — —\n\nمرحبًا،\n\nلم يتم تحديث أي توفر لصيدلية ${d.pharmacie} منذ أكثر من ${d.jours} يومًا.\n` +
+      `يرى المرضى « يجب التأكيد » بعد 24 ساعة. يكفي إجراء واحد: « كل شيء محدّث ».\n${d.lienEspace}\n\nMawjoud — موجود`,
+  };
+}

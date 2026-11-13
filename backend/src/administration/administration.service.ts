@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { AlertesService } from '../alertes/alertes.service.js';
 import { AuditService } from '../audit/audit.service.js';
 import { BaseService, type Executeur } from '../base/base.service.js';
 import { distanceMetresSql } from '../commun/geo.js';
@@ -59,6 +60,7 @@ export class AdministrationService {
   constructor(
     private readonly base: BaseService,
     private readonly audit: AuditService,
+    private readonly alertes: AlertesService,
     @Inject(CONFIGURATION) private readonly config: Configuration,
   ) {}
 
@@ -223,7 +225,7 @@ export class AdministrationService {
    */
   async changerStatut(admin: CompteConnecte, uuid: string, dto: ChangementStatutDto) {
     const vers = versBase(dto.statut);
-    return this.base.transaction(async (tx) => {
+    const fiche = await this.base.transaction(async (tx) => {
       const p = await this.ficheVerrouillee(tx, uuid);
       const de = p.statut_publication;
       if (de === vers) throw new ErreurApi(409, 'meme-statut', { statut: dto.statut });
@@ -244,8 +246,11 @@ export class AdministrationService {
       await tx.requete(`UPDATE annuaire.pharmacie SET statut_publication = $2 WHERE id = $1`, [p.id, vers]);
       await this.audit.ecrire(admin.id, 'changer_statut', 'pharmacie', uuid,
         { de: versFront(de), vers: dto.statut, motif: dto.motif ?? null }, tx);
-      return this.fiche(tx, p.id);
+      return { forme: await this.fiche(tx, p.id), id: p.id };
     });
+    // Une pharmacie qui devient publique peut satisfaire des alertes en attente (disponibilités déjà déclarées).
+    if (vers === 'publiee') await this.alertes.declencher(fiche.id);
+    return fiche.forme;
   }
 
   private async ficheVerrouillee(tx: Executeur, uuid: string): Promise<Fiche> {

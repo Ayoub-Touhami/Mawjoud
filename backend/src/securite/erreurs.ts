@@ -33,6 +33,8 @@ export type CodeErreur =
   | 'conditions-non-remplies'
   | 'meme-statut'
   | 'deja-relu'
+  | 'doublon'
+  | 'trop-d-alertes'
   | 'erreur-interne';
 
 export class ErreurApi extends HttpException {

@@ -41,6 +41,7 @@ export async function demarrer(surcharges: Partial<Configuration> = {}, controle
       publicParIp: { max: 10_000, fenetreMs: 60_000 },
       pharmacienParCompte: { max: 10_000, fenetreMs: 60_000 },
       adminParCompte: { max: 10_000, fenetreMs: 60_000 },
+      alertesParCompte: { max: 10_000, fenetreMs: 60_000 },
       ...surcharges.limites,
     },
   });

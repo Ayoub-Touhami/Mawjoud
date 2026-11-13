@@ -14,7 +14,7 @@ export function cleEmail(email: string): string {
  * - Connexion : 5 échecs par adresse et 20 échecs par IP en 15 minutes.
  * - Envois d'e-mails (inscription, renvoi de lien, mot de passe oublié) : 10 par IP et 3 par adresse par heure.
  * - Routes publiques en lecture (recherche, carte) : 120 requêtes par IP et par minute.
- * - Espace pharmacien : 120 requêtes par compte et par minute ; administration : 300.
+ * - Espace pharmacien : 120 requêtes par compte et par minute ; administration : 300 ; alertes du patient : 60.
  * Les limites s'appliquent de la même façon qu'un compte existe ou non : elles ne révèlent rien.
  */
 @Injectable()
@@ -26,6 +26,7 @@ export class LimiteursService {
   readonly publicIp: Limiteur;
   readonly pharmacienCompte: Limiteur;
   readonly adminCompte: Limiteur;
+  readonly alertesCompte: Limiteur;
 
   constructor(@Inject(CONFIGURATION) config: Configuration) {
     const l = config.limites;
@@ -36,6 +37,7 @@ export class LimiteursService {
     this.publicIp = new Limiteur(l.publicParIp);
     this.pharmacienCompte = new Limiteur(l.pharmacienParCompte);
     this.adminCompte = new Limiteur(l.adminParCompte);
+    this.alertesCompte = new Limiteur(l.alertesParCompte);
   }
 
   /** Lève 429 (avec Retry-After) si l'une des clés est bloquée. */
