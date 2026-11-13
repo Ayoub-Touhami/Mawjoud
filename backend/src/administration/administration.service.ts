@@ -209,6 +209,7 @@ export class AdministrationService {
   async relire(admin: CompteConnecte, uuid: string) {
     return this.base.transaction(async (tx) => {
       const p = await this.ficheVerrouillee(tx, uuid);
+      if (p.statut_publication === 'fusionnee') throw new ErreurApi(409, 'fiche-fusionnee');
       if (p.nom === null) throw new ErreurApi(409, 'conditions-non-remplies', { motifs: ['nom-manquant'] });
       if (!p.nom_a_verifier) throw new ErreurApi(409, 'deja-relu');
       await commeAdmin(tx, admin);

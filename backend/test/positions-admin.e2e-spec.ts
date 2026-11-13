@@ -76,10 +76,11 @@ afterAll(async () => {
 
 // ============================================================ priorité 1 : la base
 describe('a) Droits de mawjoud_api sur annuaire.pharmacie (SQL direct)', () => {
+  // nom et fusionnee_dans sont accordés depuis 035 (correction, fusion) : leurs contrôles sont dans administration-generale.
   test('ni INSERT, ni DELETE, ni UPDATE hors des colonnes accordées', async () => {
     await expect(ctx.base.requete(`INSERT INTO annuaire.pharmacie (nom, ville) VALUES ('Intruse', 'Tunis')`)).rejects.toMatchObject(REFUS);
     await expect(ctx.base.requete(`DELETE FROM annuaire.pharmacie WHERE id = $1`, [ID.PB])).rejects.toMatchObject(REFUS);
-    for (const colonne of ['nom', 'rue', 'ville', 'gouvernorat_code', 'fusionnee_dans', 'sources']) {
+    for (const colonne of ['rue', 'ville', 'gouvernorat_code', 'sources', 'quartier', 'code_postal', 'id_source']) {
       await expect(commeActeur(ctx, idAdmin, (tx) => tx.requete(`UPDATE annuaire.pharmacie SET ${colonne} = ${colonne} WHERE id = $1`, [ID.PB])))
         .rejects.toMatchObject(REFUS);
     }

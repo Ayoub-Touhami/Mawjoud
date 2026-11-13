@@ -35,6 +35,17 @@ export type CodeErreur =
   | 'deja-relu'
   | 'doublon'
   | 'trop-d-alertes'
+  | 'meme-fiche'
+  | 'deja-fusionnee'
+  | 'fiche-fusionnee'
+  | 'confirmation-requise'
+  | 'meme-valeur'
+  | 'doublons-probables'
+  | 'pas-une-demande-d-ajout'
+  | 'soi-meme'
+  | 'dernier-administrateur'
+  | 'deja-suspendu'
+  | 'pas-suspendu'
   | 'erreur-interne';
 
 export class ErreurApi extends HttpException {

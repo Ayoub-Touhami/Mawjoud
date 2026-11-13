@@ -44,6 +44,11 @@ export interface Configuration {
     /** Alertes actives au plus par compte. Défaut 20. */
     maxParCompte: number;
   };
+  /** Administration (Partie 9c). */
+  administration: {
+    /** Similarité de nom (trigrammes, 0 à 1) au-delà de laquelle une fiche de la même ville est un doublon probable. Défaut 0,5. */
+    seuilDoublon: number;
+  };
   limites: {
     connexionParEmail: Limite;
     connexionParIp: Limite;
@@ -78,6 +83,16 @@ export function chargerFichierEnv(): void {
   for (const [cle, valeur] of Object.entries(valeurs)) {
     if (process.env[cle] === undefined && valeur !== undefined) process.env[cle] = valeur;
   }
+}
+
+function decimal(nom: string, defaut: number, min: number, max: number): number {
+  const brut = process.env[nom];
+  if (brut === undefined || brut === '') return defaut;
+  const n = Number(brut.replace(',', '.'));
+  if (!Number.isFinite(n) || n < min || n > max) {
+    throw new Error(`Configuration : ${nom} doit être un nombre entre ${min} et ${max}.`);
+  }
+  return n;
 }
 
 function entier(nom: string, defaut: number, min = 1, max = Number.MAX_SAFE_INTEGER): number {
@@ -179,6 +194,9 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
       purgeJours: entier('ALERTE_PURGE_JOURS', 30, 1, 365),
       essaisMax: entier('ALERTE_ESSAIS_MAX', 5, 1, 20),
       maxParCompte: entier('ALERTE_MAX_PAR_COMPTE', 20, 1, 200),
+    },
+    administration: {
+      seuilDoublon: decimal('ADMIN_SEUIL_DOUBLON', 0.5, 0.1, 0.95),
     },
     limites: {
       connexionParEmail: { max: 5, fenetreMs: 15 * MINUTE },
