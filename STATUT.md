@@ -134,12 +134,16 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 
 ## Partie 9b : alertes, rappels, suivi et « tout confirmer »
 
-- Branche `partie-9b-alertes` (fusion après accord). Détail : `docs/API_ALERTES.md`.
+- **Terminée et fusionnée dans `main`** le 13 novembre 2026 (commit de fusion `15559e5`, `git merge --no-ff`), après accord et contrôle final : 34 migrations appliquées depuis zéro identiques octet pour octet à `schema.sql` (après la correction `.gitattributes`, `*.sql` en LF) ; 160 tests passés sur la branche et sur `main` ; preuves (alerte refusée sans compte vérifié, désinscription sans connexion, aucun médicament dans le journal ni dans le sujet des e-mails, alertes et jetons effacés avec le compte). Branche `partie-9b-alertes` supprimée. Détail : `docs/API_ALERTES.md`.
 - Alertes du patient (`/api/v1/alertes`) : compte vérifié obligatoire, consentement daté, gouvernorat ou « toutes les villes », 20 actives au plus ; déclenchement à chaque déclaration et à la publication, un seul e-mail par alerte (R11), en français et en arabe, sujet sans le nom du médicament ; désinscription par lien sans connexion (R12).
 - **Vie privée** (décisions du 13 novembre 2026) : pas d'alerte sans compte (écart refusé avec la spécification) ; alerte supprimée ou désinscrite effacée tout de suite ; alerte déclenchée effacée après 30 jours ; aucun médicament dans le journal.
 - Pharmacien : suivre un médicament sans le déclarer, « tout confirmer ». Rappel après N jours sans mise à jour (`ALERTE_RAPPEL_JOURS`, 7), au plus un par période.
 - Tâche planifiée : `npm run taches` (rappels, envoi avec nouveaux essais, purge), à lancer toutes les heures par le Planificateur de tâches ou cron ; aucun service externe.
-- Migration 034. 159 tests Jest, sur `mawjoud_test`.
+- Migration 034. 160 tests Jest, sur `mawjoud_test`.
+
+## Prochaine étape : Partie 9c (administration générale)
+
+Pas encore commencée : elle partira de `main` sur sa propre branche quand son instruction aura été envoyée.
 
 ## Back-end : positions, validation et publication (Partie 8)
 
@@ -163,3 +167,4 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 7. **Avec la Partie 9 : tests indépendants les uns des autres.** Aujourd'hui, les fichiers de tests partagent `mawjoud_test` et un fichier (positions-admin) remet ses fiches dans l'état attendu par les autres à la fin. À faire : chaque fichier de tests remet la base à son état de départ **au début** (et ne dépend plus de ce qu'un autre a laissé), puis vérifier que tous les fichiers passent **dans un ordre différent** (ordre inversé ou aléatoire de Jest).
 8. **Avant la mise en production : e-mails.** Choisir le prestataire d'e-mail (Brevo prévu, interface prête, non réalisée), le domaine d'envoi (SPF, DKIM) et obtenir les **autorisations de l'INPDP** (adresse e-mail associée à un médicament = donnée de santé). Garder un **corps d'e-mail minimal** (sujet déjà sans médicament ; réduire aussi le corps au strict nécessaire si l'INPDP le demande).
 9. **Partie 9e (front branché) : langue des e-mails.** Aujourd'hui, alertes et rappels sont en français et en arabe dans le même message, et la langue n'est pas enregistrée (décision du 13 novembre 2026). À revoir quand le front-end sera branché (par exemple : langue de l'interface au moment de créer l'alerte, sans la stocker au-delà).
+10. **Écart connu de la base `mawjoud` : 81 caractères CR** (décision du 13 novembre 2026 : laissé tel quel). Les 6 fonctions de la migration 032 (`acteur_actif`, `controler_modification_fiche`, `controler_modification_horaire`, `est_application`, `pharmacien_de`, `transition_publication_autorisee`) contiennent des retours chariot dans `mawjoud`, car la 032 lui a été appliquée depuis un fichier en fins de ligne Windows. **Sans effet** sur leur comportement (blancs dans le corps des fonctions) ; le dépôt, `schema.sql` et toute base recréée depuis les migrations sont propres (identiques octet pour octet). Une `mawjoud` recréée depuis les migrations n'aura plus cet écart. Depuis `.gitattributes` (`*.sql text eol=lf`), les fichiers SQL restent en LF.
