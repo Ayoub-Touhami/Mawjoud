@@ -20,6 +20,8 @@ import { FraicheurService } from '../../core/services/fraicheur.service';
 import { HORLOGE } from '../../core/services/horloge';
 import { PHARMACIE_API } from '../../core/services/pharmacie-api';
 import { PositionService } from '../../core/services/position.service';
+import { dansTunisie } from '../carte/cadrage';
+import { Coordonnees } from '../../core/outils/pharmacie.outils';
 import { STOCK_SERVICE } from '../../core/services/stock.service';
 import { Bouton } from '../../shared/bouton/bouton';
 import { Icone } from '../../shared/icone/icone';
@@ -87,6 +89,25 @@ export class ResultatsPage {
   protected readonly position = inject(PositionService).position;
 
   private readonly essai = signal(0);
+  private readonly positions = inject(PositionService);
+  protected readonly autourEnCours = signal(false);
+
+  /**
+   * « Autour de moi » : demande la position au navigateur. Accordée et en Tunisie : tri par distance.
+   * Refusée ou indisponible : rien ne change (tri par gouvernorat), sans message d'erreur.
+   * La position reste en mémoire pendant la visite seulement (PositionService).
+   */
+  protected async autourDeMoi(): Promise<void> {
+    this.autourEnCours.set(true);
+    try {
+      const position = await this.positions.obtenir();
+      if (dansTunisie(position)) this.positions.fixer(position);
+    } catch {
+      // refus ou position indisponible : on garde le tri par gouvernorat
+    } finally {
+      this.autourEnCours.set(false);
+    }
+  }
   private readonly parametres = toSignal(this.route.queryParamMap, { requireSync: true });
   protected readonly zone = computed(() => this.parametres().get('zone'));
 
@@ -95,9 +116,9 @@ export class ResultatsPage {
     { initialValue: [] },
   );
   protected readonly vue = toSignal(
-    combineLatest([this.route.queryParamMap, toObservable(this.essai)]).pipe(
-      switchMap(([params]) =>
-        this.charger(params.get('m'), params.get('q')).pipe(
+    combineLatest([this.route.queryParamMap, toObservable(this.essai), toObservable(this.position)]).pipe(
+      switchMap(([params, , position]) =>
+        this.charger(params.get('m'), params.get('q'), position).pipe(
           startWith<Vue>({ type: 'chargement' }),
           catchError(() => of<Vue>({ type: 'erreur' })),
         ),
@@ -275,11 +296,11 @@ export class ResultatsPage {
     return aConfirmer ? detail : this.transloco.translate('recherche.misAJour', { age });
   }
 
-  private charger(id: string | null, texte: string | null): Observable<Vue> {
+  private charger(id: string | null, texte: string | null, position: Coordonnees | null = null): Observable<Vue> {
     if (id) {
       return forkJoin({
         medicament: this.api.obtenirMedicament(id),
-        stocks: this.stocksService.stocksDeMedicament(id),
+        stocks: this.stocksService.stocksDeMedicament(id, position),
       }).pipe(
         map(({ medicament, stocks }): Vue =>
           medicament

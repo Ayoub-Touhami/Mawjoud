@@ -31,7 +31,7 @@ export class StockServiceSimule implements StockService {
     return of(this.tous().filter((s) => s.pharmacieId === id && this.lisible(id)));
   }
 
-  stocksDeMedicament(medicamentId: string): Observable<Stock[]> {
+  stocksDeMedicament(medicamentId: string, _position?: unknown): Observable<Stock[]> {
     return of(
       this.tous().filter(
         (s) => s.medicamentId === medicamentId && this.annuaire.stocksVisibles(s.pharmacieId),

@@ -271,7 +271,8 @@
   },
   "distance": {
     "m": "{{n}} m",
-    "km": "{{n}} km"
+    "km": "{{n}} km",
+    "a": "à {{d}}"
   },
   "jours": {
     "0": "Dim",
@@ -294,6 +295,7 @@
     "zone": "Zone de recherche",
     "toutePays": "Toute la Tunisie",
     "triDistance": "Triées par distance",
+    "autourDeMoi": "Autour de moi",
     "triLieu": "Triées par gouvernorat",
     "voirCarte": "Voir la carte",
     "voirListe": "Voir la liste",

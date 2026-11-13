@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { FormatService } from '../../core/i18n/format.service';
 import { FraicheurService } from '../../core/services/fraicheur.service';
 import { Icone } from '../../shared/icone/icone';
@@ -144,6 +144,7 @@ export class CarteResultat {
   readonly choisir = output<void>();
 
   private readonly format = inject(FormatService);
+  private readonly transloco = inject(TranslocoService);
   private readonly fraicheur = inject(FraicheurService);
 
   protected readonly pointilles = computed(
@@ -151,7 +152,7 @@ export class CarteResultat {
   );
   protected readonly distance = computed(() => {
     const metres = this.ligne().distance;
-    return metres === null ? null : this.format.distance(metres);
+    return metres === null ? null : this.transloco.translate('distance.a', { d: this.format.distance(metres) });
   });
   protected readonly age = computed(() => {
     const { stock } = this.ligne();

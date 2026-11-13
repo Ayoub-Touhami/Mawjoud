@@ -1,6 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StatutDeclare, Stock } from '../models';
+import { Coordonnees } from '../outils/pharmacie.outils';
 
 export type ErreurStock = 'non-autorise' | 'reseau';
 
@@ -11,7 +12,8 @@ export type ErreurStock = 'non-autorise' | 'reseau';
  */
 export interface StockService {
   stocksDePharmacie(pharmacieId: string): Observable<Stock[]>;
-  stocksDeMedicament(medicamentId: string): Observable<Stock[]>;
+  /** Avec la position du visiteur (jamais gardée) : les pharmacies les plus proches d'abord. */
+  stocksDeMedicament(medicamentId: string, position?: Coordonnees | null): Observable<Stock[]>;
 
   /** Médicaments suivis par la pharmacie, déclarés ou non. */
   medicamentsSuivis(pharmacieId: string): Observable<string[]>;

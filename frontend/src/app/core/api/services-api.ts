@@ -145,10 +145,20 @@ export class StockServiceHttp implements StockService {
       );
   }
 
-  stocksDeMedicament(medicamentId: string): Observable<Stock[]> {
+  /**
+   * Avec une position : l'API renvoie les 50 pharmacies les plus proches. La position n'est envoyée que dans
+   * cette requête : jamais gardée, ni dans l'adresse de la page, ni dans le navigateur (le serveur ne la
+   * journalise pas : son journal d'erreurs n'écrit que le chemin, sans les paramètres).
+   */
+  stocksDeMedicament(medicamentId: string, position?: { latitude: number; longitude: number } | null): Observable<Stock[]> {
+    const params: Record<string, string | number> = { limite: 50 };
+    if (position) {
+      params['lat'] = Number(position.latitude.toFixed(4));
+      params['lng'] = Number(position.longitude.toFixed(4));
+    }
     return this.http
       .get<Page<{ pharmacie: PharmacieApiForme; statut: string; declareLe: string }>>(
-        `${this.url}/v1/medicaments/${medicamentId}/pharmacies`, { params: { limite: 50 } })
+        `${this.url}/v1/medicaments/${medicamentId}/pharmacies`, { params })
       .pipe(
         map((r) => r.elements.map((d) => {
           this.pharmacies.memoriser(versPharmacie(d.pharmacie));

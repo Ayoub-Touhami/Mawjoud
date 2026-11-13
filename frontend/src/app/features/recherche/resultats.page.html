@@ -38,6 +38,18 @@
         <span class="tri">
           {{ (g.triParDistance ? 'recherche.triDistance' : 'recherche.triLieu') | transloco }}
         </span>
+        @if (!position()) {
+          <button
+            type="button"
+            class="autour"
+            [disabled]="autourEnCours()"
+            [attr.aria-busy]="autourEnCours()"
+            (click)="autourDeMoi()"
+          >
+            <app-icone nom="ma-position" [taille]="20" />
+            {{ 'recherche.autourDeMoi' | transloco }}
+          </button>
+        }
       </div>
     }
   </header>

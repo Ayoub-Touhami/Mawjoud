@@ -276,3 +276,23 @@
     box-shadow: 0 0 0 var(--e-3) var(--fond);
   }
 }
+
+/* « Autour de moi » : tri par distance, position jamais gardée (Partie 9e). */
+.autour {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid #1f6e9c;
+  border-radius: 999px;
+  background: transparent;
+  color: #1f6e9c;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.autour:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
