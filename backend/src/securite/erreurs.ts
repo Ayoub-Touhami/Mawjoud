@@ -26,6 +26,7 @@ export type CodeErreur =
   | 'deja-decidee'
   | 'pharmacie-a-creer'
   | 'pharmacie-attribuee'
+  | 'lot-invalide'
   | 'erreur-interne';
 
 export class ErreurApi extends HttpException {

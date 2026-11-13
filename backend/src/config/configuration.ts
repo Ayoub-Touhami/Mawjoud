@@ -31,6 +31,8 @@ export interface Configuration {
     envoisParEmail: Limite;
     /** Routes publiques en lecture (recherche, carte), par IP. */
     publicParIp: Limite;
+    /** Espace pharmacien, par compte (un lot compte pour une requête). */
+    pharmacienParCompte: Limite;
   };
 }
 
@@ -147,6 +149,7 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
       envoisParIp: { max: 10, fenetreMs: HEURE },
       envoisParEmail: { max: 3, fenetreMs: HEURE },
       publicParIp: { max: 120, fenetreMs: MINUTE },
+      pharmacienParCompte: { max: 120, fenetreMs: MINUTE },
     },
   };
   return { ...config, ...surcharges };

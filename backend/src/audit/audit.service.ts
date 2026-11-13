@@ -8,12 +8,19 @@ export type ActionAudit =
   | 'reinitialiser_mot_de_passe'
   | 'creer_administrateur'
   | 'valider'
-  | 'refuser';
+  | 'refuser'
+  | 'modifier_fiche'
+  | 'retirer_declaration'
+  | 'acces_refuse';
 
-export type CibleAudit = 'utilisateur' | 'rattachement';
+export type CibleAudit = 'utilisateur' | 'rattachement' | 'pharmacie';
 
-/** Détail autorisé : des codes courts, jamais de mot de passe, de jeton, d'adresse IP ni d'adresse e-mail. */
-export type DetailAudit = Record<string, string | boolean | null>;
+/**
+ * Détail : des codes courts et, pour une modification de fiche, l'ancienne et la nouvelle valeur
+ * (données publiques de la pharmacie). Jamais de mot de passe, de jeton, d'adresse IP ni d'adresse e-mail.
+ */
+export type ValeurAudit = string | number | boolean | null | ValeurAudit[] | { [cle: string]: ValeurAudit };
+export type DetailAudit = Record<string, ValeurAudit>;
 
 /** Journal d'audit (prive.journal_audit), en ajout seul. */
 @Injectable()

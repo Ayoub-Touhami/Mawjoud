@@ -39,6 +39,7 @@ export async function demarrer(surcharges: Partial<Configuration> = {}, controle
       connexionParIp: { max: 1000, fenetreMs: 60_000 },
       envoisParIp: { max: 1000, fenetreMs: 60_000 },
       publicParIp: { max: 10_000, fenetreMs: 60_000 },
+      pharmacienParCompte: { max: 10_000, fenetreMs: 60_000 },
       ...surcharges.limites,
     },
   });

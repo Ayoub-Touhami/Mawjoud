@@ -1,0 +1,280 @@
+import { Injectable } from '@nestjs/common';
+import { AuditService, type ValeurAudit } from '../audit/audit.service.js';
+import { BaseService, type Executeur } from '../base/base.service.js';
+import { echapperLike } from '../publique/publique.service.js';
+import { ErreurApi } from '../securite/erreurs.js';
+import type { CompteConnecte } from '../securite/sessions.service.js';
+import type { DisponibilitesDto, LotDto, ModificationFicheDto, PageDto, PlageDto, StatutFront } from './dto.js';
+
+/**
+ * Espace pharmacien (Partie 7). R9 : chaque route vérifie que la pharmacie appartient au compte
+ * (rattachement validé). Sinon 404 « introuvable » — la même réponse qu'une pharmacie inexistante,
+ * pour ne rien révéler — et la tentative est journalisée (acces_refuse).
+ * La base vérifie aussi : déclarant (014), retrait (031), compte suspendu (014, 027).
+ * Les déclarations n'utilisent jamais une date venue du client : declare_le = now() du serveur.
+ */
+const versBase = (s: StatutFront) => s.replaceAll('-', '_');
+const versFront = (s: string | null) => (s === null ? null : s.replaceAll('_', '-'));
+
+interface MaPharmacie {
+  id: string; // interne
+  uuid: string;
+}
+
+interface LigneDispo {
+  medicament_uuid: string;
+  nom_commercial: string;
+  dci: string;
+  forme: string | null;
+  dosage: string | null;
+  statut: string;
+  declare_le: Date;
+}
+
+const disponibilite = (l: LigneDispo) => ({
+  medicament: { id: l.medicament_uuid, nomCommercial: l.nom_commercial, dci: l.dci, forme: l.forme, dosage: l.dosage },
+  statut: versFront(l.statut),
+  declareLe: l.declare_le.toISOString(),
+});
+
+/** Fixe l'acteur pour les déclencheurs de la base (retrait de stock, positions). */
+async function acteur(tx: Executeur, compte: CompteConnecte): Promise<void> {
+  await tx.requete(`SELECT set_config('mawjoud.acteur_id', $1, true)`, [compte.id]);
+}
+
+@Injectable()
+export class PharmacienService {
+  constructor(
+    private readonly base: BaseService,
+    private readonly audit: AuditService,
+  ) {}
+
+  /** R9 : la pharmacie (uuid) doit être rattachée et validée pour ce compte. Sinon 404 et journal. */
+  private async exigerMaPharmacie(compte: CompteConnecte, uuid: string, operation: string, ex: Executeur = this.base): Promise<MaPharmacie> {
+    const [p] = await ex.requete<MaPharmacie>(
+      `SELECT p.id, p.uuid FROM annuaire.pharmacie p
+         JOIN prive.rattachement_pharmacien r ON r.pharmacie_id = p.id
+        WHERE p.uuid = $1 AND r.utilisateur_id = $2 AND r.statut = 'validee'`,
+      [uuid, compte.id],
+    );
+    if (!p) {
+      // Hors de la transaction éventuelle : la trace reste même si la requête est annulée.
+      await this.audit.ecrire(compte.id, 'acces_refuse', 'pharmacie', uuid, { operation });
+      throw new ErreurApi(404, 'introuvable');
+    }
+    return p;
+  }
+
+  async mesPharmacies(compte: CompteConnecte) {
+    const lignes = await this.base.requete<{ uuid: string; nom: string | null; statut_publication: string; declares: number }>(
+      `SELECT p.uuid, p.nom, p.statut_publication,
+              (SELECT count(*)::int FROM annuaire.stock s WHERE s.pharmacie_id = p.id AND s.statut IS NOT NULL) AS declares
+         FROM prive.rattachement_pharmacien r JOIN annuaire.pharmacie p ON p.id = r.pharmacie_id
+        WHERE r.utilisateur_id = $1 AND r.statut = 'validee'
+        ORDER BY p.nom`,
+      [compte.id],
+    );
+    return {
+      elements: lignes.map((l) => ({
+        id: l.uuid,
+        nom: l.nom,
+        // Visible du public seulement si « publiee » ; ne change jamais depuis cet espace.
+        statutPublication: versFront(l.statut_publication),
+        medicamentsDeclares: l.declares,
+      })),
+    };
+  }
+
+  async disponibilites(compte: CompteConnecte, uuid: string, f: DisponibilitesDto) {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'lire_disponibilites');
+    const motif = f.q !== undefined ? echapperLike(f.q) : null;
+    const condition = `s.pharmacie_id = $1 AND s.statut IS NOT NULL
+      AND ($2::text IS NULL OR public.normaliser(m.nom_commercial) LIKE '%' || public.normaliser($2) || '%' ESCAPE '\\'
+                            OR public.normaliser(m.dci) LIKE '%' || public.normaliser($2) || '%' ESCAPE '\\')`;
+    const [{ total }] = await this.base.requete<{ total: number }>(
+      `SELECT count(*)::int AS total FROM annuaire.stock s JOIN annuaire.medicament m ON m.id = s.medicament_id WHERE ${condition}`,
+      [p.id, motif]);
+    const lignes = await this.base.requete<LigneDispo>(
+      `SELECT m.uuid AS medicament_uuid, m.nom_commercial, m.dci, m.forme, m.dosage, s.statut, s.declare_le
+         FROM annuaire.stock s JOIN annuaire.medicament m ON m.id = s.medicament_id
+        WHERE ${condition}
+        ORDER BY m.nom_commercial, m.dosage NULLS FIRST, m.uuid
+        LIMIT $3 OFFSET $4`,
+      [p.id, motif, f.taille, (f.page - 1) * f.taille]);
+    return { elements: lignes.map(disponibilite), page: f.page, taille: f.taille, total };
+  }
+
+  /** Déclare ou met à jour un statut. La date est celle du serveur ; l'historique se remplit par déclencheur. */
+  async declarer(compte: CompteConnecte, uuid: string, medicamentUuid: string, statut: StatutFront) {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'declarer');
+    return this.base.transaction(async (tx) => {
+      await acteur(tx, compte);
+      const [l] = await tx.requete<LigneDispo>(
+        `WITH m AS (SELECT id, uuid, nom_commercial, dci, forme, dosage FROM annuaire.medicament WHERE uuid = $2 AND actif),
+              e AS (INSERT INTO annuaire.stock (pharmacie_id, medicament_id, statut, declare_le, declare_par)
+                    SELECT $1, m.id, $3, now(), $4 FROM m
+                    ON CONFLICT (pharmacie_id, medicament_id)
+                    DO UPDATE SET statut = EXCLUDED.statut, declare_le = EXCLUDED.declare_le, declare_par = EXCLUDED.declare_par
+                    RETURNING medicament_id, statut, declare_le)
+         SELECT m.uuid AS medicament_uuid, m.nom_commercial, m.dci, m.forme, m.dosage, e.statut, e.declare_le
+           FROM e JOIN m ON m.id = e.medicament_id`,
+        [p.id, medicamentUuid, versBase(statut), compte.id]);
+      if (!l) throw new ErreurApi(404, 'introuvable', { champs: ['medicamentId'] });
+      return disponibilite(l);
+    });
+  }
+
+  /** Lot de 100 déclarations au plus : tout ou rien, dans une seule transaction. */
+  async declarerLot(compte: CompteConnecte, uuid: string, lot: LotDto) {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'declarer_lot');
+    const uuids = lot.declarations.map((d) => d.medicamentId.toLowerCase());
+    const connus = new Map(
+      (await this.base.requete<{ uuid: string; id: string }>(
+        `SELECT uuid::text, id FROM annuaire.medicament WHERE uuid = ANY($1::uuid[]) AND actif`, [uuids]))
+        .map((m) => [m.uuid, m.id]),
+    );
+    const vus = new Set<string>();
+    const lignes: { index: number; medicamentId: string; erreur: 'medicament-inconnu' | 'doublon' }[] = [];
+    uuids.forEach((u, index) => {
+      if (vus.has(u)) lignes.push({ index, medicamentId: lot.declarations[index].medicamentId, erreur: 'doublon' });
+      else if (!connus.has(u)) lignes.push({ index, medicamentId: lot.declarations[index].medicamentId, erreur: 'medicament-inconnu' });
+      vus.add(u);
+    });
+    if (lignes.length) throw new ErreurApi(400, 'lot-invalide', { lignes });
+
+    const resultat = await this.base.transaction(async (tx) => {
+      await acteur(tx, compte);
+      return tx.requete<LigneDispo>(
+        `WITH e AS (
+           INSERT INTO annuaire.stock (pharmacie_id, medicament_id, statut, declare_le, declare_par)
+           SELECT $1, d.medicament_id, d.statut, now(), $4
+             FROM unnest($2::bigint[], $3::text[]) AS d (medicament_id, statut)
+           ON CONFLICT (pharmacie_id, medicament_id)
+           DO UPDATE SET statut = EXCLUDED.statut, declare_le = EXCLUDED.declare_le, declare_par = EXCLUDED.declare_par
+           RETURNING medicament_id, statut, declare_le)
+         SELECT m.uuid AS medicament_uuid, m.nom_commercial, m.dci, m.forme, m.dosage, e.statut, e.declare_le
+           FROM e JOIN annuaire.medicament m ON m.id = e.medicament_id
+          ORDER BY m.nom_commercial`,
+        [p.id, uuids.map((u) => connus.get(u)!), lot.declarations.map((d) => versBase(d.statut)), compte.id]);
+    });
+    return { declarees: resultat.length, elements: resultat.map(disponibilite) };
+  }
+
+  /** Retire la déclaration : le médicament n'est plus listé ; l'historique est conservé. */
+  async retirer(compte: CompteConnecte, uuid: string, medicamentUuid: string): Promise<void> {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'retirer');
+    await this.base.transaction(async (tx) => {
+      await acteur(tx, compte);
+      const [r] = await tx.requete<{ statut: string | null }>(
+        `DELETE FROM annuaire.stock s USING annuaire.medicament m
+          WHERE s.pharmacie_id = $1 AND s.medicament_id = m.id AND m.uuid = $2
+          RETURNING s.statut`,
+        [p.id, medicamentUuid]);
+      if (!r) throw new ErreurApi(404, 'introuvable', { champs: ['medicamentId'] });
+      await this.audit.ecrire(compte.id, 'retirer_declaration', 'pharmacie', uuid,
+        { medicament: medicamentUuid, ancienStatut: versFront(r.statut) }, tx);
+    });
+  }
+
+  /** Mes déclarations sur cette pharmacie, de la plus récente à la plus ancienne (jamais celles d'un autre compte). */
+  async historique(compte: CompteConnecte, uuid: string, page: PageDto) {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'lire_historique');
+    const [{ total }] = await this.base.requete<{ total: number }>(
+      `SELECT count(*)::int AS total FROM annuaire.historique_stock WHERE pharmacie_id = $1 AND declare_par = $2`, [p.id, compte.id]);
+    const lignes = await this.base.requete<LigneDispo>(
+      `SELECT m.uuid AS medicament_uuid, m.nom_commercial, m.dci, m.forme, m.dosage, h.statut, h.declare_le
+         FROM annuaire.historique_stock h JOIN annuaire.medicament m ON m.id = h.medicament_id
+        WHERE h.pharmacie_id = $1 AND h.declare_par = $2
+        ORDER BY h.declare_le DESC, h.id DESC
+        LIMIT $3 OFFSET $4`,
+      [p.id, compte.id, page.taille, (page.page - 1) * page.taille]);
+    return { elements: lignes.map(disponibilite), page: page.page, taille: page.taille, total };
+  }
+
+  /** Téléphones, garde, horaires : chaque champ modifié est journalisé avec l'ancienne et la nouvelle valeur. */
+  async modifierFiche(compte: CompteConnecte, uuid: string, dto: ModificationFicheDto) {
+    const champs = (['telephone', 'telephonesAutres', 'garde', 'horaires'] as const).filter((c) => dto[c] !== undefined);
+    if (!champs.length) throw new ErreurApi(400, 'donnees-invalides', { champs: [] });
+    if (dto.horaires) this.verifierPlages(dto.horaires);
+    const p = await this.exigerMaPharmacie(compte, uuid, 'modifier_fiche');
+
+    await this.base.transaction(async (tx) => {
+      await acteur(tx, compte);
+      const [avant] = await tx.requete<{ telephone_principal: string | null; telephones_autres: string[]; garde: string | null }>(
+        `SELECT telephone_principal, telephones_autres, garde FROM annuaire.pharmacie WHERE id = $1 FOR UPDATE`, [p.id]);
+      const horairesAvant = await this.lirePlages(tx, p.id);
+      const changements: { champ: string; ancien: ValeurAudit; nouveau: ValeurAudit }[] = [];
+
+      if (dto.telephone !== undefined && dto.telephone !== avant.telephone_principal) {
+        changements.push({ champ: 'telephone', ancien: avant.telephone_principal, nouveau: dto.telephone });
+      }
+      if (dto.telephonesAutres !== undefined && JSON.stringify(dto.telephonesAutres) !== JSON.stringify(avant.telephones_autres)) {
+        changements.push({ champ: 'telephonesAutres', ancien: avant.telephones_autres, nouveau: dto.telephonesAutres });
+      }
+      if (dto.garde !== undefined && dto.garde !== avant.garde) {
+        changements.push({ champ: 'garde', ancien: avant.garde, nouveau: dto.garde });
+      }
+      const horairesNouveaux = dto.horaires ? [...dto.horaires].sort((a, b) => a.jour - b.jour || a.ouverture.localeCompare(b.ouverture)) : undefined;
+      if (horairesNouveaux && JSON.stringify(horairesNouveaux) !== JSON.stringify(horairesAvant)) {
+        changements.push({ champ: 'horaires', ancien: horairesAvant as unknown as ValeurAudit, nouveau: horairesNouveaux as unknown as ValeurAudit });
+      }
+
+      await tx.requete(
+        `UPDATE annuaire.pharmacie
+            SET telephone_principal = CASE WHEN $2 THEN $3 ELSE telephone_principal END,
+                telephones_autres   = CASE WHEN $4 THEN $5::text[] ELSE telephones_autres END,
+                garde               = CASE WHEN $6 THEN $7 ELSE garde END
+          WHERE id = $1`,
+        [p.id, dto.telephone !== undefined, dto.telephone ?? null, dto.telephonesAutres !== undefined, dto.telephonesAutres ?? [],
+         dto.garde !== undefined, dto.garde ?? null]);
+      if (horairesNouveaux) {
+        await tx.requete(`DELETE FROM annuaire.horaire WHERE pharmacie_id = $1`, [p.id]);
+        if (horairesNouveaux.length) {
+          await tx.requete(
+            `INSERT INTO annuaire.horaire (pharmacie_id, jour, ouverture, fermeture)
+             SELECT $1, h.jour, h.ouverture::time, h.fermeture::time
+               FROM unnest($2::smallint[], $3::text[], $4::text[]) AS h (jour, ouverture, fermeture)`,
+            [p.id, horairesNouveaux.map((h) => String(h.jour)), horairesNouveaux.map((h) => h.ouverture), horairesNouveaux.map((h) => h.fermeture)]);
+        }
+      }
+      for (const c of changements) {
+        await this.audit.ecrire(compte.id, 'modifier_fiche', 'pharmacie', uuid, { champ: c.champ, ancien: c.ancien, nouveau: c.nouveau }, tx);
+      }
+    });
+    return this.fiche(p);
+  }
+
+  private verifierPlages(plages: PlageDto[]): void {
+    const champs: string[] = [];
+    const vues = new Set<string>();
+    plages.forEach((h, i) => {
+      const cle = `${h.jour}-${h.ouverture}`;
+      if (h.ouverture === h.fermeture || vues.has(cle)) champs.push(`horaires.${i}`);
+      vues.add(cle);
+    });
+    if (champs.length) throw new ErreurApi(400, 'donnees-invalides', { champs });
+  }
+
+  private lirePlages(ex: Executeur, pharmacieId: string) {
+    return ex.requete<{ jour: number; ouverture: string; fermeture: string }>(
+      `SELECT jour, to_char(ouverture, 'HH24:MI') AS ouverture, to_char(fermeture, 'HH24:MI') AS fermeture
+         FROM annuaire.horaire WHERE pharmacie_id = $1 ORDER BY jour, ouverture`, [pharmacieId]);
+  }
+
+  /** Ce que le pharmacien voit de sa fiche après modification (lecture seule pour les autres champs). */
+  private async fiche(p: MaPharmacie) {
+    const [f] = await this.base.requete<{ nom: string | null; ville: string | null; statut_publication: string;
+      telephone_principal: string | null; telephones_autres: string[]; garde: string | null }>(
+      `SELECT nom, ville, statut_publication, telephone_principal, telephones_autres, garde FROM annuaire.pharmacie WHERE id = $1`, [p.id]);
+    return {
+      id: p.uuid,
+      nom: f.nom,
+      ville: f.ville,
+      statutPublication: versFront(f.statut_publication),
+      telephone: f.telephone_principal,
+      telephonesAutres: f.telephones_autres,
+      garde: f.garde,
+      horaires: await this.lirePlages(this.base, p.id),
+    };
+  }
+}

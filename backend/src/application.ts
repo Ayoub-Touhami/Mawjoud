@@ -35,7 +35,7 @@ export async function creerApplication(config: Configuration, controleursEnPlus:
   app.enableCors({
     origin: config.originesCors,
     credentials: true,
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'X-XSRF-TOKEN'],
     maxAge: 600,
   });
