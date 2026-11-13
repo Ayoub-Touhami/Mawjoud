@@ -211,6 +211,31 @@ $$;
 
 
 --
+-- Name: verifier_retrait_stock(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.verifier_retrait_stock() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  acteur bigint := nullif(current_setting('mawjoud.acteur_id', true), '')::bigint;
+BEGIN
+  IF acteur IS NULL OR NOT EXISTS (
+    SELECT 1 FROM prive.utilisateur u
+     WHERE u.id = acteur AND NOT u.suspendu
+       AND (u.role = 'administrateur'
+            OR EXISTS (SELECT 1 FROM prive.rattachement_pharmacien r
+                        WHERE r.utilisateur_id = u.id AND r.pharmacie_id = OLD.pharmacie_id AND r.statut = 'validee'))
+  ) THEN
+    RAISE EXCEPTION 'Seul le pharmacien vérifié de cette pharmacie (ou un administrateur) retire une déclaration (R9).'
+      USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  RETURN OLD;
+END;
+$$;
+
+
+--
 -- Name: exiger_non_suspendu(bigint); Type: FUNCTION; Schema: prive; Owner: -
 --
 
@@ -851,7 +876,7 @@ CREATE TABLE prive.journal_audit (
     cible_id text NOT NULL,
     detail jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text, 'connexion_reussie'::text, 'connexion_echouee'::text, 'changer_mot_de_passe'::text, 'reinitialiser_mot_de_passe'::text, 'creer_administrateur'::text]))),
+    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text, 'connexion_reussie'::text, 'connexion_echouee'::text, 'changer_mot_de_passe'::text, 'reinitialiser_mot_de_passe'::text, 'creer_administrateur'::text, 'modifier_fiche'::text, 'retirer_declaration'::text, 'acces_refuse'::text]))),
     CONSTRAINT journal_audit_cible_type_check CHECK ((cible_type = ANY (ARRAY['pharmacie'::text, 'rattachement'::text, 'demande_position'::text, 'utilisateur'::text, 'signalement'::text, 'message_contact'::text])))
 );
 
@@ -1900,6 +1925,13 @@ CREATE TRIGGER pharmacie_tracer_position AFTER INSERT OR UPDATE OF latitude, lon
 --
 
 CREATE TRIGGER stock_declarant BEFORE INSERT OR UPDATE OF statut, declare_le ON annuaire.stock FOR EACH ROW EXECUTE FUNCTION annuaire.verifier_declarant();
+
+
+--
+-- Name: stock stock_retrait; Type: TRIGGER; Schema: annuaire; Owner: -
+--
+
+CREATE TRIGGER stock_retrait BEFORE DELETE ON annuaire.stock FOR EACH ROW EXECUTE FUNCTION annuaire.verifier_retrait_stock();
 
 
 --

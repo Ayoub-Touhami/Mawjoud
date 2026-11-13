@@ -67,7 +67,15 @@ function Effacer-EnvPg {
 }
 
 function Requete([string]$sql) {
-  $r = & $script:psql -X -q -A -t -v ON_ERROR_STOP=1 -c $sql
+  # Le SQL passe par l'entrée standard, en UTF-8 : PowerShell 5.1 transmettrait un argument -c en ANSI
+  # (les lettres accentuées deviendraient une suite d'octets invalide pour PostgreSQL).
+  $encodageAvant = $OutputEncoding
+  $script:OutputEncoding = New-Object Text.UTF8Encoding $false
+  try {
+    $r = $sql | & $script:psql -X -q -A -t -v ON_ERROR_STOP=1 -f -
+  } finally {
+    $script:OutputEncoding = $encodageAvant
+  }
   if ($LASTEXITCODE -ne 0) { throw "Échec de la requête (code $LASTEXITCODE)." }
   # La virgule garde un tableau même pour une seule ligne (sinon PowerShell le déballe en texte).
   return ,@($r | Where-Object { $_ -ne '' })

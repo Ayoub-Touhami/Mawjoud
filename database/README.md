@@ -52,6 +52,7 @@ SQL pur sur PostgreSQL 16. Le back-end (NestJS, dossier `backend/`) y accède av
 | 028 | (réservée) | Règle R9 sur `prive.demande_position`, prévue avec la Partie 8 |
 | 029 | `029_lecture_publique_api.sql` | `mawjoud_api` peut prendre le rôle `mawjoud_lecture_publique` (sans hériter de ses droits) pour l'API publique ; index (latitude, longitude) des fiches publiées |
 | 030 | `030_analyser_annuaire.sql` | `annuaire.analyser_annuaire()` : ANALYZE de l'annuaire par l'application (SECURITY DEFINER, sans paramètre, exécutable par `mawjoud_application` seulement) |
+| 031 | `031_espace_pharmacien.sql` | Retrait d'une déclaration de stock vérifié par la base (acteur : le pharmacien rattaché ou un administrateur) ; actions du journal `modifier_fiche`, `retirer_declaration`, `acces_refuse` |
 
 L'ordre suit les dépendances : une table vient après celles qu'elle référence.
 
@@ -70,7 +71,7 @@ Script : `database/appliquer-migrations.ps1`, à lancer depuis la racine du dép
 - Applique dans l'ordre des numéros, s'arrête à la première erreur (la transaction du fichier fautif est annulée).
 - Régénère `schema.sql` après chaque application (`pg_dump --schema-only --no-owner`, clé `\restrict` fixe pour un fichier stable). `-SansSchema` l'évite.
 
-**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 027, 029 et 030 appliquées (028 réservée, indépendante de 029 et 030), contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
+**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 027 et 029 à 031 appliquées (028 réservée, indépendante des suivantes), contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
 
 Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/connexion-pg.ps1`. Les scripts n'acceptent que deux bases : `mawjoud` et `mawjoud_test` (et refusent toujours `cleanapp`, `postgres`, `template0`, `template1`).
 
