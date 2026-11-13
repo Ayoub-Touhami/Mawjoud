@@ -122,9 +122,13 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 - La date de déclaration est celle du serveur ; une date envoyée par le client est refusée (400).
 - 115 tests Jest, sur `mawjoud_test`.
 
+## Prochaine étape : Partie 9
+
+Partie 8 terminée. La Partie 9 commencera sur sa propre branche, à partir de `main`, quand son contenu aura été envoyé (voir aussi « À faire plus tard », points marqués Partie 9).
+
 ## Back-end : positions, validation et publication (Partie 8)
 
-- Branche `partie-8-positions-publication` (les Parties 1 à 7 sont sur `main`) ; fusion après accord.
+- **Terminée et fusionnée dans `main`** le 13 novembre 2026 (commit de fusion `beb9c3e`, `git merge --no-ff`), après revue et contrôle final : migrations appliquées depuis zéro identiques à `schema.sql`, 145 tests passés deux fois, preuves de sécurité en SQL direct. Branche `partie-8-positions-publication` supprimée après fusion.
 - **Priorité faite** : `mawjoud_api` n'a plus `INSERT` ni `DELETE` sur `annuaire.pharmacie`, et `UPDATE` seulement colonne par colonne (032) ; la base contrôle les champs modifiables par le pharmacien (téléphones, garde, horaires, sa pharmacie seulement) ; R9 sur les demandes de position (028).
 - Pharmacien : proposer une position, voir l'état de sa demande. Administrateur : file des demandes, valider, refuser ; liste des fiches avec les motifs de blocage, relecture du nom, changement de statut (transitions en liste blanche, dans la base). Détail : `docs/API_ADMIN.md`.
 - Demandes de position en ajout seul (033). Seuils des positions réglables par configuration (15 m, 50 m, 6 décimales par défaut).
