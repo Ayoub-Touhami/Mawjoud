@@ -196,6 +196,34 @@ export class PubliqueService {
     });
   }
 
+  /** Catalogue actif complet (Partie 9e : le front-end le charge une fois, pour nommer les médicaments). */
+  async catalogue() {
+    return this.lire(async (l) => {
+      const lignes = await l.requete<{
+        id: string; nom_commercial: string; dci: string; forme: string | null; dosage: string | null;
+        categorie: string | null; nom_ar: string | null; dci_ar: string | null; donnee_test: boolean;
+      }>(`SELECT id, nom_commercial, dci, forme, dosage, categorie, nom_ar, dci_ar, donnee_test
+            FROM publique.medicament ORDER BY nom_commercial, dosage NULLS FIRST, id`);
+      return {
+        elements: lignes.map((m) => ({
+          id: m.id, nomCommercial: m.nom_commercial, dci: m.dci, forme: m.forme, dosage: m.dosage,
+          categorie: m.categorie, nomAr: m.nom_ar, dciAr: m.dci_ar, donneeTest: m.donnee_test,
+        })),
+      };
+    });
+  }
+
+  /** Disponibilités déclarées d'une pharmacie publiée et inscrite (vue publique.stock), tous statuts. */
+  async disponibilitesPharmacie(pharmacieId: string) {
+    return this.lire(async (l) => {
+      const [p] = await l.requete(`SELECT 1 FROM publique.pharmacie WHERE id = $1`, [pharmacieId]);
+      if (!p) throw new ErreurApi(404, 'introuvable');
+      const lignes = await l.requete<{ medicament_id: string; statut: string; declare_le: Date }>(
+        `SELECT medicament_id, statut, declare_le FROM publique.stock WHERE pharmacie_id = $1 ORDER BY declare_le DESC`, [pharmacieId]);
+      return { elements: lignes.map((s) => ({ medicamentId: s.medicament_id, statut: tirets(s.statut), declareLe: s.declare_le.toISOString() })) };
+    });
+  }
+
   /**
    * Pharmacies publiées et inscrites (R7, vue publique.stock) qui déclarent ce médicament disponible
    * ou en quantité limitée. « À confirmer » (R6, 24 h) n'est pas calculé ici : la date de déclaration

@@ -48,3 +48,8 @@ export class FiltreDemandesDto {
   @IsIn(['en-attente', 'validee', 'refusee', 'retiree'])
   etat?: string;
 }
+
+/** Recherche des fiches réclamables (Partie 9e) : nom, ville ou rue, 2 caractères au moins. */
+export class RechercheFichesDto {
+  @ApiProperty({ minLength: 2, maxLength: 100 }) @IsString() @MinLength(2) @MaxLength(100) q!: string;
+}

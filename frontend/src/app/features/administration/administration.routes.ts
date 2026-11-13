@@ -5,6 +5,8 @@ import { DossierDemandePage } from './dossier-demande.page';
 import { FicheAnnuairePage } from './fiche-annuaire.page';
 import { JournalPage } from './journal.page';
 import { ReclamationsPage } from './reclamations.page';
+import { environment } from '../../../environments/environment';
+import { fournirAdministrationApi } from './services/admin.api';
 import { fournirAdministration } from './services/admin.simule';
 import { SignalementsPage } from './signalements.page';
 import { TableauDeBordPage } from './tableau-de-bord.page';
@@ -14,7 +16,7 @@ export const ADMINISTRATION_ROUTES: Routes = [
   {
     path: '',
     component: AdminLayout,
-    providers: fournirAdministration(),
+    providers: environment.utiliserApi ? fournirAdministrationApi() : fournirAdministration(),
     children: [
       { path: '', pathMatch: 'full', component: TableauDeBordPage, title: 'pages.administration' },
       { path: 'reclamations', component: ReclamationsPage, title: 'pages.reclamations' },
