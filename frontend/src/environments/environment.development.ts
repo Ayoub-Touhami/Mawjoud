@@ -2,10 +2,14 @@ import { Routes } from '@angular/router';
 
 export const environment = {
   production: false,
-  /** Bande « données de test » : à passer à false avec les vraies données. */
-  donneesSimulees: true,
-  /** Montre les liens de test des e-mails simulés. */
-  outilsSimulation: true,
+  /** Vraie API (Partie 9e). false : services simulés de core/simulation, sans serveur. */
+  utiliserApi: true,
+  /** Adresse de l'API (développement : le back-end lancé par « npm run start:dev » dans backend/). */
+  apiUrl: 'http://localhost:3000/api',
+  /** Bande « données de test » : seulement avec les services simulés. */
+  donneesSimulees: false,
+  /** Liens de test des e-mails simulés, administrateur de test… : seulement avec les services simulés. */
+  outilsSimulation: false,
   /** Fonds de carte : changer de fournisseur ne demande que ces deux adresses, sans clé. */
   carte: {
     tuiles: 'https://tiles.openfreemap.org/planet',

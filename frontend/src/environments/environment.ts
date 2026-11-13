@@ -2,9 +2,13 @@ import { Routes } from '@angular/router';
 
 export const environment = {
   production: true,
-  /** Bande « données de test » : à passer à false avec les vraies données. */
-  donneesSimulees: true,
-  /** Montre les liens de test des e-mails simulés. */
+  /** Vraie API (Partie 9e). false : services simulés de core/simulation, sans serveur. */
+  utiliserApi: true,
+  /** Adresse de l'API (développement : le back-end lancé par « npm run start:dev » dans backend/). */
+  apiUrl: '/api',
+  /** Bande « données de test » : seulement avec les services simulés. */
+  donneesSimulees: false,
+  /** Liens de test des e-mails simulés, administrateur de test… : seulement avec les services simulés. */
   outilsSimulation: false,
   /** Fonds de carte : changer de fournisseur ne demande que ces deux adresses, sans clé. */
   carte: {
