@@ -134,6 +134,32 @@ COMMENT ON FUNCTION annuaire.analyser_annuaire() IS 'ANALYZE des tables de l''an
 
 
 --
+-- Name: controler_creation_fiche(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.controler_creation_fiche() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  u record;
+BEGIN
+  IF NOT annuaire.est_application() THEN
+    RETURN NEW;
+  END IF;
+  SELECT * INTO u FROM annuaire.acteur_actif();
+  IF u.role IS DISTINCT FROM 'administrateur' THEN
+    RAISE EXCEPTION 'Seul un administrateur crée une fiche.' USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  IF NEW.statut_publication <> 'en_attente_position' OR NEW.latitude IS NOT NULL THEN
+    RAISE EXCEPTION 'Une fiche créée par l''administration naît en attente de position, sans position.'
+      USING ERRCODE = 'check_violation';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: controler_modification_fiche(); Type: FUNCTION; Schema: annuaire; Owner: -
 --
 
@@ -143,9 +169,21 @@ CREATE FUNCTION annuaire.controler_modification_fiche() RETURNS trigger
 DECLARE
   u record;
   libres CONSTANT text[] := ARRAY['telephone_principal', 'telephones_autres', 'garde', 'updated_at'];
+  fusion CONSTANT boolean := NEW.statut_publication = 'fusionnee' AND OLD.statut_publication <> 'fusionnee';
 BEGIN
-  IF NEW.statut_publication IS DISTINCT FROM OLD.statut_publication
-     AND NOT annuaire.transition_publication_autorisee(OLD.statut_publication, NEW.statut_publication) THEN
+  IF OLD.statut_publication = 'fusionnee' AND annuaire.est_application() THEN
+    RAISE EXCEPTION 'Fiche fusionnée : elle ne se modifie plus (voir sa fiche conservée).' USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  IF fusion THEN
+    -- Seule une fusion menée par un administrateur, sur cette fiche, la fait passer à « fusionnee ».
+    IF annuaire.est_application() AND (annuaire.fusion_en_cours() IS DISTINCT FROM OLD.id
+       OR (SELECT role FROM annuaire.acteur_actif()) IS DISTINCT FROM 'administrateur') THEN
+      RAISE EXCEPTION 'Le statut « fusionnee » ne s''obtient que par une fusion.' USING ERRCODE = 'check_violation';
+    END IF;
+  ELSIF NEW.statut_publication IS DISTINCT FROM OLD.statut_publication
+     AND NOT annuaire.transition_publication_autorisee(OLD.statut_publication, NEW.statut_publication)
+     -- Rattrapage manuel d'une fusion faite par erreur : scripts du serveur seulement (jamais l'API).
+     AND NOT (OLD.statut_publication = 'fusionnee' AND NOT annuaire.est_application()) THEN
     RAISE EXCEPTION 'Transition de statut interdite : % vers %.', OLD.statut_publication, NEW.statut_publication
       USING ERRCODE = 'check_violation';
   END IF;
@@ -179,6 +217,12 @@ BEGIN
   IF NOT annuaire.est_application() THEN
     RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
   END IF;
+  IF EXISTS (SELECT 1 FROM annuaire.pharmacie p
+              WHERE p.id IN (CASE WHEN TG_OP = 'INSERT' THEN NEW.pharmacie_id ELSE OLD.pharmacie_id END,
+                             CASE WHEN TG_OP = 'DELETE' THEN OLD.pharmacie_id ELSE NEW.pharmacie_id END)
+                AND p.statut_publication = 'fusionnee') THEN
+    RAISE EXCEPTION 'Fiche fusionnée : ses horaires ne se modifient plus.' USING ERRCODE = 'insufficient_privilege';
+  END IF;
   SELECT * INTO u FROM annuaire.acteur_actif();
   IF u.role = 'administrateur'
      OR (u.role = 'pharmacien'
@@ -200,6 +244,17 @@ CREATE FUNCTION annuaire.est_application() RETURNS boolean
     AS $$
   SELECT NOT r.rolsuper AND pg_has_role(current_user, 'mawjoud_application', 'MEMBER')
     FROM pg_roles r WHERE r.rolname = current_user;
+$$;
+
+
+--
+-- Name: fusion_en_cours(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.fusion_en_cours() RETURNS bigint
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT nullif(current_setting('mawjoud.fusion', true), '')::bigint;
 $$;
 
 
@@ -334,8 +389,17 @@ $$;
 CREATE FUNCTION annuaire.verifier_declarant() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
+DECLARE
+  source bigint := annuaire.fusion_en_cours();
 BEGIN
-  IF NEW.statut IS NOT NULL AND NOT EXISTS (
+  IF NEW.statut IS NULL THEN
+    RETURN NEW;
+  END IF;
+  IF annuaire.est_application()
+     AND EXISTS (SELECT 1 FROM annuaire.pharmacie WHERE id = NEW.pharmacie_id AND statut_publication = 'fusionnee') THEN
+    RAISE EXCEPTION 'Fiche fusionnée : aucune déclaration.' USING ERRCODE = 'insufficient_privilege';
+  END IF;
+  IF EXISTS (
     SELECT 1
       FROM prive.rattachement_pharmacien r
       JOIN prive.utilisateur u ON u.id = r.utilisateur_id
@@ -344,10 +408,18 @@ BEGIN
        AND r.statut = 'validee'
        AND NOT u.suspendu
   ) THEN
-    RAISE EXCEPTION 'Seul un pharmacien vérifié de cette pharmacie peut déclarer son stock (R3, R9).'
-      USING ERRCODE = 'insufficient_privilege';
+    RETURN NEW;
   END IF;
-  RETURN NEW;
+  -- Fusion : copie d'une déclaration de la fiche fusionnée, faite par un administrateur.
+  IF source IS NOT NULL AND source <> NEW.pharmacie_id
+     AND (SELECT role FROM annuaire.acteur_actif()) = 'administrateur'
+     AND EXISTS (SELECT 1 FROM annuaire.stock s
+                  WHERE s.pharmacie_id = source AND s.medicament_id = NEW.medicament_id
+                    AND s.statut = NEW.statut AND s.declare_le = NEW.declare_le AND s.declare_par = NEW.declare_par) THEN
+    RETURN NEW;
+  END IF;
+  RAISE EXCEPTION 'Seul un pharmacien vérifié de cette pharmacie peut déclarer son stock (R3, R9).'
+    USING ERRCODE = 'insufficient_privilege';
 END;
 $$;
 
@@ -2146,6 +2218,13 @@ CREATE TRIGGER pharmacie_acteur_position_actif BEFORE UPDATE OF latitude, longit
 
 
 --
+-- Name: pharmacie pharmacie_controle_creation; Type: TRIGGER; Schema: annuaire; Owner: -
+--
+
+CREATE TRIGGER pharmacie_controle_creation BEFORE INSERT ON annuaire.pharmacie FOR EACH ROW EXECUTE FUNCTION annuaire.controler_creation_fiche();
+
+
+--
 -- Name: pharmacie pharmacie_controle_modification; Type: TRIGGER; Schema: annuaire; Owner: -
 --
 
@@ -2675,10 +2754,52 @@ GRANT SELECT ON TABLE annuaire.pharmacie TO mawjoud_application;
 
 
 --
+-- Name: COLUMN pharmacie.nom; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT INSERT(nom),UPDATE(nom) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.rue; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT INSERT(rue) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.quartier; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT INSERT(quartier) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.ville; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT INSERT(ville) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.code_postal; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT INSERT(code_postal) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.gouvernorat_code; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT INSERT(gouvernorat_code) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
 -- Name: COLUMN pharmacie.telephone_principal; Type: ACL; Schema: annuaire; Owner: -
 --
 
-GRANT UPDATE(telephone_principal) ON TABLE annuaire.pharmacie TO mawjoud_application;
+GRANT INSERT(telephone_principal),UPDATE(telephone_principal) ON TABLE annuaire.pharmacie TO mawjoud_application;
 
 
 --
@@ -2738,10 +2859,24 @@ GRANT UPDATE(statut_publication) ON TABLE annuaire.pharmacie TO mawjoud_applicat
 
 
 --
+-- Name: COLUMN pharmacie.fusionnee_dans; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT UPDATE(fusionnee_dans) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
 -- Name: COLUMN pharmacie.nom_a_verifier; Type: ACL; Schema: annuaire; Owner: -
 --
 
 GRANT UPDATE(nom_a_verifier) ON TABLE annuaire.pharmacie TO mawjoud_application;
+
+
+--
+-- Name: COLUMN pharmacie.sources; Type: ACL; Schema: annuaire; Owner: -
+--
+
+GRANT INSERT(sources) ON TABLE annuaire.pharmacie TO mawjoud_application;
 
 
 --
