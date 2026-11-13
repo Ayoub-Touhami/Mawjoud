@@ -82,6 +82,8 @@
       {{ 'fiche.signaler' | transloco }}
     </a>
   </article>
+} @else if (pharmacie() === undefined) {
+  <app-message-etat type="chargement" [titre]="'carte.chargement' | transloco" />
 } @else {
   <h1 class="visuellement-masque">{{ 'fiche.introuvable.titre' | transloco }}</h1>
   <app-message-etat

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { map, of, switchMap } from 'rxjs';
+import { catchError, concat, map, of, switchMap } from 'rxjs';
 import { FormatService } from '../../core/i18n/format.service';
 import { LangueService } from '../../core/i18n/langue.service';
 import { Pharmacie, Stock } from '../../core/models';
@@ -51,19 +51,33 @@ export class FichePharmaciePage {
   private readonly langue = inject(LangueService).langue;
   private readonly position = inject(PositionService).position;
 
+  /** undefined : chargement ; null : introuvable (ou erreur) ; sinon la fiche. */
   protected readonly pharmacie = toSignal(
     this.route.paramMap.pipe(
-      switchMap((params) => this.api.obtenirPharmacie(params.get('id') ?? '')),
+      switchMap((params) =>
+        concat(
+          of(undefined),
+          this.api.obtenirPharmacie(params.get('id') ?? '').pipe(
+            map((p) => p ?? null),
+            catchError(() => of(null)),
+          ),
+        ),
+      ),
     ),
   );
   private readonly stocks = toSignal(
     toObservable(this.pharmacie).pipe(
-      switchMap((p) => (p ? this.stocksService.stocksDePharmacie(p.id) : of<Stock[]>([]))),
+      switchMap((p) =>
+        p ? this.stocksService.stocksDePharmacie(p.id).pipe(catchError(() => of<Stock[]>([]))) : of<Stock[]>([]),
+      ),
     ),
     { initialValue: [] },
   );
   private readonly medicaments = toSignal(
-    this.api.listerMedicaments().pipe(map((liste) => new Map(liste.map((m) => [m.id, m])))),
+    this.api.listerMedicaments().pipe(
+      map((liste) => new Map(liste.map((m) => [m.id, m]))),
+      catchError(() => of(new Map())),
+    ),
   );
 
   protected readonly inscrite = computed(() => {

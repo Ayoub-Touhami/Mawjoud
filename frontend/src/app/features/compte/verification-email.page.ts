@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { Location, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -32,10 +32,18 @@ export class VerificationEmailPage {
   private jeton: string | null = null;
 
   constructor() {
+    const location = inject(Location);
     inject(ActivatedRoute)
       .queryParamMap.pipe(takeUntilDestroyed())
       .subscribe((params) => {
-        this.jeton = params.get('jeton');
+        const lu = params.get('jeton');
+        if (lu) {
+          this.jeton = lu;
+          // Le jeton ne reste ni dans l'adresse affichée, ni dans l'historique du navigateur.
+          location.replaceState(location.path().split('?')[0]);
+        } else if (this.jeton) {
+          return; // adresse nettoyée ci-dessus : rien de nouveau
+        }
         this.renvoye.set(false);
         if (this.jeton) {
           void this.verifier(this.jeton);

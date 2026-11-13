@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -41,7 +42,11 @@ export class DesabonnementPage {
   protected readonly etat = signal<'encours' | 'succes' | 'invalide'>('encours');
 
   constructor() {
-    void this.desabonner(inject(ActivatedRoute).snapshot.queryParamMap.get('jeton'));
+    const jeton = inject(ActivatedRoute).snapshot.queryParamMap.get('jeton');
+    // Le jeton ne reste ni dans l'adresse affichée, ni dans l'historique du navigateur.
+    const location = inject(Location);
+    location.replaceState(location.path().split('?')[0]);
+    void this.desabonner(jeton);
   }
 
   private async desabonner(jeton: string | null): Promise<void> {
