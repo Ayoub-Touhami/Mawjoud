@@ -45,6 +45,7 @@ SQL pur sur PostgreSQL 16, indépendant du langage du back-end. Modèle et dicti
 | 021 | `021_roles.sql` | Rôles `mawjoud_lecture_publique` et `mawjoud_application` |
 | 022 | `022_statut_pret_a_publier.sql` | Statut `pret_a_publier` : fiche complète en attente de l'autorisation des sources |
 | 023 | `023_osm_id_area.sql` | `osm_id` de type `a` (surface), gardé tel que dans l'export OSM |
+| 024 | `024_connexion_base.sql` | Droit de connexion retiré à `PUBLIC`, donné aux rôles `mawjoud_application` et `mawjoud_lecture_publique` |
 
 L'ordre suit les dépendances : une table vient après celles qu'elle référence.
 
@@ -63,9 +64,15 @@ Script : `database/appliquer-migrations.ps1`, à lancer depuis la racine du dép
 - Applique dans l'ordre des numéros, s'arrête à la première erreur (la transaction du fichier fautif est annulée).
 - Régénère `schema.sql` après chaque application (`pg_dump --schema-only --no-owner`, clé `\restrict` fixe pour un fichier stable). `-SansSchema` l'évite.
 
-**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 023 appliquées, contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
+**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 024 appliquées, contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
 
 Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/connexion-pg.ps1`.
+
+## Connexion à la base (migration 024)
+
+Seuls se connectent à la base : le superutilisateur, le propriétaire, et les comptes membres de `mawjoud_application` ou `mawjoud_lecture_publique`. Ces deux rôles de groupe n'ont pas de connexion propre (`NOLOGIN`) : le back-end utilisera un compte de connexion membre de l'un d'eux. Tout autre compte du serveur (par exemple celui d'un autre projet) est refusé avec « L'utilisateur n'a pas le droit CONNECT ». Vérifié le 13 novembre 2026 avec des rôles de test temporaires, supprimés ensuite.
+
+Ce droit porte sur la base elle-même : `pg_dump --schema-only` ne l'écrit pas dans `schema.sql`. Il n'est visible que dans la migration 024.
 
 ## Import des données
 

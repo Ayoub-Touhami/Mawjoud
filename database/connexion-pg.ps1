@@ -62,5 +62,6 @@ function Effacer-EnvPg {
 function Requete([string]$sql) {
   $r = & $script:psql -X -q -A -t -v ON_ERROR_STOP=1 -c $sql
   if ($LASTEXITCODE -ne 0) { throw "Échec de la requête (code $LASTEXITCODE)." }
-  return @($r | Where-Object { $_ -ne '' })
+  # La virgule garde un tableau même pour une seule ligne (sinon PowerShell le déballe en texte).
+  return ,@($r | Where-Object { $_ -ne '' })
 }
