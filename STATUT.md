@@ -168,6 +168,11 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 - **Démarrage en production** refusé pour chaque configuration dangereuse (13 cas testés).
 - 247 tests Jest (13 fichiers, dont 57 nouveaux). 36 migrations.
 
+## Partie 9e : front-end branché sur l'API
+
+- Services HTTP derrière les mêmes jetons que la simulation (`environment.utiliserApi`) ; 3 routes de lecture ajoutées au back-end (catalogue, disponibilités d'une pharmacie, fiches réclamables). Jeton retiré de l'adresse, mention OpenStreetMap dans À propos. Build du front et 247 tests passés.
+- Pas encore dans l'API, donc « indisponible » à l'écran : formulaire de contact, suppression de compte, signalements, modification de l'adresse, des horaires ou de la position d'une fiche par l'administration, retrait d'inscription. Les catégories de médicaments ne sont pas affichées par le front ; en base, « thyroïde » et « thyroïde et hormones » coexistent (à fusionner dans le catalogue).
+
 ## Back-end : positions, validation et publication (Partie 8)
 
 - **Terminée et fusionnée dans `main`** le 13 novembre 2026 (commit de fusion `beb9c3e`, `git merge --no-ff`), après revue et contrôle final : migrations appliquées depuis zéro identiques à `schema.sql`, 145 tests passés deux fois, preuves de sécurité en SQL direct. Branche `partie-8-positions-publication` supprimée après fusion.
