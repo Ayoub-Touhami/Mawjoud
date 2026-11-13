@@ -24,6 +24,15 @@ export interface Configuration {
   cookies: { session: string; csrf: string; securise: boolean };
   session: { dureeGlissanteMs: number; dureeMaxMs: number; rafraichirApresMs: number };
   jetons: { verificationMs: number; reinitialisationMs: number };
+  /** Demandes de position (Partie 8). Variables POSITION_* facultatives ; valeurs par défaut ci-dessous. */
+  positions: {
+    /** Autre pharmacie publiée à moins de ce rayon : avertissement (409 sans confirmation). Défaut 15 m. */
+    rayonProximiteM: number;
+    /** Précision annoncée par le GPS au-delà de laquelle la position est refusée. Défaut 50 m. */
+    precisionMaxM: number;
+    /** Décimales gardées pour la latitude et la longitude. Défaut 6 (environ 10 cm). */
+    decimales: number;
+  };
   limites: {
     connexionParEmail: Limite;
     connexionParIp: Limite;
@@ -33,6 +42,8 @@ export interface Configuration {
     publicParIp: Limite;
     /** Espace pharmacien, par compte (un lot compte pour une requête). */
     pharmacienParCompte: Limite;
+    /** Administration, par compte. */
+    adminParCompte: Limite;
   };
 }
 
@@ -56,11 +67,13 @@ export function chargerFichierEnv(): void {
   }
 }
 
-function entier(nom: string, defaut: number): number {
+function entier(nom: string, defaut: number, min = 1, max = Number.MAX_SAFE_INTEGER): number {
   const brut = process.env[nom];
   if (brut === undefined || brut === '') return defaut;
   const n = Number(brut);
-  if (!Number.isInteger(n) || n <= 0) throw new Error(`Configuration : ${nom} doit être un entier positif.`);
+  if (!Number.isInteger(n) || n < min || n > max) {
+    throw new Error(`Configuration : ${nom} doit être un entier entre ${min} et ${max}.`);
+  }
   return n;
 }
 
@@ -143,6 +156,11 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
     },
     session: { dureeGlissanteMs: 7 * JOUR, dureeMaxMs: 30 * JOUR, rafraichirApresMs: 5 * MINUTE },
     jetons: { verificationMs: 24 * HEURE, reinitialisationMs: HEURE },
+    positions: {
+      rayonProximiteM: entier('POSITION_RAYON_PROXIMITE_M', 15, 1, 200),
+      precisionMaxM: entier('POSITION_PRECISION_MAX_M', 50, 1, 1000),
+      decimales: entier('POSITION_DECIMALES', 6, 4, 8),
+    },
     limites: {
       connexionParEmail: { max: 5, fenetreMs: 15 * MINUTE },
       connexionParIp: { max: 20, fenetreMs: 15 * MINUTE },
@@ -150,6 +168,7 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
       envoisParEmail: { max: 3, fenetreMs: HEURE },
       publicParIp: { max: 120, fenetreMs: MINUTE },
       pharmacienParCompte: { max: 120, fenetreMs: MINUTE },
+      adminParCompte: { max: 300, fenetreMs: MINUTE },
     },
   };
   return { ...config, ...surcharges };

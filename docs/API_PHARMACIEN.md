@@ -29,6 +29,8 @@ La base vérifie aussi, même si le back-end se trompait :
 | `DELETE /pharmacies/:id/disponibilites/:medicamentId` | — | `204` |
 | `GET /pharmacies/:id/historique` | `page`, `taille` | `{ elements, page, taille, total }`, du plus récent au plus ancien |
 | `PATCH /pharmacies/:id` | un ou plusieurs de : `telephone`, `telephonesAutres`, `garde`, `horaires` | `200` la fiche |
+| `POST /pharmacies/:id/position` | `{ latitude, longitude, precisionMetres?, commentaire?, confirmerProximite? }` | `201 { demande, avertissement? }` ; `409 position-proche` |
+| `GET /pharmacies/:id/position` | — | `{ demande, positionActuelle }` |
 | `GET /medicaments` | `q`, `limite` | la recherche publique, à l'identique |
 
 `medicament` = `{ id, nomCommercial, dci, forme, dosage }`.
@@ -44,6 +46,27 @@ La base vérifie aussi, même si le back-end se trompait :
 - **Retrait** (`DELETE`) : la ligne de `annuaire.stock` est supprimée (le médicament n'est plus listé, ni en public) ; l'historique est conservé ; le retrait est journalisé (`retirer_declaration`, avec l'ancien statut).
 - Une pharmacie **non publiée** (`en_attente_position`, `a_relire`, `pret_a_publier`) reçoit des déclarations, mais elles restent invisibles du public tant qu'elle n'est pas `publiee` (vues `publique.*`). Cet espace ne change jamais le statut de publication.
 
+## Position (Partie 8)
+
+- **Proposer** : latitude 30 à 38, longitude 7 à 12 (bornes de la Tunisie), arrondies à 6 décimales par défaut (environ 10 cm) ; `precisionMetres` (précision annoncée par le GPS) 50 m au plus par défaut ; valeurs numériques JSON seulement (une chaîne est refusée).
+- **Une seule demande en attente** par pharmacie : une nouvelle proposition remplace la précédente, qui reste conservée (statut `remplacee`). Les demandes sont en ajout seul (033).
+- **Proximité** : si une autre pharmacie **publiée** se trouve à moins de **15 m** (par défaut), réponse `409 position-proche` avec la liste (`{ id, nom, distanceM }`). Pour maintenir la position, renvoyer avec `confirmerProximite: true` : la demande est enregistrée, l'avertissement est rendu et l'administrateur voit ces pharmacies proches dans sa file.
+- **La fiche ne change pas** tant qu'un administrateur n'a pas validé (`docs/API_ADMIN.md`).
+- **État** : ma dernière demande pour cette pharmacie (`en-attente`, `validee`, `refusee` avec `motifRefus`, `remplacee`) et la position actuelle de la fiche.
+- R9 : pharmacie d'un autre → `404`, journalisé ; la base refuse aussi (028). Journal : `proposer_position`.
+
+### Seuils (valeurs de configuration)
+
+Réglables par variables d'environnement (`.env`), sans changer le code ; valeurs par défaut :
+
+| Variable | Défaut | Bornes | Rôle |
+|---|---|---|---|
+| `POSITION_RAYON_PROXIMITE_M` | 15 | 1 à 200 | Autre pharmacie publiée à moins de ce rayon : `409 position-proche` sans confirmation, et signalée dans la file de l'administrateur |
+| `POSITION_PRECISION_MAX_M` | 50 | 1 à 1 000 | Précision annoncée par le GPS au-delà de laquelle la position est refusée (`400`, `champs: ["precisionMetres"]`, avec `precisionMaxM`) |
+| `POSITION_DECIMALES` | 6 | 4 à 8 | Décimales gardées pour la latitude et la longitude (6 : environ 10 cm) |
+
+Une valeur hors bornes empêche le serveur de démarrer (message clair). Lues dans `backend/src/config/configuration.ts` (`positions`).
+
 ## Fiche (`PATCH`)
 
 - **Modifiables** : `telephone` (`+216` et 8 chiffres, ou `null` pour « Téléphone non renseigné »), `telephonesAutres` (5 au plus, sans doublon), `garde` (`jour`, `nuit` ou `null`), `horaires` (remplace toutes les plages : 21 au plus, `jour` 0 à 6 avec 0 = dimanche, heures `HH:MM`, ouverture différente de la fermeture, pas deux plages commençant à la même heure le même jour ; une fermeture avant l'ouverture veut dire « le lendemain »).
@@ -56,7 +79,7 @@ La base vérifie aussi, même si le back-end se trompait :
 
 ## Droits de la base
 
-Aucun droit nouveau : `mawjoud_api` (membre de `mawjoud_application`, migration 021) a déjà `SELECT`, `INSERT`, `UPDATE`, `DELETE` sur `annuaire.stock` et `annuaire.horaire`, `SELECT` et `UPDATE` sur `annuaire.pharmacie` (il a aussi `INSERT` et `DELETE`, que cet espace n'utilise pas : à resserrer quand l'administration sera écrite, Partie 8), `SELECT`, `INSERT` (sans `UPDATE` ni `DELETE`) sur `annuaire.historique_stock` et `prive.journal_audit`. La migration 031 ajoute seulement le déclencheur de retrait et trois actions du journal (`modifier_fiche`, `retirer_declaration`, `acces_refuse`).
+Depuis la Partie 8 (032) : `mawjoud_api` n'a plus `INSERT` ni `DELETE` sur `annuaire.pharmacie`, et `UPDATE` seulement sur certaines colonnes ; **la base contrôle aussi les champs du pharmacien** (téléphones et garde de sa seule pharmacie, ses horaires ; acteur obligatoire, compte non suspendu). `mawjoud_api` a `SELECT`, `INSERT`, `UPDATE`, `DELETE` sur `annuaire.stock` et `annuaire.horaire`, `SELECT`, `INSERT` (sans `UPDATE` ni `DELETE`) sur `annuaire.historique_stock` et `prive.journal_audit`. La migration 031 ajoute seulement le déclencheur de retrait et trois actions du journal (`modifier_fiche`, `retirer_declaration`, `acces_refuse`).
 
 ## Tests
 
@@ -66,4 +89,3 @@ Aucun droit nouveau : `mawjoud_api` (membre de `mawjoud_application`, migration 
 
 - Le front-end attend aussi « suivre un médicament sans le déclarer » (`suivreMedicament`) et « tout confirmer » (`confirmerTout`) : à décider avec la Partie 9 (le lot peut déjà redéclarer tous les statuts d'un coup).
 - Rappels aux pharmacies qui ne mettent pas à jour, alertes : Partie 9.
-- Contrôle par la base des modifications de la fiche (téléphones, garde, horaires) : aujourd'hui assuré par l'API et les tests ; à faire avec l'administration (Partie 8), quand l'acteur sera fixé pour toute modification de fiche.

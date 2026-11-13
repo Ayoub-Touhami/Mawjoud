@@ -74,8 +74,11 @@ describe('Pharmacien suspendu', () => {
     // Témoins : avant la suspension, tout passe.
     await declarerStock(pharmacieId, medicaments[0], pharmacienId, 'disponible');
     const [demande] = await proposerPosition(pharmacieId, pharmacienId);
-    await ctx.base.requete(`DELETE FROM prive.demande_position WHERE id = $1`, [demande.id]); // libère « une seule en attente »
-    await changerPosition(pharmacieId, pharmacienId, 36.80);
+    // Les demandes ne se suppriment plus (033) : celle-ci est refusée, ce qui libère « une seule en attente ».
+    await ctx.base.requete(
+      `UPDATE prive.demande_position SET statut = 'refusee', motif_refus = 'témoin du test', decide_le = now() WHERE id = $1`, [demande.id]);
+    // Un pharmacien ne change jamais une position directement (032) : le témoin est un administrateur.
+    await changerPosition(pharmacieId, adminId, 36.80);
 
     // Suspension par l'administrateur (sa route viendra avec l'administration, Partie 8).
     await ctx.base.requete(`UPDATE prive.utilisateur SET suspendu = true WHERE id = $1`, [pharmacienId]);

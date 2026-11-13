@@ -5,8 +5,10 @@ import {
   ArrayMinSize,
   ArrayUnique,
   IsArray,
+  IsBoolean,
   IsIn,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -94,4 +96,31 @@ export class ModificationFicheDto {
   @IsOptional() @IsArray() @ArrayMaxSize(PLAGES_MAX)
   @ValidateNested({ each: true }) @Type(() => PlageDto)
   horaires?: PlageDto[];
+}
+
+/**
+ * Position proposée par le pharmacien. Bornes de la Tunisie (comme la base). Seuils réglables
+ * (configuration `positions`, docs/API_PHARMACIEN.md) : coordonnées arrondies à 6 décimales (environ 10 cm),
+ * précision GPS annoncée de 50 m au plus, avertissement si une autre pharmacie publiée est à moins de 15 m.
+ */
+export class PositionDto {
+  @ApiProperty({ minimum: 30, maximum: 38, example: 36.80652 })
+  @IsNumber({ allowNaN: false, allowInfinity: false }) @Min(30) @Max(38)
+  latitude!: number;
+
+  @ApiProperty({ minimum: 7, maximum: 12, example: 10.18155 })
+  @IsNumber({ allowNaN: false, allowInfinity: false }) @Min(7) @Max(12)
+  longitude!: number;
+
+  @ApiPropertyOptional({ minimum: 1, maximum: 1000, description: 'Précision annoncée par le GPS, en mètres (plafond configurable : 50 par défaut).' })
+  @IsOptional() @IsInt() @Min(1) @Max(1000)
+  precisionMetres?: number;
+
+  @ApiPropertyOptional({ maxLength: 500 })
+  @IsOptional() @IsString() @MaxLength(500)
+  commentaire?: string;
+
+  @ApiPropertyOptional({ description: 'true : maintenir malgré une autre pharmacie publiée proche (15 m par défaut).' })
+  @IsOptional() @IsBoolean()
+  confirmerProximite?: boolean;
 }

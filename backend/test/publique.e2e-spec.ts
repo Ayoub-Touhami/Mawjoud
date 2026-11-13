@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { BaseService } from '../src/base/base.service.js';
 import { lireConfiguration } from '../src/config/configuration.js';
-import { administrateur, compteVerifie, connecter, demarrer, type Contexte, type Session } from './aide.js';
+import { administrateur, compteVerifie, connecter, demarrer, fixtures, type Contexte, type Session } from './aide.js';
 
 /**
  * API publique (Partie 6) sur mawjoud_test. Jeu de données créé ici :
@@ -24,7 +24,7 @@ async function creerPharmacie(cle: string, valeurs: {
   nom: string; ville: string; gouvernorat: number; lat: number | null; lng: number | null;
   statut: string; confirmee: boolean; garde?: string | null; telephone?: string | null; source?: string | null; nomAVerifier?: boolean;
 }) {
-  const [p] = await ctx.base.requete<{ uuid: string }>(
+  const [p] = await fixtures(ctx, (tx) => tx.requete<{ uuid: string }>(
     `INSERT INTO annuaire.pharmacie (id_source, nom, ville, gouvernorat_code, latitude, longitude, position_confirmee,
                                      source_gps, precision_gps, statut_publication, garde, telephone_principal,
                                      telephones_autres, nom_a_verifier, sources)
@@ -32,7 +32,7 @@ async function creerPharmacie(cle: string, valeurs: {
     [`C9${String(Object.keys(P).length).padStart(4, '0')}`, valeurs.nom, valeurs.ville, valeurs.gouvernorat, valeurs.lat, valeurs.lng,
      valeurs.confirmee, valeurs.lat === null ? null : (valeurs.source ?? 'tunidoc'), valeurs.statut, valeurs.garde ?? null,
      valeurs.telephone ?? null, valeurs.telephone ? ['+21671999999'] : [], valeurs.nomAVerifier ?? false],
-  );
+  ));
   P[cle] = p.uuid;
   return p.uuid;
 }
@@ -63,9 +63,9 @@ beforeAll(async () => {
   await creerPharmacie('attente', { nom: 'Pharmacie Cachée Attente', ville: 'Tunis', gouvernorat: 11, lat: 36.8001, lng: 10.1801, statut: 'en_attente_position', confirmee: false, source: 'osm_telephone' });
   await creerPharmacie('relire', { nom: 'Pharmacie Cachée Relire', ville: 'Tunis', gouvernorat: 11, lat: 36.8002, lng: 10.1802, statut: 'a_relire', confirmee: true, nomAVerifier: true });
   await creerPharmacie('prete', { nom: 'Pharmacie Cachée Prête', ville: 'Tunis', gouvernorat: 11, lat: 36.8003, lng: 10.1803, statut: 'pret_a_publier', confirmee: true });
-  await ctx.base.requete(
+  await fixtures(ctx, (tx) => tx.requete(
     `INSERT INTO annuaire.horaire (pharmacie_id, jour, ouverture, fermeture)
-     SELECT id, j, '08:00', '20:00' FROM annuaire.pharmacie, generate_series(1, 6) j WHERE uuid = $1`, [P.p1]);
+     SELECT id, j, '08:00', '20:00' FROM annuaire.pharmacie, generate_series(1, 6) j WHERE uuid = $1`, [P.p1]));
 
   const meds = await ctx.base.requete<{ uuid: string; nom_commercial: string }>(
     `INSERT INTO annuaire.medicament (code_source, nom_commercial, dci, forme, dosage, donnee_test) VALUES
@@ -346,10 +346,10 @@ describe('Limitation de débit des routes publiques', () => {
 
 describe('Plafond de la carte (en dernier : ajoute 520 pharmacies publiées à Gabès)', () => {
   test('plus de 500 points dans la boîte : 500 renvoyés, tronque = true', async () => {
-    await ctx.base.requete(
+    await fixtures(ctx, (tx) => tx.requete(
       `INSERT INTO annuaire.pharmacie (nom, ville, gouvernorat_code, latitude, longitude, position_confirmee, source_gps, statut_publication)
        SELECT 'Pharmacie Gabès ' || i, 'Gabès', 81, 33.80 + (i % 26) * 0.005, 10.05 + (i / 26) * 0.005, true, 'tunidoc', 'publiee'
-         FROM generate_series(1, 520) i`);
+         FROM generate_series(1, 520) i`));
     await ctx.base.requete(`SELECT annuaire.analyser_annuaire()`);
     const r = await api().get('/api/v1/pharmacies/carte').query({ sud: 33.7, ouest: 9.9, nord: 34.0, est: 10.3, zoom: 11 }).expect(200);
     expect(r.body.points).toHaveLength(500);
