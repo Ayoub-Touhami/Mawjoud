@@ -1,7 +1,8 @@
 -- Vérifications chiffrées de l'import initial. Lecture seule.
 -- Valeurs attendues : comptées directement dans les CSV du 8 novembre 2026
 -- (pharmacies_final.csv 802, pharmacies_en_attente_position.csv 3 138, pharmacies_interne.csv 802,
---  medicaments_test.csv 40). Si les fichiers changent, mettre ces valeurs à jour.
+--  medicaments_test.csv 40), plus le catalogue de référence medicaments_200.csv (200, importé par
+--  importer-medicaments-reference.ps1, Partie 9a). Si les fichiers changent, mettre ces valeurs à jour.
 -- Échoue (code de sortie non nul) si un chiffre diffère.
 \set ON_ERROR_STOP on
 SET client_encoding = 'UTF8';
@@ -76,9 +77,10 @@ INSERT INTO v (controle, attendu, obtenu) VALUES
 ('osm_id ⇔ position OSM',                              100, (SELECT count(*) FROM prive.pharmacie_interne i JOIN annuaire.pharmacie p ON p.id = i.pharmacie_id
                                                              WHERE i.osm_id IS NOT NULL AND p.source_gps = 'osm_telephone')),
 -- Médicaments et référentiel
-('médicaments',                                         40, (SELECT count(*) FROM annuaire.medicament)),
+('médicaments (40 de test + 200 du catalogue)',        240, (SELECT count(*) FROM annuaire.medicament)),
+('  catalogue de référence (R001 à R200)',            200, (SELECT count(*) FROM annuaire.medicament WHERE code_source ~ '^R[0-9]{3}$' AND NOT donnee_test)),
 ('  marqués donnée de test',                            40, (SELECT count(*) FROM annuaire.medicament WHERE donnee_test)),
-('  visibles dans publique.medicament',                 40, (SELECT count(*) FROM publique.medicament)),
+('  visibles dans publique.medicament',                240, (SELECT count(*) FROM publique.medicament)),
 ('gouvernorats (inchangés)',                            24, (SELECT count(*) FROM annuaire.gouvernorat)),
 -- Tables qui doivent rester vides
 ('comptes, stocks, alertes, rattachements',              0, (SELECT (SELECT count(*) FROM prive.utilisateur) + (SELECT count(*) FROM annuaire.stock)

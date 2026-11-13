@@ -122,9 +122,13 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 - La date de déclaration est celle du serveur ; une date envoyée par le client est refusée (400).
 - 115 tests Jest, sur `mawjoud_test`.
 
-## Prochaine étape : Partie 9
+## Partie 9a : catalogue de référence de 200 médicaments
 
-Partie 8 terminée. La Partie 9 commencera sur sa propre branche, à partir de `main`, quand son contenu aura été envoyé (voir aussi « À faire plus tard », points marqués Partie 9).
+- Branche `partie-9a-medicaments` (fusion après accord).
+- `../data/final/medicaments_200.csv` (hors de Git) et son `LISEZMOI_medicaments_200.md` : R001 à R200, par DCI, **sans aucune marque**, 19 catégories (cardiologie 32, antibiotique 23, digestif 19, anti-inflammatoire 15, neurologie 14, diabète 13…). Exclus : stupéfiants, psychotropes, prescription restreinte ou contrôlée ; d'où une catégorie « neurologie » sans psychiatrie. Pas de noms arabes pour l'instant.
+- **Ce n'est PAS la nomenclature officielle. À faire relire par un pharmacien avant publication** : formes, dosages, exclusions, et en particulier insuline glargine, énoxaparine, acénocoumarol et carbamazépine (« à confirmer par le pharmacien », LISEZMOI).
+- Contrôle : `database/import/controler_catalogue.py` (catégories, aucune marque, aucun doublon, ni avec les 40 de test). Import rejouable : `database/importer-medicaments-reference.ps1` (une transaction ; vérifie 200 lignes du catalogue, 40 de test conservées, aucune disponibilité créée). Essayé deux fois sur `mawjoud_test` : 200 ajoutés, puis 0.
+- **Version de la base `mawjoud`** : migrations 001 à 033 ; annuaire importé le 13 novembre 2026 (3 940 pharmacies) ; médicaments : 40 de test, **catalogue de référence pas encore importé** (en attente d'accord). Après l'import : 240 médicaments, et les vérifications chiffrées (`importer-donnees.ps1 -VerifierSeulement`) attendent ce total (55 contrôles) ; avant l'import, elles signalent l'écart.
 
 ## Back-end : positions, validation et publication (Partie 8)
 
