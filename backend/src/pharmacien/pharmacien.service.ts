@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { AlertesService } from '../alertes/alertes.service.js';
 import { AuditService, type ValeurAudit } from '../audit/audit.service.js';
 import { BaseService, type Executeur } from '../base/base.service.js';
 import { echapperLike } from '../publique/publique.service.js';
@@ -50,6 +51,7 @@ export class PharmacienService {
   constructor(
     private readonly base: BaseService,
     private readonly audit: AuditService,
+    private readonly alertes: AlertesService,
     @Inject(CONFIGURATION) private readonly config: Configuration,
   ) {}
 
@@ -111,7 +113,7 @@ export class PharmacienService {
   /** Déclare ou met à jour un statut. La date est celle du serveur ; l'historique se remplit par déclencheur. */
   async declarer(compte: CompteConnecte, uuid: string, medicamentUuid: string, statut: StatutFront) {
     const p = await this.exigerMaPharmacie(compte, uuid, 'declarer');
-    return this.base.transaction(async (tx) => {
+    const resultat = await this.base.transaction(async (tx) => {
       await acteur(tx, compte);
       const [l] = await tx.requete<LigneDispo>(
         `WITH m AS (SELECT id, uuid, nom_commercial, dci, forme, dosage FROM annuaire.medicament WHERE uuid = $2 AND actif),
@@ -126,6 +128,8 @@ export class PharmacienService {
       if (!l) throw new ErreurApi(404, 'introuvable', { champs: ['medicamentId'] });
       return disponibilite(l);
     });
+    await this.alertes.declencher(p.id);
+    return resultat;
   }
 
   /** Lot de 100 déclarations au plus : tout ou rien, dans une seule transaction. */
@@ -161,7 +165,52 @@ export class PharmacienService {
           ORDER BY m.nom_commercial`,
         [p.id, uuids.map((u) => connus.get(u)!), lot.declarations.map((d) => versBase(d.statut)), compte.id]);
     });
+    await this.alertes.declencher(p.id);
     return { declarees: resultat.length, elements: resultat.map(disponibilite) };
+  }
+
+  // ---------------------------------------------------------------- suivi et « tout confirmer » (Partie 9b)
+
+  /** Médicaments suivis par ma pharmacie, déclarés ou non (identifiants). */
+  async suivis(compte: CompteConnecte, uuid: string) {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'lire_suivis');
+    const lignes = await this.base.requete<{ uuid: string }>(
+      `SELECT m.uuid FROM annuaire.stock s JOIN annuaire.medicament m ON m.id = s.medicament_id
+        WHERE s.pharmacie_id = $1 ORDER BY m.nom_commercial, m.dosage NULLS FIRST, m.uuid`, [p.id]);
+    return { elements: lignes.map((l) => l.uuid) };
+  }
+
+  /** Suit un médicament sans le déclarer (ligne de stock sans statut). Sans effet s'il est déjà suivi. */
+  async suivre(compte: CompteConnecte, uuid: string, medicamentUuid: string): Promise<{ nouveau: boolean }> {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'suivre');
+    return this.base.transaction(async (tx) => {
+      await acteur(tx, compte);
+      const [m] = await tx.requete<{ id: string }>(`SELECT id FROM annuaire.medicament WHERE uuid = $1 AND actif`, [medicamentUuid]);
+      if (!m) throw new ErreurApi(404, 'introuvable', { champs: ['medicamentId'] });
+      const r = await tx.requete(
+        `INSERT INTO annuaire.stock (pharmacie_id, medicament_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING medicament_id`, [p.id, m.id]);
+      return { nouveau: r.length > 0 };
+    });
+  }
+
+  /**
+   * « Tout est à jour » : redéclare chaque statut existant à la date du serveur, sans le changer.
+   * Chaque ligne passe dans l'historique (déclencheur 014) ; une seule entrée de journal.
+   */
+  async confirmerTout(compte: CompteConnecte, uuid: string) {
+    const p = await this.exigerMaPharmacie(compte, uuid, 'confirmer_tout');
+    const lignes = await this.base.transaction(async (tx) => {
+      await acteur(tx, compte);
+      const l = await tx.requete<LigneDispo>(
+        `WITH e AS (UPDATE annuaire.stock SET declare_le = now(), declare_par = $2
+                     WHERE pharmacie_id = $1 AND statut IS NOT NULL RETURNING medicament_id, statut, declare_le)
+         SELECT m.uuid AS medicament_uuid, m.nom_commercial, m.dci, m.forme, m.dosage, e.statut, e.declare_le
+           FROM e JOIN annuaire.medicament m ON m.id = e.medicament_id ORDER BY m.nom_commercial`, [p.id, compte.id]);
+      await this.audit.ecrire(compte.id, 'confirmer_tout', 'pharmacie', uuid, { declarations: l.length }, tx);
+      return l;
+    });
+    await this.alertes.declencher(p.id);
+    return { confirmees: lignes.length, elements: lignes.map(disponibilite) };
   }
 
   /** Retire la déclaration : le médicament n'est plus listé ; l'historique est conservé. */

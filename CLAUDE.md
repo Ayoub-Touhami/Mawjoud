@@ -12,7 +12,7 @@ Site tunisien qui montre sur une carte les pharmacies et la disponibilité des m
 ## Pile technique
 - Front-end : Angular (bilingue français/arabe, RTL pour l'arabe).
 - Base de données : PostgreSQL.
-- Back-end : NestJS (TypeScript), dossier `backend/`, npm, versions figées. SQL pur avec `pg` et requêtes paramétrées (pas d'ORM). Compte `mawjoud_api`, jamais `postgres`. Voir `docs/API_COMPTES.md`, `docs/API_PUBLIQUE.md`, `docs/API_PHARMACIEN.md` et `docs/API_ADMIN.md`.
+- Back-end : NestJS (TypeScript), dossier `backend/`, npm, versions figées. SQL pur avec `pg` et requêtes paramétrées (pas d'ORM). Compte `mawjoud_api`, jamais `postgres`. Voir `docs/API_COMPTES.md`, `docs/API_PUBLIQUE.md`, `docs/API_PHARMACIEN.md`, `docs/API_ADMIN.md` et `docs/API_ALERTES.md`.
 - Carte : MapLibre GL JS avec les tuiles OpenFreeMap (décidé).
 - Service d'e-mails, hébergement, source de l'annuaire des pharmacies : à décider ; ne pas trancher seul.
 

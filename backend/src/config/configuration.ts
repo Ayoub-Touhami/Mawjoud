@@ -33,6 +33,17 @@ export interface Configuration {
     /** Décimales gardées pour la latitude et la longitude. Défaut 6 (environ 10 cm). */
     decimales: number;
   };
+  /** Alertes et rappels (Partie 9b). Variables ALERTE_* facultatives. */
+  alertes: {
+    /** Pharmacie publiée sans mise à jour depuis N jours : rappel au pharmacien (au plus un par période). Défaut 7. */
+    rappelJours: number;
+    /** Alerte déclenchée effacée après ce délai (données de santé gardées au minimum). Défaut 30. */
+    purgeJours: number;
+    /** Essais d'envoi d'un e-mail d'alerte ou de rappel avant abandon. Défaut 5. */
+    essaisMax: number;
+    /** Alertes actives au plus par compte. Défaut 20. */
+    maxParCompte: number;
+  };
   limites: {
     connexionParEmail: Limite;
     connexionParIp: Limite;
@@ -44,6 +55,8 @@ export interface Configuration {
     pharmacienParCompte: Limite;
     /** Administration, par compte. */
     adminParCompte: Limite;
+    /** Alertes du patient, par compte. */
+    alertesParCompte: Limite;
   };
 }
 
@@ -161,6 +174,12 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
       precisionMaxM: entier('POSITION_PRECISION_MAX_M', 50, 1, 1000),
       decimales: entier('POSITION_DECIMALES', 6, 4, 8),
     },
+    alertes: {
+      rappelJours: entier('ALERTE_RAPPEL_JOURS', 7, 1, 90),
+      purgeJours: entier('ALERTE_PURGE_JOURS', 30, 1, 365),
+      essaisMax: entier('ALERTE_ESSAIS_MAX', 5, 1, 20),
+      maxParCompte: entier('ALERTE_MAX_PAR_COMPTE', 20, 1, 200),
+    },
     limites: {
       connexionParEmail: { max: 5, fenetreMs: 15 * MINUTE },
       connexionParIp: { max: 20, fenetreMs: 15 * MINUTE },
@@ -169,6 +188,7 @@ export function lireConfiguration(surcharges: Partial<Configuration> = {}): Conf
       publicParIp: { max: 120, fenetreMs: MINUTE },
       pharmacienParCompte: { max: 120, fenetreMs: MINUTE },
       adminParCompte: { max: 300, fenetreMs: MINUTE },
+      alertesParCompte: { max: 60, fenetreMs: MINUTE },
     },
   };
   return { ...config, ...surcharges };

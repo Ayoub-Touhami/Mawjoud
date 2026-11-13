@@ -31,6 +31,9 @@ La base vérifie aussi, même si le back-end se trompait :
 | `PATCH /pharmacies/:id` | un ou plusieurs de : `telephone`, `telephonesAutres`, `garde`, `horaires` | `200` la fiche |
 | `POST /pharmacies/:id/position` | `{ latitude, longitude, precisionMetres?, commentaire?, confirmerProximite? }` | `201 { demande, avertissement? }` ; `409 position-proche` |
 | `GET /pharmacies/:id/position` | — | `{ demande, positionActuelle }` |
+| `GET /pharmacies/:id/suivis` | — | `{ elements }` : médicaments suivis, déclarés ou non (Partie 9b) |
+| `PUT /pharmacies/:id/suivis/:medicamentId` | — | `{ nouveau }` : suivre sans déclarer (Partie 9b) |
+| `POST /pharmacies/:id/disponibilites/confirmer-tout` | — | `{ confirmees, elements }` : « tout est à jour » (Partie 9b) |
 | `GET /medicaments` | `q`, `limite` | la recherche publique, à l'identique |
 
 `medicament` = `{ id, nomCommercial, dci, forme, dosage }`.
@@ -87,5 +90,5 @@ Depuis la Partie 8 (032) : `mawjoud_api` n'a plus `INSERT` ni `DELETE` sur `annu
 
 ## Pas encore fait
 
-- Le front-end attend aussi « suivre un médicament sans le déclarer » (`suivreMedicament`) et « tout confirmer » (`confirmerTout`) : à décider avec la Partie 9 (le lot peut déjà redéclarer tous les statuts d'un coup).
+- « Suivre un médicament » et « tout confirmer » : faits en Partie 9b (`docs/API_ALERTES.md`). Chaque déclaration déclenche aussi les alertes des patients.
 - Rappels aux pharmacies qui ne mettent pas à jour, alertes : Partie 9.

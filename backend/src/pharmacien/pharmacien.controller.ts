@@ -91,6 +91,32 @@ export class EspacePharmacienController {
     await this.service.retirer(compte, id, medicamentId);
   }
 
+  @Get('pharmacies/:id/suivis')
+  @Pharmacien({ emailVerifie: true })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOperation({ summary: 'Médicaments suivis par ma pharmacie, déclarés ou non (identifiants).' })
+  suivis(@CompteCourant() compte: CompteConnecte, @Param('id', uuid('id')) id: string) {
+    return this.service.suivis(compte, id);
+  }
+
+  @Put('pharmacies/:id/suivis/:medicamentId')
+  @Pharmacien({ emailVerifie: true })
+  @HttpCode(200)
+  @ApiParam({ name: 'id', format: 'uuid' }) @ApiParam({ name: 'medicamentId', format: 'uuid' })
+  @ApiOperation({ summary: 'Suit un médicament sans le déclarer. Arrêter le suivi : DELETE …/disponibilites/:medicamentId.' })
+  suivre(@CompteCourant() compte: CompteConnecte, @Param('id', uuid('id')) id: string, @Param('medicamentId', uuid('medicamentId')) medicamentId: string) {
+    return this.service.suivre(compte, id, medicamentId);
+  }
+
+  @Post('pharmacies/:id/disponibilites/confirmer-tout')
+  @Pharmacien({ emailVerifie: true })
+  @HttpCode(200)
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOperation({ summary: '« Tout est à jour » : redéclare chaque statut à la date du serveur, sans le changer. Journalisé.' })
+  confirmerTout(@CompteCourant() compte: CompteConnecte, @Param('id', uuid('id')) id: string) {
+    return this.service.confirmerTout(compte, id);
+  }
+
   @Get('pharmacies/:id/historique')
   @Pharmacien({ emailVerifie: true })
   @ApiParam({ name: 'id', format: 'uuid' })

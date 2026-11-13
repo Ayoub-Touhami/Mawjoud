@@ -55,6 +55,7 @@ SQL pur sur PostgreSQL 16. Le back-end (NestJS, dossier `backend/`) y accède av
 | 031 | `031_espace_pharmacien.sql` | Retrait d'une déclaration de stock vérifié par la base (acteur : le pharmacien rattaché ou un administrateur) ; actions du journal `modifier_fiche`, `retirer_declaration`, `acces_refuse` |
 | 032 | `032_droits_fiche_et_transitions.sql` | `mawjoud_api` sans `INSERT` ni `DELETE` sur `annuaire.pharmacie`, `UPDATE` par colonne ; modifications de fiche et d'horaires contrôlées par la base (acteur obligatoire, pharmacien limité à sa pharmacie et à téléphones, garde, horaires) ; transitions de statut en liste blanche (`annuaire.transition_publication_autorisee`) |
 | 033 | `033_demandes_position.sql` | Demandes de position en ajout seul (seule la décision s'enregistre, une fois), statut `remplacee` ; actions du journal `proposer_position`, `relire_nom`, `changer_statut` |
+| 034 | `034_alertes_et_rappels.sql` | Consentement daté des alertes ; un jeton de désinscription par e-mail ; e-mails `rappel_mise_a_jour` ; suivi d'un médicament contrôlé par la base ; action de journal `confirmer_tout` |
 
 L'ordre suit les dépendances : une table vient après celles qu'elle référence.
 
@@ -73,7 +74,7 @@ Script : `database/appliquer-migrations.ps1`, à lancer depuis la racine du dép
 - Applique dans l'ordre des numéros, s'arrête à la première erreur (la transaction du fichier fautif est annulée).
 - Régénère `schema.sql` après chaque application (`pg_dump --schema-only --no-owner`, clé `\restrict` fixe pour un fichier stable). `-SansSchema` l'évite.
 
-**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 033 appliquées (028 écrite en Partie 8, après 029 à 031 sur `mawjoud`), contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
+**État** : base `mawjoud` créée le 13 novembre 2026 (UTF8), migrations 001 à 034 appliquées (028 écrite en Partie 8, après 029 à 031 sur `mawjoud`), contrôles de comportement réussis (contraintes de publication, bornes de la Tunisie, téléphones, historique des positions, déclarant du stock, droits des rôles). Données importées le 13 novembre 2026 (voir ci-dessous).
 
 Les fonctions communes (lecture de `.env`, variables `PG*`) sont dans `database/connexion-pg.ps1`. Les scripts n'acceptent que deux bases : `mawjoud` et `mawjoud_test` (et refusent toujours `cleanapp`, `postgres`, `template0`, `template1`).
 
