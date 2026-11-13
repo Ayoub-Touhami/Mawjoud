@@ -378,6 +378,28 @@ $$;
 
 
 --
+-- Name: verifier_suivi(); Type: FUNCTION; Schema: annuaire; Owner: -
+--
+
+CREATE FUNCTION annuaire.verifier_suivi() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  u record;
+BEGIN
+  IF NEW.statut IS NOT NULL OR NOT annuaire.est_application() THEN
+    RETURN NEW;  -- statut déclaré : verifier_declarant (014) s'en charge
+  END IF;
+  SELECT * INTO u FROM annuaire.acteur_actif();
+  IF u.role = 'administrateur' OR (u.role = 'pharmacien' AND annuaire.pharmacien_de(u.id, NEW.pharmacie_id)) THEN
+    RETURN NEW;
+  END IF;
+  RAISE EXCEPTION 'Seul le pharmacien de cette pharmacie suit un médicament (R9).' USING ERRCODE = 'insufficient_privilege';
+END;
+$$;
+
+
+--
 -- Name: exiger_non_suspendu(bigint); Type: FUNCTION; Schema: prive; Owner: -
 --
 
@@ -905,6 +927,7 @@ CREATE TABLE prive.alerte (
     declenchee_par_pharmacie bigint,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    consentement_le timestamp with time zone NOT NULL,
     CONSTRAINT alerte_check CHECK (((declenchee_le IS NULL) OR (statut = 'terminee'::text))),
     CONSTRAINT alerte_check1 CHECK (((declenchee_le IS NULL) = (declenchee_par_pharmacie IS NULL))),
     CONSTRAINT alerte_statut_check CHECK ((statut = ANY (ARRAY['active'::text, 'terminee'::text])))
@@ -916,6 +939,13 @@ CREATE TABLE prive.alerte (
 --
 
 COMMENT ON TABLE prive.alerte IS 'R13 : seuls le compte, le médicament et le lieu sont gardés.';
+
+
+--
+-- Name: COLUMN alerte.consentement_le; Type: COMMENT; Schema: prive; Owner: -
+--
+
+COMMENT ON COLUMN prive.alerte.consentement_le IS 'Date du consentement explicite à recevoir un e-mail pour ce médicament (obligatoire). Migration 034.';
 
 
 --
@@ -999,9 +1029,10 @@ CREATE TABLE prive.envoi_email (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT envoi_email_check CHECK (((type <> 'alerte'::text) OR ((alerte_id IS NOT NULL) AND (pharmacie_id IS NOT NULL)))),
     CONSTRAINT envoi_email_check1 CHECK (((statut = 'envoye'::text) = (envoye_le IS NOT NULL))),
+    CONSTRAINT envoi_email_rappel_pharmacie CHECK (((type <> 'rappel_mise_a_jour'::text) OR (pharmacie_id IS NOT NULL))),
     CONSTRAINT envoi_email_statut_check CHECK ((statut = ANY (ARRAY['a_envoyer'::text, 'envoye'::text, 'abandonne'::text]))),
     CONSTRAINT envoi_email_tentatives_check CHECK ((tentatives >= 0)),
-    CONSTRAINT envoi_email_type_check CHECK ((type = ANY (ARRAY['verification_email'::text, 'alerte'::text, 'reinitialisation_mot_de_passe'::text, 'compte_existant'::text])))
+    CONSTRAINT envoi_email_type_check CHECK ((type = ANY (ARRAY['verification_email'::text, 'alerte'::text, 'reinitialisation_mot_de_passe'::text, 'compte_existant'::text, 'rappel_mise_a_jour'::text])))
 );
 
 
@@ -1070,7 +1101,7 @@ CREATE TABLE prive.journal_audit (
     cible_id text NOT NULL,
     detail jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text, 'connexion_reussie'::text, 'connexion_echouee'::text, 'changer_mot_de_passe'::text, 'reinitialiser_mot_de_passe'::text, 'creer_administrateur'::text, 'modifier_fiche'::text, 'retirer_declaration'::text, 'acces_refuse'::text, 'proposer_position'::text, 'relire_nom'::text, 'changer_statut'::text]))),
+    CONSTRAINT journal_audit_action_check CHECK ((action = ANY (ARRAY['valider'::text, 'refuser'::text, 'creer_fiche'::text, 'corriger'::text, 'fermer'::text, 'rouvrir'::text, 'fusionner'::text, 'retirer_inscription'::text, 'suspendre'::text, 'retablir'::text, 'supprimer_compte'::text, 'valider_position'::text, 'refuser_position'::text, 'traiter_signalement'::text, 'connexion_reussie'::text, 'connexion_echouee'::text, 'changer_mot_de_passe'::text, 'reinitialiser_mot_de_passe'::text, 'creer_administrateur'::text, 'modifier_fiche'::text, 'retirer_declaration'::text, 'acces_refuse'::text, 'proposer_position'::text, 'relire_nom'::text, 'changer_statut'::text, 'confirmer_tout'::text]))),
     CONSTRAINT journal_audit_cible_type_check CHECK ((cible_type = ANY (ARRAY['pharmacie'::text, 'rattachement'::text, 'demande_position'::text, 'utilisateur'::text, 'signalement'::text, 'message_contact'::text])))
 );
 
@@ -1898,6 +1929,13 @@ CREATE INDEX envoi_email_pharmacie ON prive.envoi_email USING btree (pharmacie_i
 
 
 --
+-- Name: envoi_email_rappels; Type: INDEX; Schema: prive; Owner: -
+--
+
+CREATE INDEX envoi_email_rappels ON prive.envoi_email USING btree (pharmacie_id, created_at DESC) WHERE (type = 'rappel_mise_a_jour'::text);
+
+
+--
 -- Name: envoi_email_une_alerte; Type: INDEX; Schema: prive; Owner: -
 --
 
@@ -1919,10 +1957,10 @@ CREATE INDEX jeton_actifs ON prive.jeton USING btree (utilisateur_id, type) WHER
 
 
 --
--- Name: jeton_desabonnement_unique; Type: INDEX; Schema: prive; Owner: -
+-- Name: jeton_desabonnement; Type: INDEX; Schema: prive; Owner: -
 --
 
-CREATE UNIQUE INDEX jeton_desabonnement_unique ON prive.jeton USING btree (utilisateur_id) WHERE (type = 'desabonnement'::text);
+CREATE INDEX jeton_desabonnement ON prive.jeton USING btree (utilisateur_id) WHERE (type = 'desabonnement'::text);
 
 
 --
@@ -2140,6 +2178,13 @@ CREATE TRIGGER stock_declarant BEFORE INSERT OR UPDATE OF statut, declare_le ON 
 --
 
 CREATE TRIGGER stock_retrait BEFORE DELETE ON annuaire.stock FOR EACH ROW EXECUTE FUNCTION annuaire.verifier_retrait_stock();
+
+
+--
+-- Name: stock stock_suivi; Type: TRIGGER; Schema: annuaire; Owner: -
+--
+
+CREATE TRIGGER stock_suivi BEFORE INSERT ON annuaire.stock FOR EACH ROW EXECUTE FUNCTION annuaire.verifier_suivi();
 
 
 --
