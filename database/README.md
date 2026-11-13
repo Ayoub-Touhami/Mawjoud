@@ -114,6 +114,22 @@ Script : `database/importer-donnees.ps1`, à lancer depuis la racine du dépôt,
 
 Résultat du 13 novembre 2026 : 3 940 pharmacies (755 `pret_a_publier`, 47 `a_relire`, 2 455 `en_attente_position`, 683 `non_publiable`, aucune `publiee`), 4 907 plages horaires, 876 positions historisées, 802 fiches internes, 40 médicaments de test. 54 contrôles sur 54 conformes.
 
+- `import/verifier_import.sql` attend désormais **240 médicaments** (40 de test + 200 du catalogue de référence) et compte 55 contrôles : tant que le catalogue n'est pas importé dans `mawjoud`, il signale cet écart.
+
+## Catalogue de référence des médicaments (Partie 9a)
+
+`../data/final/medicaments_200.csv` (hors du dépôt, avec son `LISEZMOI_medicaments_200.md`) : 200 médicaments courants, R001 à R200, par DCI, sans aucune marque, 19 catégories. **Ce n'est pas la nomenclature officielle : à faire relire par un pharmacien avant publication.** Les 40 médicaments de test (M001 à M040) restent en place.
+
+```powershell
+python database/import/controler_catalogue.py ../data/final/medicaments_200.csv ../data/medicaments_test.csv
+.\database\importer-medicaments-reference.ps1             # import dans mawjoud
+.\database\importer-medicaments-reference.ps1 -BaseTest   # essai dans mawjoud_test
+```
+
+- `import/controler_catalogue.py` : contrôle sans rien modifier (colonnes, identifiants R001 à R200, les 19 catégories, `donnee_test = non`, nom = DCI donc aucune marque, aucun doublon même DCI, même forme, même dosage, ni dans le fichier ni avec les médicaments de test) et comptage par catégorie. Code de sortie 1 au moindre problème.
+- `importer-medicaments-reference.ps1` et `import/importer_medicaments_reference.sql` : `\copy` vers une table temporaire, mêmes contrôles refaits en base, puis `INSERT … ON CONFLICT DO NOTHING`, en une seule transaction. **Rejouable** : relancé, il n'ajoute rien. Vérifie après écriture : 200 médicaments du catalogue, médicaments de test inchangés, **aucune disponibilité** créée. Refuse un code déjà présent avec un contenu différent (fichier modifié depuis le premier import).
+- Essayé le 13 novembre 2026 sur `mawjoud_test` : 200 ajoutés, puis 0 à la seconde exécution. **Pas encore importé dans `mawjoud`** (en attente d'accord).
+
 ## Pour le back-end, quand il sera choisi
 
 - Requêtes paramétrées uniquement, jamais de texte concaténé.
