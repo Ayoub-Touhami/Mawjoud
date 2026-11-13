@@ -312,7 +312,7 @@
     "groupes": {
       "declares": "Inscrites : stock déclaré",
       "nonDeclares": "Inscrites : médicament non déclaré",
-      "nonInscrites": "Non inscrites"
+      "nonInscrites": "Stock non renseigné, appelez avant de vous déplacer"
     },
     "vide": {
       "titre": "Quel médicament cherchez-vous ?",
