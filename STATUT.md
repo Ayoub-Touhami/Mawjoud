@@ -124,11 +124,17 @@ Tout se remplace dans `fournirSimulation()` et `fournirAdministration()` : les �
 
 ## Partie 9a : catalogue de référence de 200 médicaments
 
-- Branche `partie-9a-medicaments` (fusion après accord).
+- **Terminée et fusionnée dans `main`** le 13 novembre 2026 (commit de fusion `38d9b22`, `git merge --no-ff`), après accord ; 145 tests passés sur la branche et sur `main` ; branche `partie-9a-medicaments` supprimée.
+- **Catalogue importé dans `mawjoud`** le 13 novembre 2026 : 200 ajoutés, puis 0 à la seconde exécution (rejouable) ; vérifications chiffrées 55 sur 55.
+- **Relecture par un pharmacien : toujours à faire**, avant toute publication (voir ci-dessous).
 - `../data/final/medicaments_200.csv` (hors de Git) et son `LISEZMOI_medicaments_200.md` : R001 à R200, par DCI, **sans aucune marque**, 19 catégories (cardiologie 32, antibiotique 23, digestif 19, anti-inflammatoire 15, neurologie 14, diabète 13…). Exclus : stupéfiants, psychotropes, prescription restreinte ou contrôlée ; d'où une catégorie « neurologie » sans psychiatrie. Pas de noms arabes pour l'instant.
 - **Ce n'est PAS la nomenclature officielle. À faire relire par un pharmacien avant publication** : formes, dosages, exclusions, et en particulier insuline glargine, énoxaparine, acénocoumarol et carbamazépine (« à confirmer par le pharmacien », LISEZMOI).
-- Contrôle : `database/import/controler_catalogue.py` (catégories, aucune marque, aucun doublon, ni avec les 40 de test). Import rejouable : `database/importer-medicaments-reference.ps1` (une transaction ; vérifie 200 lignes du catalogue, 40 de test conservées, aucune disponibilité créée). Essayé deux fois sur `mawjoud_test` : 200 ajoutés, puis 0.
-- **Version de la base `mawjoud`** : migrations 001 à 033 ; annuaire importé le 13 novembre 2026 (3 940 pharmacies) ; médicaments : 40 de test, **catalogue de référence pas encore importé** (en attente d'accord). Après l'import : 240 médicaments, et les vérifications chiffrées (`importer-donnees.ps1 -VerifierSeulement`) attendent ce total (55 contrôles) ; avant l'import, elles signalent l'écart.
+- Contrôle : `database/import/controler_catalogue.py` (catégories, aucune marque, aucun doublon, ni avec les 40 de test). Import rejouable : `database/importer-medicaments-reference.ps1` (une transaction ; vérifie 200 lignes du catalogue, 40 de test conservées, aucune disponibilité créée). Essayé deux fois sur `mawjoud_test`, puis sur `mawjoud` : 200 ajoutés, puis 0.
+- **Version de la base `mawjoud`** : migrations 001 à 033 ; annuaire importé le 13 novembre 2026 (3 940 pharmacies) ; médicaments : **240** (40 de test M001 à M040, inchangés, et 200 du catalogue de référence R001 à R200, importés le 13 novembre 2026), **aucune disponibilité** ; vérifications chiffrées (`importer-donnees.ps1 -VerifierSeulement`) : 55 sur 55.
+
+## Prochaine étape : Partie 9b (alertes)
+
+Pas encore commencée : elle partira de `main` sur sa propre branche quand son instruction aura été envoyée.
 
 ## Back-end : positions, validation et publication (Partie 8)
 
