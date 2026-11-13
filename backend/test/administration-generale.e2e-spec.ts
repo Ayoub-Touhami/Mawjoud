@@ -526,7 +526,7 @@ describe('5. Lecture : comptes et journal d\'audit', () => {
     expect(page1.body.total).toBeGreaterThan(4);
     expect(page1.body.elements).toHaveLength(2);
     expect(page2.body.elements[0].id).not.toBe(page1.body.elements[0].id);
-    const jour = new Date().toLocaleDateString('sv-SE'); // AAAA-MM-JJ, heure locale
+    const jour = new Date().toLocaleDateString('sv-SE', { timeZone: 'Africa/Tunis' }); // AAAA-MM-JJ, heure de Tunis
     expect((await api().get(`${ADMIN}/journal`).query({ depuis: jour, jusqua: jour, acteur: idA }).set('Cookie', admin.cookie).expect(200)).body.total)
       .toBe(page1.body.total);
     expect((await api().get(`${ADMIN}/journal`).query({ jusqua: '2020-01-01' }).set('Cookie', admin.cookie).expect(200)).body.total).toBe(0);
