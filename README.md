@@ -11,7 +11,6 @@ Projet en cours de développement. Cette version contient la recherche de pharma
 | `database/` | Migrations PostgreSQL (001 à 036), scripts PowerShell, jeu de données fictif |
 | `docs/` | Documentation technique (base de données, API, sécurité) |
 
-**Démo en ligne (données fictives) : [LIEN À AJOUTER]**
 
 ---
 
