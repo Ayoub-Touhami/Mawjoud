@@ -14,7 +14,7 @@ export interface MessageContact {
   pharmacieId?: string;
 }
 
-export type ErreurContact = 'reseau';
+export type ErreurContact = 'reseau' | 'donnees-invalides' | 'trop-de-tentatives' | 'indisponible';
 
 /** Envoi d'un message de contact. L'erreur est « reseau » si l'envoi échoue. */
 export interface ContactService {

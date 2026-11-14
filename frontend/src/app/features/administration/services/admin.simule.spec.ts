@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, UrlTree } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { adminGuard } from '../../../core/guards/admin.guard';
 import { fournirTraductionTest } from '../../../core/i18n/traduction.test-outils';
 import { CLAIM_SERVICE } from '../../../core/services/claim.service';
@@ -19,6 +20,10 @@ import {
 const MOTIF = { code: 'justificatif-illisible' } as const;
 const LIBRE = 'T006';
 const AUTRE_LIBRE = 'T007';
+
+// Ces tests portent sur l'administration simulée : ils utilisent le raccourci « administrateur de test »,
+// réservé au réglage outilsSimulation (désactivé quand le front utilise la vraie API, Partie 9e).
+(environment as { outilsSimulation: boolean }).outilsSimulation = true;
 
 describe('administration simulée', () => {
   let auth: AuthServiceSimule;

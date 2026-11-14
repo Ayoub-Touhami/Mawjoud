@@ -15,6 +15,7 @@ import { firstValueFrom, of } from 'rxjs';
 import { COORDONNEES } from '../../core/coordonnees.config';
 import {
   CONTACT_SERVICE,
+  ErreurContact,
   SUJETS_CONTACT,
   SujetContact,
 } from '../../core/services/contact.service';
@@ -54,7 +55,8 @@ export class ContactPage {
   protected readonly message = signal('');
   protected readonly erreurs = signal<ErreursContact>(AUCUNE_ERREUR);
   protected readonly envoi = signal(false);
-  protected readonly echec = signal(false);
+  /** Code de l'erreur d'envoi (message précis), ou null. */
+  protected readonly echec = signal<ErreurContact | null>(null);
   protected readonly envoye = signal(false);
 
   protected async envoyer(evenement?: Event): Promise<void> {
@@ -74,7 +76,7 @@ export class ContactPage {
       return;
     }
     this.envoi.set(true);
-    this.echec.set(false);
+    this.echec.set(null);
     try {
       await firstValueFrom(
         this.service.envoyer({
@@ -89,8 +91,8 @@ export class ContactPage {
       afterNextRender(() => this.confirmation()?.nativeElement.focus(), {
         injector: this.injecteur,
       });
-    } catch {
-      this.echec.set(true);
+    } catch (erreur) {
+      this.echec.set((typeof erreur === 'string' ? erreur : 'indisponible') as ErreurContact);
     } finally {
       this.envoi.set(false);
     }

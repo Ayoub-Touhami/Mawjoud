@@ -770,6 +770,11 @@
       "aRenseignerEmail": "Adresse e-mail de contact à renseigner",
       "aRenseignerTelephone": "Téléphone de contact à renseigner",
       "aRenseignerAdresse": "Adresse postale à renseigner"
+    },
+    "erreursEnvoi": {
+      "donnees-invalides": "Le message n'a pas été accepté : vérifiez l'adresse e-mail et le message (10 caractères au moins).",
+      "trop-de-tentatives": "Trop de messages envoyés depuis cette connexion. Réessayez dans une heure.",
+      "indisponible": "Erreur du serveur : le message n'a pas été enregistré. Réessayez dans un instant."
     }
   },
   "apropos": {

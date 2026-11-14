@@ -24,6 +24,7 @@ import { AdministrationService } from './administration/administration.service.j
 import { AdministrationGeneraleController } from './administration/administration-generale.controller.js';
 import { AdministrationGeneraleService } from './administration/administration-generale.service.js';
 import { AlertesController, LimiteAlertesGuard } from './alertes/alertes.controller.js';
+import { ContactController } from './contact/contact.controller.js';
 import { AlertesService } from './alertes/alertes.service.js';
 import { FiltreErreurs } from './securite/filtre-erreurs.js';
 import { AdministrateurGuard, ConnecteGuard, PatientGuard, PharmacienGuard, SecuriteGuard } from './securite/gardes.js';
@@ -61,6 +62,7 @@ export class AppModule {
         AdministrationController,
         AdministrationGeneraleController,
         AlertesController,
+        ContactController,
         ...controleursEnPlus,
       ],
       providers: [

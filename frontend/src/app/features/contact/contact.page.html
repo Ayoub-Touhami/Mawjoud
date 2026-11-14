@@ -85,9 +85,9 @@
         ></textarea>
       </app-champ>
 
-      @if (echec()) {
+      @if (echec(); as code) {
         <div class="erreur" role="alert">
-          <p>{{ 'contact.echec' | transloco }}</p>
+          <p>{{ (code === 'reseau' ? 'contact.echec' : 'contact.erreursEnvoi.' + code) | transloco }}</p>
           <button type="button" appBouton variante="secondaire" (click)="envoyer()">
             {{ 'carte.horsConnexion.reessayer' | transloco }}
           </button>

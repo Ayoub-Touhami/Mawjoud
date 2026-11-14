@@ -401,10 +401,21 @@ export class ClaimServiceHttp implements ClaimService {
   }
 }
 
-/** Le formulaire de contact n'a pas encore de route dans l'API (STATUT.md) : l'envoi échoue proprement. */
+/** Formulaire de contact : POST /api/v1/contact (enregistré par le serveur, aucun e-mail). */
 @Injectable({ providedIn: 'root' })
-export class ContactServiceIndisponible implements ContactService {
-  envoyer(_message: MessageContact): Observable<void> {
-    return throwError(() => 'reseau' satisfies ErreurContact);
+export class ContactServiceHttp implements ContactService {
+  private readonly http = inject(HttpClient);
+  private readonly url = inject(API_URL);
+
+  envoyer(message: MessageContact): Observable<void> {
+    return this.http.post(`${this.url}/v1/contact`, message).pipe(
+      map(() => undefined),
+      catchError((e) => {
+        const code = codeErreur(e);
+        const valeur: ErreurContact =
+          code === 'reseau' || code === 'donnees-invalides' || code === 'trop-de-tentatives' ? code : 'indisponible';
+        return throwError(() => valeur);
+      }),
+    );
   }
 }

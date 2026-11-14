@@ -7,7 +7,7 @@ import { PHARMACIE_API } from '../services/pharmacie-api';
 import { PHARMACIST_AUTH_SERVICE } from '../services/pharmacist-auth.service';
 import { EVALUATEUR_ALERTES, STOCK_SERVICE } from '../services/stock.service';
 import {
-  AlertServiceHttp, AuthServiceHttp, ClaimServiceHttp, ContactServiceIndisponible, EvaluateurAlertesServeur,
+  AlertServiceHttp, AuthServiceHttp, ClaimServiceHttp, ContactServiceHttp, EvaluateurAlertesServeur,
   PharmacieApiHttp, PharmacistAuthServiceHttp, StockServiceHttp,
 } from './services-api';
 
@@ -20,7 +20,7 @@ export function fournirApi(): Provider[] {
     { provide: PHARMACIST_AUTH_SERVICE, useExisting: PharmacistAuthServiceHttp },
     { provide: CLAIM_SERVICE, useExisting: ClaimServiceHttp },
     { provide: STOCK_SERVICE, useExisting: StockServiceHttp },
-    { provide: CONTACT_SERVICE, useExisting: ContactServiceIndisponible },
+    { provide: CONTACT_SERVICE, useExisting: ContactServiceHttp },
     { provide: EVALUATEUR_ALERTES, useExisting: EvaluateurAlertesServeur },
   ];
 }

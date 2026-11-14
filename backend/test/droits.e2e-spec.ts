@@ -43,6 +43,7 @@ const COLONNES: Record<string, string> = {
   'prive.demande_position UPDATE': 'statut,motif_refus,decide_par,decide_le',
   'prive.envoi_email UPDATE': 'statut,tentatives,prochaine_tentative_le,derniere_erreur,envoye_le',
   'prive.jeton UPDATE': 'expire_le,utilise_le',
+  'prive.message_contact INSERT': 'nom,email,sujet,message,pharmacie_id', // formulaire de contact (037)
   'prive.message_contact SELECT': 'uuid,pharmacie_id',
   'prive.message_contact UPDATE': 'pharmacie_id',
   'prive.rattachement_pharmacien UPDATE': 'pharmacie_id,statut,conflit,motif_code,motif_precision,decide_par,decide_le',
