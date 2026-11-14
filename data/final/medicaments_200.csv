@@ -1,0 +1,201 @@
+﻿id,nom,dci,forme,dosage,categorie,donnee_test
+R001,Paracétamol,paracétamol,comprimé,500 mg,antalgique,non
+R002,Paracétamol,paracétamol,comprimé,1000 mg,antalgique,non
+R003,Paracétamol,paracétamol,comprimé effervescent,500 mg,antalgique,non
+R004,Paracétamol,paracétamol,suspension buvable,120 mg / 5 ml,antalgique,non
+R005,Paracétamol,paracétamol,suppositoire,150 mg,antalgique,non
+R006,Paracétamol,paracétamol,suppositoire,300 mg,antalgique,non
+R007,Acide acétylsalicylique,acide acétylsalicylique,comprimé,500 mg,antalgique,non
+R008,Ibuprofène,ibuprofène,comprimé,200 mg,anti-inflammatoire,non
+R009,Ibuprofène,ibuprofène,comprimé,400 mg,anti-inflammatoire,non
+R010,Ibuprofène,ibuprofène,suspension buvable,100 mg / 5 ml,anti-inflammatoire,non
+R011,Diclofénac,diclofénac,comprimé,50 mg,anti-inflammatoire,non
+R012,Diclofénac,diclofénac,suppositoire,100 mg,anti-inflammatoire,non
+R013,Diclofénac,diclofénac,gel,1 %,anti-inflammatoire,non
+R014,Kétoprofène,kétoprofène,gélule,50 mg,anti-inflammatoire,non
+R015,Kétoprofène,kétoprofène,gel,"2,5 %",anti-inflammatoire,non
+R016,Méloxicam,méloxicam,comprimé,15 mg,anti-inflammatoire,non
+R017,Célécoxib,célécoxib,gélule,200 mg,anti-inflammatoire,non
+R018,Prednisolone,prednisolone,comprimé,20 mg,anti-inflammatoire,non
+R019,Prednisone,prednisone,comprimé,5 mg,anti-inflammatoire,non
+R020,Méthylprednisolone,méthylprednisolone,comprimé,16 mg,anti-inflammatoire,non
+R021,Dexaméthasone,dexaméthasone,solution injectable,4 mg / ml,anti-inflammatoire,non
+R022,Bétaméthasone,bétaméthasone,solution injectable,4 mg / ml,anti-inflammatoire,non
+R023,Amoxicilline,amoxicilline,gélule,500 mg,antibiotique,non
+R024,Amoxicilline,amoxicilline,comprimé,1 g,antibiotique,non
+R025,Amoxicilline,amoxicilline,poudre pour suspension buvable,250 mg / 5 ml,antibiotique,non
+R026,Amoxicilline et acide clavulanique,amoxicilline et acide clavulanique,comprimé,500 mg / 125 mg,antibiotique,non
+R027,Amoxicilline et acide clavulanique,amoxicilline et acide clavulanique,comprimé,1 g / 125 mg,antibiotique,non
+R028,Céfuroxime,céfuroxime,comprimé,500 mg,antibiotique,non
+R029,Céfixime,céfixime,comprimé,200 mg,antibiotique,non
+R030,Céfixime,céfixime,comprimé,400 mg,antibiotique,non
+R031,Céfixime,céfixime,poudre pour suspension buvable,100 mg / 5 ml,antibiotique,non
+R032,Ceftriaxone,ceftriaxone,poudre pour solution injectable,1 g,antibiotique,non
+R033,Azithromycine,azithromycine,comprimé,500 mg,antibiotique,non
+R034,Azithromycine,azithromycine,poudre pour suspension buvable,200 mg / 5 ml,antibiotique,non
+R035,Clarithromycine,clarithromycine,comprimé,500 mg,antibiotique,non
+R036,Spiramycine,spiramycine,comprimé,3 M UI,antibiotique,non
+R037,Spiramycine et métronidazole,spiramycine et métronidazole,comprimé,"1,5 M UI / 250 mg",antibiotique,non
+R038,Métronidazole,métronidazole,comprimé,500 mg,antibiotique,non
+R039,Ciprofloxacine,ciprofloxacine,comprimé,500 mg,antibiotique,non
+R040,Lévofloxacine,lévofloxacine,comprimé,500 mg,antibiotique,non
+R041,Doxycycline,doxycycline,gélule,100 mg,antibiotique,non
+R042,Sulfaméthoxazole et triméthoprime,sulfaméthoxazole et triméthoprime,comprimé,400 mg / 80 mg,antibiotique,non
+R043,Fosfomycine,fosfomycine,sachet,3 g,antibiotique,non
+R044,Clindamycine,clindamycine,gélule,300 mg,antibiotique,non
+R045,Acide fusidique,acide fusidique,pommade,2 %,antibiotique,non
+R046,Fluconazole,fluconazole,gélule,50 mg,antifongique,non
+R047,Fluconazole,fluconazole,gélule,150 mg,antifongique,non
+R048,Terbinafine,terbinafine,comprimé,250 mg,antifongique,non
+R049,Terbinafine,terbinafine,crème,1 %,antifongique,non
+R050,Miconazole,miconazole,gel buccal,2 %,antifongique,non
+R051,Nystatine,nystatine,suspension buvable,100 000 UI / ml,antifongique,non
+R052,Clotrimazole,clotrimazole,crème,1 %,antifongique,non
+R053,Clotrimazole,clotrimazole,ovule,500 mg,antifongique,non
+R054,Aciclovir,aciclovir,comprimé,200 mg,antiviral,non
+R055,Aciclovir,aciclovir,crème,5 %,antiviral,non
+R056,Valaciclovir,valaciclovir,comprimé,500 mg,antiviral,non
+R057,Oseltamivir,oseltamivir,gélule,75 mg,antiviral,non
+R058,Albendazole,albendazole,comprimé,400 mg,antiparasitaire,non
+R059,Mébendazole,mébendazole,comprimé,100 mg,antiparasitaire,non
+R060,Ivermectine,ivermectine,comprimé,3 mg,antiparasitaire,non
+R061,Perméthrine,perméthrine,crème,5 %,antiparasitaire,non
+R062,Métronidazole,métronidazole,ovule,500 mg,antiparasitaire,non
+R063,Amlodipine,amlodipine,comprimé,5 mg,cardiologie,non
+R064,Amlodipine,amlodipine,comprimé,10 mg,cardiologie,non
+R065,Bisoprolol,bisoprolol,comprimé,5 mg,cardiologie,non
+R066,Aténolol,aténolol,comprimé,50 mg,cardiologie,non
+R067,Nébivolol,nébivolol,comprimé,5 mg,cardiologie,non
+R068,Propranolol,propranolol,comprimé,40 mg,cardiologie,non
+R069,Ramipril,ramipril,comprimé,5 mg,cardiologie,non
+R070,Périndopril,périndopril,comprimé,5 mg,cardiologie,non
+R071,Valsartan,valsartan,comprimé,80 mg,cardiologie,non
+R072,Valsartan,valsartan,comprimé,160 mg,cardiologie,non
+R073,Losartan,losartan,comprimé,50 mg,cardiologie,non
+R074,Irbésartan,irbésartan,comprimé,150 mg,cardiologie,non
+R075,Hydrochlorothiazide,hydrochlorothiazide,comprimé,25 mg,cardiologie,non
+R076,Indapamide,indapamide,comprimé,"1,5 mg",cardiologie,non
+R077,Furosémide,furosémide,comprimé,40 mg,cardiologie,non
+R078,Furosémide,furosémide,solution injectable,20 mg / 2 ml,cardiologie,non
+R079,Spironolactone,spironolactone,comprimé,25 mg,cardiologie,non
+R080,Méthyldopa,méthyldopa,comprimé,250 mg,cardiologie,non
+R081,Atorvastatine,atorvastatine,comprimé,10 mg,cardiologie,non
+R082,Atorvastatine,atorvastatine,comprimé,20 mg,cardiologie,non
+R083,Rosuvastatine,rosuvastatine,comprimé,10 mg,cardiologie,non
+R084,Fénofibrate,fénofibrate,gélule,200 mg,cardiologie,non
+R085,Clopidogrel,clopidogrel,comprimé,75 mg,cardiologie,non
+R086,Acide acétylsalicylique,acide acétylsalicylique,comprimé,75 mg,cardiologie,non
+R087,Acide acétylsalicylique,acide acétylsalicylique,comprimé,100 mg,cardiologie,non
+R088,Warfarine,warfarine,comprimé,5 mg,cardiologie,non
+R089,Rivaroxaban,rivaroxaban,comprimé,20 mg,cardiologie,non
+R090,Énoxaparine,énoxaparine,solution injectable,"4 000 UI / 0,4 ml",cardiologie,non
+R091,Digoxine,digoxine,comprimé,"0,25 mg",cardiologie,non
+R092,Amiodarone,amiodarone,comprimé,200 mg,cardiologie,non
+R093,Trinitrine,trinitrine,spray sublingual,"0,3 mg / dose",cardiologie,non
+R094,Trimétazidine,trimétazidine,comprimé,35 mg,cardiologie,non
+R095,Metformine,metformine,comprimé,500 mg,diabète,non
+R096,Metformine,metformine,comprimé,850 mg,diabète,non
+R097,Metformine,metformine,comprimé,1000 mg,diabète,non
+R098,Gliclazide,gliclazide,comprimé,30 mg,diabète,non
+R099,Gliclazide,gliclazide,comprimé,80 mg,diabète,non
+R100,Glimépiride,glimépiride,comprimé,2 mg,diabète,non
+R101,Glimépiride,glimépiride,comprimé,4 mg,diabète,non
+R102,Sitagliptine,sitagliptine,comprimé,100 mg,diabète,non
+R103,Vildagliptine,vildagliptine,comprimé,50 mg,diabète,non
+R104,Empagliflozine,empagliflozine,comprimé,10 mg,diabète,non
+R105,Insuline glargine,insuline glargine,stylo injectable,100 UI / ml,diabète,non
+R106,Insuline asparte,insuline asparte,stylo injectable,100 UI / ml,diabète,non
+R107,Insuline humaine NPH,insuline humaine NPH,stylo injectable,100 UI / ml,diabète,non
+R108,Oméprazole,oméprazole,gélule,20 mg,digestif,non
+R109,Ésoméprazole,ésoméprazole,comprimé,20 mg,digestif,non
+R110,Ésoméprazole,ésoméprazole,comprimé,40 mg,digestif,non
+R111,Pantoprazole,pantoprazole,comprimé,40 mg,digestif,non
+R112,Dompéridone,dompéridone,comprimé,10 mg,digestif,non
+R113,Métoclopramide,métoclopramide,comprimé,10 mg,digestif,non
+R114,Métoclopramide,métoclopramide,solution injectable,10 mg / 2 ml,digestif,non
+R115,Ondansétron,ondansétron,comprimé,4 mg,digestif,non
+R116,Siméticone,siméticone,gouttes buvables,40 mg / ml,digestif,non
+R117,Lopéramide,lopéramide,gélule,2 mg,digestif,non
+R118,Racécadotril,racécadotril,gélule,100 mg,digestif,non
+R119,Racécadotril,racécadotril,sachet,30 mg,digestif,non
+R120,Diosmectite,diosmectite,sachet,3 g,digestif,non
+R121,Lactulose,lactulose,solution buvable,10 g / 15 ml,digestif,non
+R122,Macrogol,macrogol,sachet,10 g,digestif,non
+R123,Bisacodyl,bisacodyl,comprimé,5 mg,digestif,non
+R124,Phloroglucinol,phloroglucinol,comprimé,80 mg,digestif,non
+R125,Saccharomyces boulardii,Saccharomyces boulardii,gélule,250 mg,digestif,non
+R126,Sels de réhydratation orale,sels de réhydratation orale,sachet,standard OMS,digestif,non
+R127,Salbutamol,salbutamol,aérosol doseur,100 µg / dose,asthme,non
+R128,Budésonide et formotérol,budésonide et formotérol,inhalateur,"160 µg / 4,5 µg",asthme,non
+R129,Fluticasone et salmétérol,fluticasone et salmétérol,inhalateur,250 µg / 25 µg,asthme,non
+R130,Béclométasone,béclométasone,aérosol doseur,250 µg / dose,asthme,non
+R131,Ipratropium,ipratropium,solution pour nébulisation,"0,5 mg / 2 ml",asthme,non
+R132,Budésonide,budésonide,suspension pour nébulisation,"0,5 mg / 2 ml",asthme,non
+R133,Montélukast,montélukast,comprimé,10 mg,asthme,non
+R134,Montélukast,montélukast,comprimé à croquer,5 mg,asthme,non
+R135,Ambroxol,ambroxol,sirop,30 mg / 5 ml,toux et rhume,non
+R136,Ambroxol,ambroxol,comprimé,30 mg,toux et rhume,non
+R137,Acétylcystéine,acétylcystéine,sachet,200 mg,toux et rhume,non
+R138,Carbocistéine,carbocistéine,sirop,5 %,toux et rhume,non
+R139,Mométasone,mométasone,spray nasal,50 µg / dose,toux et rhume,non
+R140,Xylométazoline,xylométazoline,spray nasal,"0,1 %",toux et rhume,non
+R141,Chlorure de sodium,chlorure de sodium,solution nasale unidose,"0,9 %",toux et rhume,non
+R142,Cétirizine,cétirizine,comprimé,10 mg,allergie,non
+R143,Cétirizine,cétirizine,solution buvable,1 mg / ml,allergie,non
+R144,Loratadine,loratadine,comprimé,10 mg,allergie,non
+R145,Desloratadine,desloratadine,comprimé,5 mg,allergie,non
+R146,Lévocétirizine,lévocétirizine,comprimé,5 mg,allergie,non
+R147,Fexofénadine,fexofénadine,comprimé,120 mg,allergie,non
+R148,Fexofénadine,fexofénadine,comprimé,180 mg,allergie,non
+R149,Tobramycine,tobramycine,collyre,"0,3 %",ophtalmologie et ORL,non
+R150,Ofloxacine,ofloxacine,collyre,"0,3 %",ophtalmologie et ORL,non
+R151,Dexaméthasone et tobramycine,dexaméthasone et tobramycine,collyre,"0,1 % / 0,3 %",ophtalmologie et ORL,non
+R152,Carmellose,carmellose,collyre,"0,5 %",ophtalmologie et ORL,non
+R153,Timolol,timolol,collyre,"0,5 %",ophtalmologie et ORL,non
+R154,Latanoprost,latanoprost,collyre,"0,005 %",ophtalmologie et ORL,non
+R155,Ciprofloxacine,ciprofloxacine,gouttes auriculaires,"0,3 %",ophtalmologie et ORL,non
+R156,Carbamazépine,carbamazépine,comprimé,200 mg,neurologie et psychiatrie,non
+R157,Valproate de sodium,valproate de sodium,comprimé,500 mg,neurologie et psychiatrie,non
+R158,Lamotrigine,lamotrigine,comprimé,100 mg,neurologie et psychiatrie,non
+R159,Lévétiracétam,lévétiracétam,comprimé,500 mg,neurologie et psychiatrie,non
+R160,Lévétiracétam,lévétiracétam,comprimé,1000 mg,neurologie et psychiatrie,non
+R161,Gabapentine,gabapentine,gélule,300 mg,neurologie et psychiatrie,non
+R162,Prégabaline,prégabaline,gélule,75 mg,neurologie et psychiatrie,non
+R163,Sertraline,sertraline,comprimé,50 mg,neurologie et psychiatrie,non
+R164,Escitalopram,escitalopram,comprimé,10 mg,neurologie et psychiatrie,non
+R165,Fluoxétine,fluoxétine,gélule,20 mg,neurologie et psychiatrie,non
+R166,Amitriptyline,amitriptyline,comprimé,25 mg,neurologie et psychiatrie,non
+R167,Rispéridone,rispéridone,comprimé,2 mg,neurologie et psychiatrie,non
+R168,Sumatriptan,sumatriptan,comprimé,50 mg,neurologie et psychiatrie,non
+R169,Bétahistine,bétahistine,comprimé,24 mg,neurologie et psychiatrie,non
+R170,Lévothyroxine,lévothyroxine,comprimé,50 µg,endocrinologie,non
+R171,Lévothyroxine,lévothyroxine,comprimé,100 µg,endocrinologie,non
+R172,Carbimazole,carbimazole,comprimé,5 mg,endocrinologie,non
+R173,Progestérone,progestérone,gélule,200 mg,endocrinologie,non
+R174,Lévonorgestrel,lévonorgestrel,comprimé,"1,5 mg",endocrinologie,non
+R175,Éthinylestradiol et lévonorgestrel,éthinylestradiol et lévonorgestrel,comprimé,30 µg / 150 µg,endocrinologie,non
+R176,Acide tranexamique,acide tranexamique,comprimé,500 mg,endocrinologie,non
+R177,Colécalciférol,colécalciférol,ampoule buvable,100 000 UI,vitamines et minéraux,non
+R178,Colécalciférol,colécalciférol,gouttes buvables,10 000 UI / ml,vitamines et minéraux,non
+R179,Carbonate de calcium et colécalciférol,carbonate de calcium et colécalciférol,comprimé,500 mg / 400 UI,vitamines et minéraux,non
+R180,Acide folique,acide folique,comprimé,5 mg,vitamines et minéraux,non
+R181,Sulfate ferreux,sulfate ferreux,comprimé,80 mg de fer,vitamines et minéraux,non
+R182,Cyanocobalamine,cyanocobalamine,solution injectable,1 000 µg / ml,vitamines et minéraux,non
+R183,Acide ascorbique,acide ascorbique,comprimé,500 mg,vitamines et minéraux,non
+R184,Tamsulosine,tamsulosine,gélule,"0,4 mg",urologie,non
+R185,Finastéride,finastéride,comprimé,5 mg,urologie,non
+R186,Solifénacine,solifénacine,comprimé,5 mg,urologie,non
+R187,Sildénafil,sildénafil,comprimé,50 mg,urologie,non
+R188,Colchicine,colchicine,comprimé,1 mg,rhumatologie,non
+R189,Allopurinol,allopurinol,comprimé,100 mg,rhumatologie,non
+R190,Allopurinol,allopurinol,comprimé,300 mg,rhumatologie,non
+R191,Méthotrexate,méthotrexate,comprimé,"2,5 mg",rhumatologie,non
+R192,Hydroxychloroquine,hydroxychloroquine,comprimé,200 mg,rhumatologie,non
+R193,Hydrocortisone,hydrocortisone,crème,1 %,dermatologie et antiseptiques,non
+R194,Bétaméthasone,bétaméthasone,crème,"0,05 %",dermatologie et antiseptiques,non
+R195,Clobétasol,clobétasol,crème,"0,05 %",dermatologie et antiseptiques,non
+R196,Adapalène,adapalène,gel,"0,1 %",dermatologie et antiseptiques,non
+R197,Peroxyde de benzoyle,peroxyde de benzoyle,gel,5 %,dermatologie et antiseptiques,non
+R198,Povidone iodée,povidone iodée,solution cutanée,10 %,dermatologie et antiseptiques,non
+R199,Chlorhexidine,chlorhexidine,solution alcoolique,"0,5 %",dermatologie et antiseptiques,non
+R200,Lévothyroxine,lévothyroxine,comprimé,25 µg,endocrinologie,non
