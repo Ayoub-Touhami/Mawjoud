@@ -5,8 +5,8 @@ Slogan : « Moins de tours, plus de secours. »
 Site tunisien qui montre sur une carte les pharmacies et la disponibilité des médicaments.
 
 ## Fichiers de référence (à lire avant de coder)
-- `docs/Mawjoud_Specifications.pdf` : spécification fonctionnelle et technique (fonctions F1–F13, règles R1–R15, points ouverts).
-- `docs/Mawjoud_Objectif2.pptx` : arborescence (14 pages), wireframes, charte graphique, écrans haute fidélité.
+- `..\documents-prives\Mawjoud_Specifications.pdf` (hors dépôt) : spécification fonctionnelle et technique (fonctions F1–F13, règles R1–R15, points ouverts).
+- `..\documents-prives\Mawjoud_Objectif2.pptx` (hors dépôt) : arborescence (14 pages), wireframes, charte graphique, écrans haute fidélité.
 - Le PDF de design « Mawjoud : identité et écrans » est la référence visuelle : le suivre fidèlement.
 
 ## Pile technique

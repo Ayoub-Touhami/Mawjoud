@@ -11,3 +11,7 @@ NOMS_A_VERIFIER*.csv
 
 /docs/Mawjoud_Objectif2.pptx
 /docs/Mawjoud_Specifications.pdf
+
+# Documents de cadrage privés (déplacés dans ..\documents-prives, retirés de l'historique le 14/11/2026).
+/docs/Mawjoud_Objectif2.pptx
+/docs/Mawjoud_Specifications.pdf
