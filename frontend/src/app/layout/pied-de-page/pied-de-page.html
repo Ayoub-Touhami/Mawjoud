@@ -1,10 +1,10 @@
 <footer class="pied">
   <p class="slogan">{{ 'app.slogan' | transloco }}</p>
   <nav [attr.aria-label]="'navigation.secondaire' | transloco">
-    <a routerLink="/a-propos">{{ 'navigation.aPropos' | transloco }}</a>
-    <a routerLink="/contact">{{ 'navigation.contact' | transloco }}</a>
-    <a routerLink="/alertes/creer">{{ 'navigation.creerAlerte' | transloco }}</a>
-    <a routerLink="/pharmacien">{{ 'navigation.espacePharmacien' | transloco }}</a>
+    <a routerLink="/a-propos"><app-icone nom="information" [taille]="18" />{{ 'navigation.aPropos' | transloco }}</a>
+    <a routerLink="/contact"><app-icone nom="telephone" [taille]="18" />{{ 'navigation.contact' | transloco }}</a>
+    <a routerLink="/alertes/creer"><app-icone nom="alerte" [taille]="18" />{{ 'navigation.creerAlerte' | transloco }}</a>
+    <a routerLink="/pharmacien"><app-icone nom="croix-pharmacie" [taille]="18" />{{ 'navigation.espacePharmacien' | transloco }}</a>
     @if (administrateur()) {
       <a routerLink="/admin">{{ 'navigation.administration' | transloco }}</a>
     }

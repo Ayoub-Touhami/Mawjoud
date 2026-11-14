@@ -47,6 +47,8 @@ type Vue =
 /** Nombre de pharmacies non inscrites montrées avant le bouton « Voir plus ». */
 const PAS_NON_INSCRITES = 20;
 
+import { iconeForme } from '../../core/outils/forme-medicament';
+
 @Component({
   selector: 'app-resultats-page',
   imports: [
@@ -71,6 +73,7 @@ const PAS_NON_INSCRITES = 20;
   styleUrls: ['./resultats.page.scss', './resultats-liste.scss'],
 })
 export class ResultatsPage {
+  protected readonly iconeForme = iconeForme;
   private readonly api = inject(PHARMACIE_API);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

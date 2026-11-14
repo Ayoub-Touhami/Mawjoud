@@ -25,13 +25,17 @@
     [attr.aria-label]="'navigation.principale' | transloco"
   >
     <a routerLink="/alertes" routerLinkActive="actif" [routerLinkActiveOptions]="{ exact: true }">
-      {{ 'navigation.mesAlertes' | transloco }}
+      <app-icone nom="alerte" [taille]="20" />{{ 'navigation.mesAlertes' | transloco }}
     </a>
     <a routerLink="/pharmacien/inscription" routerLinkActive="actif">
-      {{ 'navigation.jeSuisPharmacien' | transloco }}
+      <app-icone nom="croix-pharmacie" [taille]="20" />{{ 'navigation.jeSuisPharmacien' | transloco }}
     </a>
-    <a routerLink="/a-propos" routerLinkActive="actif">{{ 'navigation.aPropos' | transloco }}</a>
-    <a routerLink="/contact" routerLinkActive="actif">{{ 'navigation.contact' | transloco }}</a>
+    <a routerLink="/a-propos" routerLinkActive="actif">
+      <app-icone nom="information" [taille]="20" />{{ 'navigation.aPropos' | transloco }}
+    </a>
+    <a routerLink="/contact" routerLinkActive="actif">
+      <app-icone nom="telephone" [taille]="20" />{{ 'navigation.contact' | transloco }}
+    </a>
     @if (utilisateur()) {
       <button type="button" class="connexion" appBouton variante="secondaire" (click)="sortir()">
         {{ 'navigation.seDeconnecter' | transloco }}

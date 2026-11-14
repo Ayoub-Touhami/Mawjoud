@@ -56,6 +56,8 @@ nav.ouverte {
 nav > a:not(.connexion) {
   display: flex;
   align-items: center;
+  /* Icône décorative au début du mot (à droite en arabe), espace constant. */
+  gap: var(--e-1);
   min-block-size: var(--cible-tactile);
   padding-inline: var(--e-2);
   font-weight: 600;

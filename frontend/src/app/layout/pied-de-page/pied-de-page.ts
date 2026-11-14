@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Icone } from '../../shared/icone/icone';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AUTH_SERVICE } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-pied-de-page',
-  imports: [RouterLink, TranslocoPipe],
+  imports: [Icone, RouterLink, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pied-de-page.html',
   styleUrl: './pied-de-page.scss',

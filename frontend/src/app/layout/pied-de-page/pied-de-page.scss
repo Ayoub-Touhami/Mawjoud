@@ -32,6 +32,8 @@ nav {
 a {
   display: inline-flex;
   align-items: center;
+  /* Icône décorative au début du mot (à droite en arabe), espace constant. */
+  gap: var(--e-1);
   justify-content: center;
   min-block-size: var(--cible-tactile);
   min-inline-size: var(--cible-tactile);

@@ -90,9 +90,12 @@ ul[hidden] {
 }
 
 li {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  /* Icône de forme au début (à droite en arabe), nom et détail l'un sous l'autre. */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--e-2);
+  align-content: center;
+  align-items: center;
   min-block-size: 52px;
   padding: var(--e-1) var(--e-3);
   cursor: pointer;
@@ -107,6 +110,11 @@ li.active {
 li.active {
   outline: 2px solid var(--focus);
   outline-offset: -2px;
+}
+
+.forme {
+  grid-row: span 2;
+  color: var(--texte-secondaire);
 }
 
 .nom {

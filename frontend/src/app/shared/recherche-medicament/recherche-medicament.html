@@ -56,6 +56,7 @@
       (mousedown)="$event.preventDefault()"
       (click)="choisir(medicament)"
     >
+      <app-icone class="forme" [nom]="iconeForme(medicament.forme)" [taille]="22" />
       <span class="nom"><bdi>{{ libelle(medicament) }}</bdi></span>
       <span class="detail"><bdi>{{ medicament.dci }} · {{ medicament.forme }}</bdi></span>
     </li>

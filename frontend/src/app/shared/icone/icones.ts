@@ -1,6 +1,7 @@
 import cadenas from '../../../assets/svg/icones-ajoutees/cadenas.svg';
 import chevronBas from '../../../assets/svg/icones-ajoutees/chevron-bas.svg';
 import fermer from '../../../assets/svg/icones-ajoutees/fermer.svg';
+import information from '../../../assets/svg/icones-ajoutees/information.svg';
 import lune from '../../../assets/svg/icones-ajoutees/lune.svg';
 import menu from '../../../assets/svg/icones-ajoutees/menu.svg';
 import question from '../../../assets/svg/icones-ajoutees/question.svg';
@@ -45,6 +46,7 @@ export const ICONES = {
   gelule,
   goutte,
   horloge,
+  information,
   'hors-connexion': horsConnexion,
   itineraire,
   loupe,

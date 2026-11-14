@@ -113,8 +113,9 @@
         @for (medicament of vueActuelle.medicaments; track medicament.id) {
           <li>
             <button type="button" (click)="ouvrir(medicament)">
+              <app-icone class="forme" [nom]="iconeForme(medicament.forme)" [taille]="22" />
               <strong>{{ libelle(medicament) }}</strong>
-              <span>{{ medicament.dci }} · {{ medicament.forme }}</span>
+              <span class="detail">{{ medicament.dci }} · {{ medicament.forme }}</span>
             </button>
           </li>
         }

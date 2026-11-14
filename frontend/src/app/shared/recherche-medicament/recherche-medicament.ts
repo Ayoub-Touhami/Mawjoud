@@ -30,6 +30,8 @@ const SUGGESTIONS_MAX = 7;
  * Champ de recherche avec suggestions (motif ARIA « combobox »). Rien de ce qui est saisi
  * n'est enregistré : le médicament choisi va seulement dans l'adresse de la page de résultats.
  */
+import { iconeForme } from '../../core/outils/forme-medicament';
+
 @Component({
   selector: 'app-recherche-medicament',
   imports: [Icone, TranslocoPipe],
@@ -38,6 +40,7 @@ const SUGGESTIONS_MAX = 7;
   styleUrl: './recherche-medicament.scss',
 })
 export class RechercheMedicament {
+  protected readonly iconeForme = iconeForme;
   /** Texte affiché à l'arrivée sur la page, par exemple le médicament déjà choisi. */
   readonly valeur = input('');
   /** Le choix reste dans la page, sans ouvrir les résultats : formulaire d'alerte. */
