@@ -4,6 +4,9 @@
 Slogan : « Moins de tours, plus de secours. »
 Site tunisien qui montre sur une carte les pharmacies et la disponibilité des médicaments.
 
+## Règle prioritaire : messages de commit
+- Ne jamais ajouter de ligne « Co-Authored-By », de ligne « Claude-Session » ni aucune mention de Claude ou d'Anthropic dans les messages de commit ou de pull request de ce projet.
+
 ## Fichiers de référence (à lire avant de coder)
 - `..\documents-prives\Mawjoud_Specifications.pdf` (hors dépôt) : spécification fonctionnelle et technique (fonctions F1–F13, règles R1–R15, points ouverts).
 - `..\documents-prives\Mawjoud_Objectif2.pptx` (hors dépôt) : arborescence (14 pages), wireframes, charte graphique, écrans haute fidélité.
