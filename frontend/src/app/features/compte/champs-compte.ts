@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Champ, Controle } from '../../shared/champ/champ';
 
-const LONGUEUR_MOT_DE_PASSE = 8;
+/** Comme l'API (MotsDePasseService.LONGUEUR_MIN). */
+const LONGUEUR_MOT_DE_PASSE = 10;
 
 export interface ErreursChamps {
   email: string | null;

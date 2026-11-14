@@ -9,6 +9,13 @@ export type ErreurAuth =
   | 'lien-expire'
   | 'lien-invalide'
   | 'non-connecte'
+  | 'mot-de-passe-court'
+  | 'mot-de-passe-courant'
+  | 'mot-de-passe-email'
+  | 'email-non-verifie'
+  | 'compte-suspendu'
+  | 'trop-de-tentatives'
+  | 'reseau'
   | 'indisponible';
 
 /**

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable } from '@angular/core';
 import { catchError, EMPTY, expand, map, Observable, of, reduce, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import {
@@ -224,10 +224,21 @@ export class AuthServiceHttp implements AuthService {
     );
   }
 
+  /** Code précis pour l'écran : « identifiants » n'apparaît que pour une connexion refusée (401). */
   private erreurAuth(e: unknown, defaut: ErreurAuth = 'indisponible'): Observable<never> {
     const code = codeErreur(e);
-    const connus: ErreurAuth[] = ['identifiants', 'lien-expire', 'lien-invalide', 'non-connecte'];
-    return throwError(() => (connus.includes(code as ErreurAuth) ? code : defaut));
+    const motif = (e instanceof HttpErrorResponse ? (e.error as { motif?: string } | null)?.motif : undefined) ?? '';
+    const parCode: Record<string, ErreurAuth> = {
+      identifiants: 'identifiants', 'lien-expire': 'lien-expire', 'lien-invalide': 'lien-invalide', 'non-connecte': 'non-connecte',
+      'email-non-verifie': 'email-non-verifie', 'compte-suspendu': 'compte-suspendu', 'trop-de-tentatives': 'trop-de-tentatives',
+      reseau: 'reseau',
+    };
+    const parMotif: Record<string, ErreurAuth> = {
+      'trop-court': 'mot-de-passe-court', 'trop-long': 'mot-de-passe-court', 'trop-courant': 'mot-de-passe-courant',
+      'identique-email': 'mot-de-passe-email',
+    };
+    const valeur = code === 'mot-de-passe-faible' ? (parMotif[motif] ?? 'mot-de-passe-court') : (parCode[code] ?? defaut);
+    return throwError(() => valeur);
   }
 
   /** Inscription (réponse toujours identique), puis connexion. Si la connexion échoue, l'adresse avait déjà un compte. */

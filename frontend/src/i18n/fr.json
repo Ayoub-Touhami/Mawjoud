@@ -143,7 +143,7 @@
       "emailAide": "Un lien vérifie votre e-mail.",
       "emailErreur": "Saisissez une adresse e-mail valide.",
       "motDePasse": "Mot de passe",
-      "motDePasseAide": "8 caractères au moins.",
+      "motDePasseAide": "10 caractères au moins.",
       "desactive": "Champ désactivé"
     },
     "cartes": {
@@ -366,7 +366,7 @@
   "compte": {
     "email": "E-mail",
     "motDePasse": "Mot de passe",
-    "aideMotDePasse": "8 caractères au moins. Un lien vérifie votre e-mail.",
+    "aideMotDePasse": "10 caractères au moins. Un lien vérifie votre e-mail.",
     "oublie": "Mot de passe oublié ?",
     "creer": "Créer mon compte",
     "ou": "ou",
@@ -381,13 +381,20 @@
     "erreurs": {
       "email": "Saisissez une adresse e-mail valide, par exemple nom@exemple.tn.",
       "motDePasseVide": "Saisissez votre mot de passe.",
-      "motDePasseCourt": "Le mot de passe doit compter 8 caractères au moins.",
+      "motDePasseCourt": "Le mot de passe doit compter 10 caractères au moins.",
       "email-utilise": "Cette adresse e-mail a déjà un compte. Connectez-vous avec votre mot de passe.",
       "identifiants": "E-mail ou mot de passe incorrect.",
-      "indisponible": "L'opération n'a pas abouti. Réessayez dans un instant.",
+      "indisponible": "Erreur du serveur. Réessayez dans un instant.",
       "non-connecte": "Connectez-vous pour continuer.",
       "lien-expire": "Ce lien a expiré.",
-      "lien-invalide": "Ce lien n'est pas valable."
+      "lien-invalide": "Ce lien n'est pas valable.",
+      "mot-de-passe-court": "Le mot de passe doit compter 10 caractères au moins (128 au plus).",
+      "mot-de-passe-courant": "Ce mot de passe est trop courant. Choisissez-en un autre, plus personnel.",
+      "mot-de-passe-email": "Le mot de passe ne doit pas être votre adresse e-mail.",
+      "email-non-verifie": "Confirmez d'abord votre adresse e-mail avec le lien reçu.",
+      "compte-suspendu": "Ce compte est suspendu.",
+      "trop-de-tentatives": "Trop de tentatives. Patientez quelques minutes avant de réessayer.",
+      "reseau": "Le serveur ne répond pas. Vérifiez votre connexion et réessayez."
     },
     "verification": {
       "encours": "Vérification en cours…",
