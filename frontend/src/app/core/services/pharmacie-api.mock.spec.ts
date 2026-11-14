@@ -8,10 +8,10 @@ import { statutStock } from '../models';
 import { PharmacieApiMock } from './pharmacie-api.mock';
 
 describe('données de test', () => {
-  it('contient 162 pharmacies et 40 médicaments, sans identifiant en double', () => {
-    expect(PHARMACIES_TEST.length).toBe(162);
+  it('contient 22 pharmacies et 40 médicaments, sans identifiant en double', () => {
+    expect(PHARMACIES_TEST.length).toBe(22);
     expect(MEDICAMENTS_TEST.length).toBe(40);
-    expect(new Set(PHARMACIES_TEST.map((p) => p.id)).size).toBe(162);
+    expect(new Set(PHARMACIES_TEST.map((p) => p.id)).size).toBe(22);
     expect(new Set(MEDICAMENTS_TEST.map((m) => m.id)).size).toBe(40);
   });
 

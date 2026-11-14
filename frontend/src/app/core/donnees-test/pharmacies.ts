@@ -1,8 +1,7 @@
 /*
- * DONNÉES DE TEST. Ce fichier charge pharmacies-test.json, produit par
- * scripts/importer-pharmacies.mjs à partir de data/pharmacies_test.csv. Les positions et les
- * statuts d'inscription sont simulés : ils ne décrivent pas ces pharmacies. Ces données ne
- * doivent pas être publiées telles quelles.
+ * DONNÉES DE TEST INVENTÉES : 22 pharmacies fictives (« Pharmacie Test NN », numéros +216000000NN,
+ * positions plausibles près des villes indiquées). Aucune donnée réelle : le jeu d'origine (pharmacies et
+ * téléphones réels) a été retiré de tout l'historique Git le 14 novembre 2026.
  */
 import { Pharmacie } from '../models';
 import pharmacies from './pharmacies-test.json';
