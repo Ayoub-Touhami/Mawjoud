@@ -394,7 +394,9 @@
       "email-non-verifie": "Confirmez d'abord votre adresse e-mail avec le lien reçu.",
       "compte-suspendu": "Ce compte est suspendu.",
       "trop-de-tentatives": "Trop de tentatives. Patientez quelques minutes avant de réessayer.",
-      "reseau": "Le serveur ne répond pas. Vérifiez votre connexion et réessayez."
+      "reseau": "Le serveur ne répond pas. Vérifiez votre connexion et réessayez.",
+      "donnees-invalides": "Vérifiez l'adresse e-mail et le mot de passe saisis.",
+      "session-expiree": "Votre session a expiré. Rechargez la page, puis réessayez."
     },
     "verification": {
       "encours": "Vérification en cours…",

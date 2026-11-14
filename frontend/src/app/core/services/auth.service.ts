@@ -16,6 +16,8 @@ export type ErreurAuth =
   | 'compte-suspendu'
   | 'trop-de-tentatives'
   | 'reseau'
+  | 'donnees-invalides'
+  | 'session-expiree'
   | 'indisponible';
 
 /**

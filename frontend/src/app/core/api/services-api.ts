@@ -231,7 +231,7 @@ export class AuthServiceHttp implements AuthService {
     const parCode: Record<string, ErreurAuth> = {
       identifiants: 'identifiants', 'lien-expire': 'lien-expire', 'lien-invalide': 'lien-invalide', 'non-connecte': 'non-connecte',
       'email-non-verifie': 'email-non-verifie', 'compte-suspendu': 'compte-suspendu', 'trop-de-tentatives': 'trop-de-tentatives',
-      reseau: 'reseau',
+      reseau: 'reseau', 'donnees-invalides': 'donnees-invalides', csrf: 'session-expiree', 'origine-refusee': 'session-expiree',
     };
     const parMotif: Record<string, ErreurAuth> = {
       'trop-court': 'mot-de-passe-court', 'trop-long': 'mot-de-passe-court', 'trop-courant': 'mot-de-passe-courant',
@@ -243,6 +243,8 @@ export class AuthServiceHttp implements AuthService {
 
   /** Inscription (réponse toujours identique), puis connexion. Si la connexion échoue, l'adresse avait déjà un compte. */
   creerCompte(email: string, motDePasse: string, role: Role = 'patient'): Observable<Utilisateur> {
+    // L'autoremplissage ajoute souvent une espace : l'API refuserait l'adresse (400) à l'inscription.
+    email = email.trim();
     const route = role === 'pharmacien' ? 'pharmaciens' : 'patients';
     return this.http.post(`${this.url}/comptes/${route}`, { email, motDePasse }).pipe(
       catchError((e) => this.erreurAuth(e)),
@@ -253,7 +255,7 @@ export class AuthServiceHttp implements AuthService {
   }
 
   seConnecter(email: string, motDePasse: string): Observable<Utilisateur> {
-    return this.http.post<Utilisateur>(`${this.url}/comptes/connexion`, { email, motDePasse }).pipe(
+    return this.http.post<Utilisateur>(`${this.url}/comptes/connexion`, { email: email.trim(), motDePasse }).pipe(
       tap((u) => this.session.ouvrir(u)),
       catchError((e) => this.erreurAuth(e)),
     );
