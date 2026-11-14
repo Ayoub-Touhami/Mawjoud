@@ -59,10 +59,11 @@ STATUT.md    État détaillé du projet et points restant à faire
 1. **Configuration** : à la racine, copier `.env.example` en `.env`, puis renseigner `DATABASE_URL` avec le compte propriétaire de PostgreSQL (par exemple `postgres`) et la base `mawjoud`. `.env` n'est jamais commité.
 2. **Base et migrations** : `.\database\appliquer-migrations.ps1 -CreerBase` (crée la base `mawjoud` et applique toutes les migrations).
 3. **Compte de l'API** : `.\database\definir-mot-de-passe-api.ps1` (mot de passe aléatoire du compte `mawjoud_api`, écrit dans `.env`, jamais affiché).
-4. **Jeu de données fictif** : `.\database\jeu-fictif.ps1` (pharmacies, médicaments, stocks et comptes de démonstration inventés ; les mots de passe des comptes s'affichent une seule fois).
-5. **Back-end** : `cd backend`, `npm ci`, puis `npm run start:dev`. Attendre « API prête sur http://127.0.0.1:3000/api ».
-6. **Front-end** (second terminal) : `cd frontend`, `npm ci`, puis `npm start`. Ouvrir **http://localhost:4200** (le proxy de développement envoie `/api` vers le back-end).
-7. **Premier administrateur** (si l'on n'utilise pas celui du jeu fictif), dans `backend` :
+4. **Dépendances du back-end** : `cd backend`, puis `npm ci`, puis `cd ..`.
+5. **Jeu de données fictif** : `.\database\jeu-fictif.ps1`. Il installe 25 pharmacies inventées et publiées (12 gouvernorats), 15 médicaments génériques, des disponibilités variées et 14 comptes de démonstration (`admin@demo.mawjoud.test`, `patient@demo.mawjoud.test`, `pharmacien01` à `pharmacien12@demo.mawjoud.test`). **Les mots de passe s'affichent une seule fois dans le terminal : les noter.** Le script refuse de tourner sur une base qui contient déjà des fiches réelles, ou si le jeu est déjà installé.
+6. **Back-end** : dans `backend`, `npm run start:dev`. Attendre « API prête sur http://127.0.0.1:3000/api ».
+7. **Front-end** (second terminal) : `cd frontend`, `npm ci`, puis `npm start`. Ouvrir **http://localhost:4200** (le proxy de développement envoie `/api` vers le back-end).
+8. **Premier administrateur** (si l'on n'utilise pas celui du jeu fictif), dans `backend` :
    `$env:ADMIN_EMAIL='admin@exemple.tn'; $env:ADMIN_MOT_DE_PASSE='<mot de passe de 10 caractères ou plus>'; npm run admin:creer; Remove-Item Env:ADMIN_MOT_DE_PASSE`
 
 En développement, les e-mails (vérification d'adresse, alertes) ne partent pas : ils s'affichent dans le terminal du back-end, adresse masquée, avec le lien à ouvrir.
