@@ -24,6 +24,7 @@ Dans la base de développement `mawjoud`, aucune pharmacie n'est encore publiée
 | `GET /v1/medicaments/:id/pharmacies` | `lat` et `lng` (ensemble, facultatifs), `limite` | `{ elements: [{ pharmacie, statut, declareLe }] }` ; `404` si médicament inconnu |
 | `GET /v1/pharmacies/:id/disponibilites` | `id` (uuid) | `{ elements: [{ medicamentId, statut, declareLe }] }`, tous statuts (Partie 9e) ; `404` si non publiée |
 | `GET /v1/medicaments/tous` | — | `{ elements }` : catalogue actif complet, trié par nom (Partie 9e, chargé une fois par le front-end) |
+| `POST /v1/contact` | `{ nom?, email, sujet (question, erreur-pharmacie, pharmacien, autre), message (10 à 2 000 caractères), pharmacieId? }` | `201 { statut: "recu" }` : enregistré dans `prive.message_contact`, aucun e-mail envoyé ; 10 envois par heure et par IP (Partie 10c, migration 037) |
 | `GET /v1/gouvernorats` | — | `{ elements: [{ code, nom, nombrePharmacies }] }` |
 | `GET /v1/villes` | `gouvernorat` (facultatif) | `{ elements: [{ nom, gouvernorat, nombrePharmacies }] }` |
 

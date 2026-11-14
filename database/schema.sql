@@ -3097,10 +3097,38 @@ GRANT SELECT(uuid) ON TABLE prive.message_contact TO mawjoud_application;
 
 
 --
+-- Name: COLUMN message_contact.nom; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT INSERT(nom) ON TABLE prive.message_contact TO mawjoud_application;
+
+
+--
+-- Name: COLUMN message_contact.email; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT INSERT(email) ON TABLE prive.message_contact TO mawjoud_application;
+
+
+--
+-- Name: COLUMN message_contact.sujet; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT INSERT(sujet) ON TABLE prive.message_contact TO mawjoud_application;
+
+
+--
+-- Name: COLUMN message_contact.message; Type: ACL; Schema: prive; Owner: -
+--
+
+GRANT INSERT(message) ON TABLE prive.message_contact TO mawjoud_application;
+
+
+--
 -- Name: COLUMN message_contact.pharmacie_id; Type: ACL; Schema: prive; Owner: -
 --
 
-GRANT SELECT(pharmacie_id),UPDATE(pharmacie_id) ON TABLE prive.message_contact TO mawjoud_application;
+GRANT SELECT(pharmacie_id),INSERT(pharmacie_id),UPDATE(pharmacie_id) ON TABLE prive.message_contact TO mawjoud_application;
 
 
 --
