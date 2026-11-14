@@ -29,7 +29,9 @@ export const intercepteurApi: HttpInterceptorFn = (req, suite) => {
 /** Code d'erreur de l'API (« identifiants », « lien-expire »…), « reseau » sans réponse, sinon « indisponible ». */
 export function codeErreur(e: unknown): string {
   if (e instanceof HttpErrorResponse) {
-    if (e.status === 0) return 'reseau';
+    // 0 : pas de réponse ; 502 à 504 : le proxy de développement (ou un relais) n'atteint pas le back-end,
+    // par exemple pendant son redémarrage. Ce n'est pas une erreur de l'API : « le serveur ne répond pas ».
+    if (e.status === 0 || (e.status >= 502 && e.status <= 504)) return 'reseau';
     const code = (e.error as { erreur?: unknown } | null)?.erreur;
     return typeof code === 'string' ? code : 'indisponible';
   }
