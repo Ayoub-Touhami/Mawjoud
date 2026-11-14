@@ -8,3 +8,6 @@ NOMS_A_VERIFIER*.csv
 
 # Démonstration (données de test) : non commitée tant qu'elle n'est pas validée.
 /database/demo/
+
+/docs/Mawjoud_Objectif2.pptx
+/docs/Mawjoud_Specifications.pdf
